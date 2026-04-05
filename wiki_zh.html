@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>SIRIUS Ui 维基 | 数据驱动型界面框架</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f6f8fa;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', 'Inter', system-ui, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #1f2328;
+            font-smooth: antialiased;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .layout {
+            display: flex;
+            width: 100%;
+            gap: 0;
+            padding: 0;
+        }
+
+        .sidebar {
+            width: 280px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            align-self: flex-start;
+            background: #ffffff;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.03);
+            border-right: 1px solid #e1e4e8;
+            padding: 1.5rem 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar .toc {
+            padding: 0 1rem;
+        }
+
+        .sidebar .toc h3 {
+            font-size: 1.1rem;
+            margin: 0 0 1rem 0;
+            padding-left: 0.5rem;
+            color: #0969da;
+            border-left: 3px solid #0969da;
+        }
+
+        .sidebar .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .sidebar .toc li {
+            margin: 0.5rem 0;
+        }
+
+        .sidebar .toc a {
+            text-decoration: none;
+            color: #2c3e50;
+            font-size: 0.85rem;
+            display: block;
+            padding: 0.3rem 0.5rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .sidebar .toc a:hover {
+            background-color: #f0f4fa;
+            color: #0969da;
+        }
+
+        .sidebar .toc .level-2 {
+            margin-left: 1rem;
+        }
+
+        .main-content {
+            flex: 1;
+            min-width: 0;
+            background: #ffffff;
+            padding: 2rem 2.5rem;
+            overflow-x: auto;
+        }
+
+        @media (max-width: 768px) {
+            .layout {
+                flex-direction: column;
+            }
+            .sidebar {
+                position: static;
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid #e1e4e8;
+                padding: 1rem;
+            }
+            .main-content {
+                padding: 1.5rem;
+            }
+        }
+
+        h1, h2, h3, h4 {
+            font-weight: 600;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+            line-height: 1.25;
+        }
+        h1 {
+            font-size: 2rem;
+            border-bottom: 1px solid #e1e4e8;
+            padding-bottom: 0.3em;
+            margin-top: 0;
+        }
+        h2 {
+            font-size: 1.5rem;
+            border-bottom: 1px solid #eaecef;
+            padding-bottom: 0.3em;
+        }
+        h3 {
+            font-size: 1.25rem;
+        }
+        p, ul, ol {
+            margin-bottom: 1em;
+        }
+        ul, ol {
+            padding-left: 2em;
+        }
+        li {
+            margin: 0.25em 0;
+        }
+
+        pre {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 1.2rem 1.4rem;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin: 1.2rem 0;
+            border: 1px solid #e9edf2;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.03);
+            transition: box-shadow 0.2s;
+        }
+        pre:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        code {
+            font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+            font-size: 0.85em;
+            background-color: rgba(135, 145, 155, 0.1);
+            padding: 0.2rem 0.4rem;
+            border-radius: 8px;
+            font-weight: 450;
+            letter-spacing: -0.01em;
+        }
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            font-size: 0.85rem;
+            border: none;
+            font-weight: normal;
+        }
+
+        .note, .tip, .warning {
+            padding: 0.8rem 1rem;
+            margin: 1.2rem 0;
+            border-radius: 14px;
+            border-left: 4px solid;
+            background-color: #f8fafc;
+        }
+        .note {
+            background-color: #eef5ff;
+            border-left-color: #3b82f6;
+        }
+        .tip {
+            background-color: #e6f7ec;
+            border-left-color: #10b981;
+        }
+        .warning {
+            background-color: #fff3e3;
+            border-left-color: #f97316;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.2rem 0;
+            font-size: 0.9rem;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        }
+        th, td {
+            border: 1px solid #e1e4e8;
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+        }
+        th {
+            background-color: #f6f8fa;
+            font-weight: 600;
+        }
+        .coord-diagram {
+            background: #f0f4fa;
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+            margin: 1rem 0;
+            font-family: monospace;
+            font-size: 0.9rem;
+            border: 1px solid #d0d7de;
+        }
+        .coord-diagram svg {
+            max-width: 100%;
+            height: auto;
+            background: white;
+            border-radius: 12px;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #e1e4e8;
+            margin: 2rem 0;
+        }
+        .badge {
+            display: inline-block;
+            background: #e9ecef;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-family: monospace;
+            color: #2c3e50;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <div class="toc">
+            <h3>📖 目次</h3>
+            <ul>
+                <li><a href="#overview">总览</a></li>
+                <li><a href="#pack-structure">资源包结构</a></li>
+                <li><a href="#screen-config">屏幕配置</a>
+                    <ul class="level-2">
+                        <li><a href="#panorama">背景（panorama）</a></li>
+                        <li><a href="#elements">元素（elements）</a></li>
+                    </ul>
+                </li>
+                <li><a href="#graphicsdraw">背景图层（graphicsDraw）</a></li>
+                <li><a href="#button-style">按钮样式（button style）</a></li>
+                <li><a href="#actions">动作（action）</a></li>
+                <li><a href="#coordinates">坐标系与表达式</a>
+                    <ul class="level-2">
+                        <li><a href="#coord-origin">原点</a></li>
+                        <li><a href="#anchor-point">元素锚点</a></li>
+                        <li><a href="#expression-vars">表达式变量</a></li>
+                        <li><a href="#alignment">常用对齐公式</a></li>
+                        <li><a href="#different-sizes">不同尺寸元素的对齐</a></li>
+                    </ul>
+                </li>
+                <li><a href="#examples">配置范例</a></li>
+                <li><a href="#faq">疑难排解</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <h1>📦 SIRIUS Ui 维基</h1>
+        <p><span class="badge">适用 Minecraft 26.1.1 | 数据驱动型界面框架（开发中）</span></p>
+        <p>SIRIUS Ui 是一款模组，允许您通过简洁的 JSON 配置与纹理资源自定义 Minecraft 的标题画面与游戏选择画面。无需编写 Java 代码，即可轻松添加图像、按钮、背景以及动态布局。</p>
+        <div class="note">
+            📌 目前支持两种屏幕：<strong>标题画面（title_screen）</strong>与<strong>游戏选择画面（game_selection_screen）</strong>。模组名称为 SIRIUS Ui。
+        </div>
+
+        <h2 id="overview">总览</h2>
+        <p>SIRIUS Ui 将硬编码的标题画面与游戏选择画面替换为基于 JSON 的动态渲染系统。资源包可覆写下列文件：</p>
+        <ul>
+            <li><code>assets/sirius_ui/screens/title_screen.json</code> — 标题画面布局</li>
+            <li><code>assets/sirius_ui/screens/game_selection_screen.json</code> — 游戏选择画面布局</li>
+            <li><code>assets/sirius_ui/buttons/*.json</code> — 按钮样式定义</li>
+            <li>任意 PNG 纹理文件</li>
+        </ul>
+        <p>核心特性：</p>
+        <ul>
+            <li>图像显示（<code>logo</code> 元素）</li>
+            <li>可交互按钮（常态 / 悬停 / 禁用纹理）</li>
+            <li>基于表达式的动态坐标（基于屏幕尺寸与元素尺寸）</li>
+            <li>按钮动作：打开屏幕、退出游戏、返回</li>
+            <li>背景全景控制（原版、无、自定义图像）</li>
+            <li>自定义背景图层（<code>graphicsDraw</code>）—— 支持表达式的彩色矩形</li>
+            <li>静态文本元素（<code>text</code>）</li>
+        </ul>
+
+        <h2 id="pack-structure">资源包结构</h2>
+        <p>您的资源包必须遵循下述精确的文件夹层次：</p>
+        <pre><code>📦 您的资源包/
+└── 📁 assets/
+    └── 📁 sirius_ui/
+        ├── 📁 screens/
+        │   ├── 📄 title_screen.json
+        │   └── 📄 game_selection_screen.json
+        ├── 📁 buttons/
+        │   ├── singleplayer.json
+        │   ├── multiplayer.json
+        │   └── ...
+        └── 📁 textures/
+            └── 📁 gui/
+                ├── custom_logo.png
+                ├── btn_normal.png
+                └── ...
+└── 📄 pack.mcmeta</code></pre>
+        <p><code>pack.mcmeta</code> 示例：</p>
+        <pre><code>{
+  "pack": {
+    "pack_format": 26,
+    "description": "SIRIUS Ui 自定义界面资源包"
+  }
+}</code></pre>
+
+        <h2 id="screen-config">屏幕配置</h2>
+        <p>每个屏幕 JSON 的根对象为 <code>screen</code>，其可包含：</p>
+        <ul>
+            <li><code>panorama</code> — 背景配置</li>
+            <li><code>graphicsDraw</code> — 背景图层数组</li>
+            <li><code>elements</code> — 界面元素数组</li>
+            <li><code>copyright</code> — 版权文本（仅标题画面）</li>
+        </ul>
+
+        <h3 id="panorama">背景（panorama）</h3>
+        <p>支持三种形式：</p>
+        <ul>
+            <li><code>"panorama": "vanilla"</code> — 原版动态全景</li>
+            <li><code>"panorama": "none"</code> — 纯黑背景</li>
+            <li><code>"panorama": { "type": "image", "texture": "sirius_ui:textures/gui/background.png" }</code> — 自定义图像（缩放填充，居中）</li>
+        </ul>
+
+        <h3 id="elements">元素（elements）</h3>
+        <p><code>elements</code> 数组可包含以下类型的对象：</p>
+        <ul>
+            <li><strong><code>logo</code></strong> ：显示静态图像。必填字段：<code>texture</code>、<code>position</code>、<code>size</code>。</li>
+            <li><strong><code>button</code></strong> ：可交互按钮。必填字段：<code>style</code>、<code>position</code>、<code>size</code>、<code>action</code>。可选：<code>enabled</code>（默认为 true）、<code>text_key</code>（覆写样式的文本）。</li>
+            <li><strong><code>text</code></strong> ：静态文本。必填字段：<code>text_key</code>、<code>position</code>。可选：<code>color</code>（默认为 0xFFFFFF）、<code>shadow</code>（默认为 true）。</li>
+        </ul>
+
+        <h2 id="graphicsdraw">背景图层（graphicsDraw）</h2>
+        <p><code>graphicsDraw</code> 是一组彩色矩形数组，绘制于背景与常规元素之间。每个图层均支持表达式：</p>
+        <ul>
+            <li><code>x</code>、<code>y</code> — 左上角坐标</li>
+            <li><code>width</code>、<code>height</code> — 宽高尺寸</li>
+            <li><code>color</code> — 颜色字符串：<code>"#RRGGBB"</code>、<code>"0xRRGGBB"</code> 或 <code>"0xAARRGGBB"</code></li>
+        </ul>
+        <p>示例：底部一条红色装饰线</p>
+        <pre><code>{
+  "x": "0",
+  "y": "height - 4",
+  "width": "width",
+  "height": "4",
+  "color": "#AA0000"
+}</code></pre>
+
+        <h2 id="button-style">按钮样式（button style）</h2>
+        <p>按钮样式文件（例如 <code>singleplayer.json</code>）必须包含顶层对象 <code>button</code>：</p>
+        <pre><code>{
+  "button": {
+    "text_key": "menu.singleplayer",
+    "texture": {
+      "normal": "minecraft:widget/button",
+      "hovered": "minecraft:widget/button_highlighted",
+      "disabled": "minecraft:widget/button_disabled"
+    },
+    "text_color": 16777215,
+    "hover_text_color": 16777088,
+    "disabled_text_color": 10526880,
+    "text_offset_x": "center",
+    "text_offset_y": "(height - elementHeight)/2"
+  }
+}</code></pre>
+        <ul>
+            <li><code>text_key</code> — 显示在按钮上的本地化键名。</li>
+            <li><code>texture</code> — 三种状态的纹理标识符（不含 <code>.png</code> 扩展名；纹理须置于 <code>assets/namespace/textures/gui/sprites/</code> 目录）。</li>
+            <li><code>text_color</code> / <code>hover_text_color</code> / <code>disabled_text_color</code> — 十进制整数表示的 ARGB 颜色值。</li>
+            <li><code>text_offset_x</code> / <code>text_offset_y</code> — 文本相对于按钮左上角的偏移量（允许表达式）。您也可以使用 <code>hovered_text_offset_*</code> 和 <code>disabled_text_offset_*</code> 来实现状态相关的偏移。</li>
+        </ul>
+
+        <h2 id="actions">动作（action）</h2>
+        <p>按钮的 <code>action</code> 字段支持以下类型：</p>
+        <ul>
+            <li><strong>打开屏幕</strong>：<code>{ "type": "open_screen", "screenId": "singleplayer" }</code><br>
+            预定义的 <code>screenId</code> 取值：
+                <ul>
+                    <li><code>singleplayer</code> — 单人游戏世界选择</li>
+                    <li><code>multiplayer</code> — 多人游戏屏幕</li>
+                    <li><code>options</code> — 选项屏幕</li>
+                    <li><code>realms</code> — Realms 主屏幕</li>
+                    <li><code>selectGame</code> — 模组提供的自定义游戏选择屏幕</li>
+                    <li><code>language</code> — 语言设置</li>
+                    <li><code>accessibility</code> — 辅助功能设置</li>
+                </ul>
+            </li>
+            <li><strong>退出游戏</strong>：<code>{ "type": "quit_game" }</code></li>
+            <li><strong>关闭当前屏幕（返回）</strong>：<code>{ "type": "close_screen" }</code></li>
+        </ul>
+
+        <h2 id="coordinates">坐标系与表达式</h2>
+        <h3 id="coord-origin">原点</h3>
+        <p>原点 (0,0) 位于屏幕左上角。X 轴向右递增，Y 轴向下递增。</p>
+        <div class="coord-diagram">
+            <svg width="400" height="260" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" style="background: #fefefe; border: 1px solid #ccc;">
+                <rect x="0" y="0" width="400" height="260" fill="#fafcff" stroke="#cbd5e1" stroke-width="1"/>
+                <line x1="20" y1="20" x2="380" y2="20" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowX)"/>
+                <line x1="20" y1="20" x2="20" y2="240" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowY)"/>
+                <text x="385" y="25" fill="#ef4444" font-size="12">X+</text>
+                <text x="10" y="245" fill="#ef4444" font-size="12">Y+</text>
+                <circle cx="20" cy="20" r="4" fill="#ef4444"/>
+                <text x="5" y="15" fill="#ef4444" font-size="12">(0,0)</text>
+                <rect x="140" y="80" width="120" height="50" fill="#3b82f6" fill-opacity="0.3" stroke="#3b82f6" stroke-width="2"/>
+                <circle cx="140" cy="80" r="5" fill="#2563eb"/>
+                <text x="145" y="75" fill="#1e40af" font-size="11">按钮左上角 (x,y)</text>
+                <defs>
+                    <marker id="arrowX" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                        <path d="M0,0 L0,6 L9,3 z" fill="#ef4444"/>
+                    </marker>
+                    <marker id="arrowY" markerWidth="10" markerHeight="10" refX="3" refY="9" orient="auto">
+                        <path d="M0,0 L6,0 L3,9 z" fill="#ef4444"/>
+                    </marker>
+                </defs>
+            </svg>
+            <p>▲ 原点位于左上角，X 向右，Y 向下。</p>
+        </div>
+
+        <h3 id="anchor-point">元素锚点</h3>
+        <p><code>position</code> 字段定义的是元素的<strong>左上角</strong>，而非其中心。</p>
+        <div class="warning">
+            ⚠️ 常见误区：<code>"x": "width/2", "y": "height/2"</code> 并<strong>不能</strong>将元素居中——它只是将元素的左上角置于屏幕中心。
+        </div>
+        <p>正确的居中表达式：</p>
+        <pre><code>"x": "(width - elementWidth)/2"
+"y": "(height - elementHeight)/2"</code></pre>
+
+        <h3 id="expression-vars">表达式变量与运算</h3>
+        <p>可用变量：</p>
+        <ul>
+            <li><code>width</code> — 屏幕宽度（缩放后）</li>
+            <li><code>height</code> — 屏幕高度</li>
+            <li><code>elementWidth</code> — 元素宽度（来自 <code>size.width</code>）</li>
+            <li><code>elementHeight</code> — 元素高度（来自 <code>size.height</code>）</li>
+        </ul>
+        <p>运算符：<code>+ - * / ( )</code>；除法为整数截断。快捷写法：</p>
+        <ul>
+            <li><code>"center"</code> → <code>"(width - elementWidth)/2"</code>（仅用于元素 x 坐标）</li>
+            <li><code>"bottom-20"</code> → <code>"height - elementHeight - 20"</code>（仅用于元素 y 坐标）</li>
+        </ul>
+
+        <h3 id="alignment">常用对齐公式</h3>
+        <table>
+            <thead>
+                <tr><th>效果</th><th>X 表达式</th><th>Y 表达式</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>水平居中</td><td><code>"center"</code> 或 <code>"(width - elementWidth)/2"</code></td><td>任意（保持原值）</td></tr>
+                <tr><td>垂直居中</td><td>任意</td><td><code>"(height - elementHeight)/2"</code></td></tr>
+                <tr><td>完全居中</td><td><code>"center"</code> 或 <code>"(width - elementWidth)/2"</code></td><td><code>"(height - elementHeight)/2"</code></td></tr>
+                <tr><td>左上边距 10px</td><td><code>10</code></td><td><code>10</code></td></tr>
+                <tr><td>右上（距右边缘 20px）</td><td><code>"width - elementWidth - 20"</code></td><td><code>20</code></td></tr>
+                <tr><td>左下（距底边缘 30px）</td><td><code>20</code></td><td><code>"bottom-30"</code> 或 <code>"height - elementHeight - 30"</code></td></tr>
+                <tr><td>右下</td><td><code>"width - elementWidth - 15"</code></td><td><code>"height - elementHeight - 15"</code></td></tr>
+            </tbody>
+        </table>
+
+        <h3 id="different-sizes">不同尺寸元素的对齐</h3>
+        <ul>
+            <li><strong>左 / 右 / 水平居中</strong>：对所有元素使用相同的 <code>x</code> 表达式。</li>
+            <li><strong>底部对齐</strong>：使用 <code>"y": "baseY - elementHeight"</code>，其中 <code>baseY</code> 为目标基线。</li>
+            <li><strong>垂直堆叠</strong>：手动累加 <code>y</code> 值，例如 <code>"y": "100 + 20 + 10"</code>（首个按钮高度 20，间距 10）。</li>
+        </ul>
+        <div class="tip">核心公式：<strong>左上角坐标 = 目标参考点 - 元素尺寸偏移</strong>（例如右对齐：参考点 = <code>width</code>，偏移 = <code>elementWidth</code>）。</div>
+
+        <h2 id="examples">配置范例</h2>
+        <p>完整的标题画面配置（深色主题、自定义徽标、三个按钮、顶部标题）：</p>
+        <pre><code>{
+  "screen": {
+    "panorama": { "type": "image", "texture": "sirius_ui:textures/gui/background.png" },
+    "graphicsDraw": [
+      { "x": "0", "y": "0", "width": "width", "height": "height", "color": "#0A0A0A" },
+      { "x": "0", "y": "height - 4", "width": "width", "height": "4", "color": "#FFAA00" }
+    ],
+    "elements": [
+      {
+        "type": "text",
+        "text_key": "auui.title",
+        "position": { "x": "center", "y": 12 },
+        "color": 16777215,
+        "shadow": true
+      },
+      {
+        "type": "logo",
+        "texture": "sirius_ui:textures/gui/fancy_logo.png",
+        "position": { "x": "center", "y": 40 },
+        "size": { "width": 300, "height": 90 }
+      },
+      {
+        "type": "button",
+        "text_key": "menu.singleplayer",
+        "style": "sirius_ui:buttons/custom_play.json",
+        "position": { "x": "center", "y": "(height - elementHeight)/2 - 40" },
+        "size": { "width": 200, "height": 24 },
+        "action": { "type": "open_screen", "screenId": "singleplayer" }
+      },
+      {
+        "type": "button",
+        "text_key": "menu.multiplayer",
+        "style": "sirius_ui:buttons/custom_multi.json",
+        "position": { "x": "center", "y": "(height - elementHeight)/2" },
+        "size": { "width": 200, "height": 24 },
+        "action": { "type": "open_screen", "screenId": "multiplayer" }
+      },
+      {
+        "type": "button",
+        "text_key": "menu.quit",
+        "style": "sirius_ui:buttons/custom_quit.json",
+        "position": { "x": "center", "y": "(height - elementHeight)/2 + 40" },
+        "size": { "width": 200, "height": 24 },
+        "action": { "type": "quit_game" }
+      }
+    ]
+  }
+}</code></pre>
+
+        <h2 id="faq">疑难排解</h2>
+        <table>
+            <thead><tr><th>问题</th><th>可能原因与解决方案</th></tr></thead>
+            <tbody>
+                <tr><td>按钮无响应</td><td>检查 <code>action</code> 与 <code>screenId</code>；确保 <code>enabled</code> 为 true。</td></tr>
+                <tr><td>纹理显示粉黑棋盘格</td><td>路径错误或文件缺失；确认命名空间与 <code>.png</code> 扩展名。</td></tr>
+                <tr><td>表达式错误“未知变量”</td><td>仅允许 <code>width, height, elementWidth, elementHeight</code>；检查拼写。</td></tr>
+                <tr><td>背景图层未显示</td><td>检查颜色格式（例如 <code>#RRGGBB</code>）及坐标范围。</td></tr>
+                <tr><td>自定义全景图未显示</td><td>确认 <code>panorama.type</code> 为 <code>"image"</code>，<code>texture</code> 路径包含 <code>.png</code>，且文件存在。</td></tr>
+            </tbody>
+        </table>
+        <div class="tip">🔧 按下 <kbd>F3+T</kbd> 可重载资源包 —— 界面更新无需重启游戏。</div>
+    </main>
+</div>
+</body>
+</html>
