@@ -200,6 +200,7 @@
             border: 1px solid #e1e4e8;
             padding: 0.6rem 0.8rem;
             text-align: left;
+            vertical-align: top;
         }
         th {
             background-color: #f6f8fa;
@@ -251,19 +252,25 @@
                 <li><a href="#screen-config">Screen Configuration</a>
                     <ul class="level-2">
                         <li><a href="#panorama">Background (panorama)</a></li>
-                        <li><a href="#elements">Elements (elements)</a></li>
+                        <li><a href="#graphicsdraw">Background Layers (graphicsDraw)</a></li>
+                        <li><a href="#elements">Elements (elements)</a>
+                            <ul class="level-2">
+                                <li><a href="#logo-element">Logo Element</a></li>
+                                <li><a href="#button-element">Button Element</a></li>
+                                <li><a href="#text-element">Text Element</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#copyright">Copyright (copyright)</a></li>
                     </ul>
                 </li>
-                <li><a href="#graphicsdraw">Background Layers (graphicsDraw)</a></li>
-                <li><a href="#button-style">Button Style (button style)</a></li>
-                <li><a href="#actions">Actions (action)</a></li>
+                <li><a href="#button-style">Button Style</a></li>
+                <li><a href="#actions">Actions</a></li>
                 <li><a href="#coordinates">Coordinate System & Expressions</a>
                     <ul class="level-2">
                         <li><a href="#coord-origin">Origin</a></li>
                         <li><a href="#anchor-point">Element Anchor</a></li>
                         <li><a href="#expression-vars">Expression Variables</a></li>
                         <li><a href="#alignment">Common Alignment Formulas</a></li>
-                        <li><a href="#different-sizes">Aligning Different‑sized Elements</a></li>
                     </ul>
                 </li>
                 <li><a href="#examples">Configuration Examples</a></li>
@@ -274,39 +281,33 @@
 
     <main class="main-content">
         <h1>📦 SIRIUS Ui Wiki</h1>
-        <p><span class="badge">For Minecraft 26.1.1 | Data‑Driven UI Framework (In Development)</span></p>
-        <p>SIRIUS Ui is a mod that lets you customise Minecraft's Title Screen and Game Selection Screen using simple JSON configurations and texture resources. No Java coding required – add images, buttons, backgrounds, and dynamic layouts with ease.</p>
+        <p><span class="badge">Minecraft 26.1.1 | Data-Driven UI Framework (Version 0.3.1)</span></p>
+        <p>SIRIUS Ui is a mod that allows you to customize Minecraft's Title Screen, Game Selection Screen, Pause Screen, and Death Screen using simple JSON configurations and texture assets. No Java coding required – easily add images, buttons, backgrounds, and dynamic layouts.</p>
         <div class="note">
-            📌 Currently supports two screens: <strong>Title Screen (title_screen)</strong> and <strong>Game Selection Screen (game_selection_screen)</strong>. The mod is named SIRIUS Ui.
+            📌 Currently supports four screens: <strong>Title Screen (title_screen)</strong>, <strong>Game Selection Screen (game_selection_screen)</strong>, <strong>Pause Screen (pause_screen)</strong> and <strong>Death Screen (death_screen)</strong>. Mod name is SIRIUS Ui.
         </div>
 
         <h2 id="overview">Overview</h2>
-        <p>SIRIUS Ui replaces the hard‑coded Title and Game Selection screens with a JSON‑driven dynamic rendering system. A resource pack can override the following files:</p>
+        <p>SIRIUS Ui replaces hardcoded screens with a JSON‑based dynamic rendering system. Resource packs can override the following files:</p>
         <ul>
             <li><code>assets/sirius_ui/screens/title_screen.json</code> — Title Screen layout</li>
             <li><code>assets/sirius_ui/screens/game_selection_screen.json</code> — Game Selection Screen layout</li>
+            <li><code>assets/sirius_ui/screens/pause_screen.json</code> — Pause Screen layout</li>
+            <li><code>assets/sirius_ui/screens/death_screen.json</code> — Death Screen layout</li>
             <li><code>assets/sirius_ui/buttons/*.json</code> — Button style definitions</li>
             <li>Any PNG texture files</li>
-        </ul>
-        <p>Core features:</p>
-        <ul>
-            <li>Image display (<code>logo</code> element)</li>
-            <li>Interactive buttons (normal / hovered / disabled textures)</li>
-            <li>Dynamic expression coordinates (based on screen size and element dimensions)</li>
-            <li>Button actions: open screens, quit game, go back</li>
-            <li>Background panorama control (vanilla, none, custom image)</li>
-            <li>Custom background layers (<code>graphicsDraw</code>) – coloured rectangles with expression support</li>
-            <li>Static text element (<code>text</code>)</li>
         </ul>
 
         <h2 id="pack-structure">Resource Pack Structure</h2>
         <p>Your resource pack must follow this exact folder hierarchy:</p>
-        <pre><code>📦 your_resource_pack/
+        <pre><code>📦 your-resource-pack/
 └── 📁 assets/
     └── 📁 sirius_ui/
         ├── 📁 screens/
         │   ├── 📄 title_screen.json
-        │   └── 📄 game_selection_screen.json
+        │   ├── 📄 game_selection_screen.json
+        │   ├── 📄 pause_screen.json
+        │   └── 📄 death_screen.json
         ├── 📁 buttons/
         │   ├── singleplayer.json
         │   ├── multiplayer.json
@@ -321,93 +322,129 @@
         <pre><code>{
   "pack": {
     "pack_format": 26,
-    "description": "SIRIUS Ui custom interface pack"
+    "description": "SIRIUS Ui custom UI resource pack"
   }
 }</code></pre>
 
         <h2 id="screen-config">Screen Configuration</h2>
-        <p>The root object of each screen JSON is <code>screen</code>, which may contain:</p>
+        <p>The root object of each screen JSON is <code>screen</code>, which can contain:</p>
         <ul>
-            <li><code>panorama</code> — background configuration</li>
-            <li><code>graphicsDraw</code> — array of background layers</li>
-            <li><code>elements</code> — array of UI elements</li>
-            <li><code>copyright</code> — copyright text (Title Screen only)</li>
+            <li><code>panorama</code> — background configuration (object or string)</li>
+            <li><code>graphicsDraw</code> — array of background layers (optional)</li>
+            <li><code>elements</code> — array of UI elements (required)</li>
+            <li><code>copyright</code> — copyright text object (title screen only, optional)</li>
         </ul>
 
         <h3 id="panorama">Background (panorama)</h3>
         <p>Three forms are supported:</p>
         <ul>
-            <li><code>"panorama": "vanilla"</code> — vanilla dynamic panorama</li>
+            <li><code>"panorama": "vanilla"</code> — vanilla dynamic panorama background</li>
             <li><code>"panorama": "none"</code> — solid black background</li>
-            <li><code>"panorama": { "type": "image", "texture": "sirius_ui:textures/gui/background.png" }</code> — custom image (scaled to fill, centered)</li>
+            <li><code>"panorama": { "type": "image", "texture": "namespace:path/image" }</code> — custom image, automatically scaled and centered to fill the screen (preserves aspect ratio, similar to CSS background-size: cover). Example texture path: <code>"sirius_ui:textures/gui/background.png"</code>.</li>
         </ul>
+
+        <h3 id="graphicsdraw">Background Layers (graphicsDraw)</h3>
+        <p><code>graphicsDraw</code> is an array of colored rectangles drawn between the background and regular elements. Useful for masks, decorative lines, semi‑transparent overlays, etc. Each rectangle object contains:</p>
+        <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+            <tbody>
+                <tr><td><code>x</code></td><td>string (expression)</td><td>Rectangle top‑left X coordinate</td></tr>
+                <tr><td><code>y</code></td><td>string (expression)</td><td>Rectangle top‑left Y coordinate</td></tr>
+                <tr><td><code>width</code></td><td>string (expression)</td><td>Rectangle width</td></tr>
+                <tr><td><code>height</code></td><td>string (expression)</td><td>Rectangle height</td></tr>
+                <tr><td><code>color</code></td><td>string</td><td>Color format: <code>"#RRGGBB"</code>, <code>"0xRRGGBB"</code> or <code>"0xAARRGGBB"</code> (with alpha)</td></tr>
+                <tr><td><code>comment</code></td><td>string</td><td>Optional comment, ignored by the parser</td></tr>
+            </tbody>
+        </table>
 
         <h3 id="elements">Elements (elements)</h3>
-        <p>The <code>elements</code> array can contain objects of these types:</p>
-        <ul>
-            <li><strong><code>logo</code></strong> : displays a static image. Required fields: <code>texture</code>, <code>position</code>, <code>size</code>.</li>
-            <li><strong><code>button</code></strong> : interactive button. Required fields: <code>style</code>, <code>position</code>, <code>size</code>, <code>action</code>. Optional: <code>enabled</code> (default true), <code>text_key</code> (overrides style text).</li>
-            <li><strong><code>text</code></strong> : static text. Required fields: <code>text_key</code>, <code>position</code>. Optional: <code>color</code> (default 0xFFFFFF), <code>shadow</code> (default true).</li>
-        </ul>
+        <p>The <code>elements</code> array can contain objects of the following three types, each must have a <code>"type"</code> field to distinguish the type.</p>
 
-        <h2 id="graphicsdraw">Background Layers (graphicsDraw)</h2>
-        <p><code>graphicsDraw</code> is an array of coloured rectangles drawn between the background and normal elements. Each layer supports expressions for all fields:</p>
-        <ul>
-            <li><code>x</code>, <code>y</code> — top‑left corner</li>
-            <li><code>width</code>, <code>height</code> — dimensions</li>
-            <li><code>color</code> — colour string: <code>"#RRGGBB"</code>, <code>"0xRRGGBB"</code>, or <code>"0xAARRGGBB"</code></li>
-        </ul>
-        <p>Example: a red decorative line at the bottom</p>
-        <pre><code>{
-  "x": "0",
-  "y": "height - 4",
-  "width": "width",
-  "height": "4",
-  "color": "#AA0000"
-}</code></pre>
+        <h4 id="logo-element">🖼️ Logo Element (type: "logo")</h4>
+        <p>Displays a static image (e.g. mod logo, decoration).</p>
+        <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+            <tbody>
+                <tr><td><code>type</code></td><td>string</td><td>Yes</td><td>Must be <code>"logo"</code></td></tr>
+                <tr><td><code>texture</code></td><td>string</td><td>Yes</td><td>Texture identifier, e.g. <code>"sirius_ui:textures/gui/logo.png"</code></td></tr>
+                <tr><td><code>position</code></td><td>object</td><td>Yes</td><td>Contains <code>x</code> and <code>y</code> (expression strings), top‑left corner of the image</td></tr>
+                <tr><td><code>size</code></td><td>object</td><td>Yes</td><td>Contains <code>width</code> and <code>height</code> (integers), display size of the image in pixels</td></tr>
+            </tbody>
+        </table>
 
-        <h2 id="button-style">Button Style (button style)</h2>
-        <p>Button style files (e.g., <code>singleplayer.json</code>) must have a top‑level <code>button</code> object:</p>
-        <pre><code>{
-  "button": {
-    "text_key": "menu.singleplayer",
-    "texture": {
-      "normal": "minecraft:widget/button",
-      "hovered": "minecraft:widget/button_highlighted",
-      "disabled": "minecraft:widget/button_disabled"
-    },
-    "text_color": 16777215,
-    "hover_text_color": 16777088,
-    "disabled_text_color": 10526880,
-    "text_offset_x": "center",
-    "text_offset_y": "(height - elementHeight)/2"
-  }
-}</code></pre>
-        <ul>
-            <li><code>text_key</code> — localization key shown on the button.</li>
-            <li><code>texture</code> — identifiers for the three states (no <code>.png</code> extension; textures must be placed in <code>assets/namespace/textures/gui/sprites/</code>).</li>
-            <li><code>text_color</code> / <code>hover_text_color</code> / <code>disabled_text_color</code> — ARGB colours as decimal integers.</li>
-            <li><code>text_offset_x</code> / <code>text_offset_y</code> — text offset from the button's top‑left corner (expressions allowed). You can also use <code>hovered_text_offset_*</code> and <code>disabled_text_offset_*</code> for state‑specific offsets.</li>
-        </ul>
+        <h4 id="button-element">🔘 Button Element (type: "button")</h4>
+        <p>Interactive button with support for different state textures, text, and actions.</p>
+        <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+            <tbody>
+                <tr><td><code>type</code></td><td>string</td><td>Yes</td><td>Must be <code>"button"</code></td></tr>
+                <tr><td><code>style</code></td><td>string</td><td>Yes</td><td>Identifier of the button style file, e.g. <code>"sirius_ui:buttons/default.json"</code></td></tr>
+                <tr><td><code>position</code></td><td>object</td><td>Yes</td><td><code>x</code> and <code>y</code> expressions, top‑left corner of the button</td></tr>
+                <tr><td><code>size</code></td><td>object</td><td>Yes</td><td><code>width</code> and <code>height</code> (integers), button dimensions</td></tr>
+                <tr><td><code>action</code></td><td>object</td><td>Yes</td><td>Defines the action when clicked, see <a href="#actions">Actions</a> section</td></tr>
+                <tr><td><code>text_key</code></td><td>string</td><td>No</td><td>Overrides the text key defined in the style file, for dynamic button text</td></tr>
+                <tr><td><code>enabled</code></td><td>boolean</td><td>No</td><td>Default <code>true</code>, set to <code>false</code> to disable the button (shows disabled texture and not clickable)</td></tr>
+            </tbody>
+        </table>
 
-        <h2 id="actions">Actions (action)</h2>
-        <p>The button <code>action</code> field supports the following types:</p>
-        <ul>
-            <li><strong>Open screen</strong>: <code>{ "type": "open_screen", "screenId": "singleplayer" }</code><br>
-            Predefined <code>screenId</code> values:
-                <ul>
-                    <li><code>singleplayer</code> — singleplayer world selection</li>
-                    <li><code>multiplayer</code> — multiplayer screen</li>
-                    <li><code>options</code> — options screen</li>
-                    <li><code>realms</code> — Realms main screen</li>
-                    <li><code>selectGame</code> — custom game selection screen (provided by the mod)</li>
-                    <li><code>language</code> — language settings</li>
-                    <li><code>accessibility</code> — accessibility settings</li>
-                </ul>
-            </li>
-            <li><strong>Quit game</strong>: <code>{ "type": "quit_game" }</code></li>
-            <li><strong>Close current screen (go back)</strong>: <code>{ "type": "close_screen" }</code></li>
-        </ul>
+        <h4 id="text-element">📝 Text Element (type: "text")</h4>
+        <p>Displays text, supports static localization keys, dynamic game data, scaling, shadow, and custom color.</p>
+        <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+            <tbody>
+                <tr><td><code>type</code></td><td>string</td><td>Yes</td><td>Must be <code>"text"</code></td></tr>
+                <tr><td><code>text_key</code></td><td>string</td><td>Conditional</td><td>Localization key (e.g. <code>"menu.paused"</code>). Required if <code>dynamicType</code> is not provided.</td></tr>
+                <tr><td><code>dynamicType</code></td><td>string</td><td>Conditional</td><td>Dynamic data type. Possible values:<br> • <code>"score"</code> – player's current score (raw number)<br> • <code>"death_cause"</code> – death cause text (death screen only)<br> • <code>"player_name"</code> – player's name<br>If provided and <code>text_key</code> is absent, only the dynamic value is shown. If both are provided, <code>text_key</code> is ignored.</td></tr>
+                <tr><td><code>position</code></td><td>object</td><td>Yes</td><td><code>x</code> and <code>y</code> expressions, top‑left corner of the text (note: the actual width/height of text is determined by rendered content; you can use <code>elementWidth</code>/<code>elementHeight</code> in expressions)</td></tr>
+                <tr><td><code>color</code></td><td>string</td><td>No</td><td>Color, same format as background layers, default <code>"#FFFFFF"</code> (white)</td></tr>
+                <tr><td><code>shadow</code></td><td>boolean</td><td>No</td><td>Whether to draw text shadow, default <code>true</code></td></tr>
+                <tr><td><code>scale</code></td><td>float</td><td>No</td><td>Text scaling factor, default <code>1.0</code>. Example: <code>"scale": 1.5</code> enlarges by 50%.</td></tr>
+            </tbody>
+        </table>
+        <div class="tip">💡 Tip: To display the vanilla‑style “Score: 123”, use two text elements: one with <code>"text_key": "deathScreen.score"</code> (outputs “Score: ”) and another with <code>"dynamicType": "score"</code> (outputs the number), then position them side by side.</div>
+
+        <h3 id="copyright">Copyright (copyright)</h3>
+        <p>Only used on the title screen, for copyright text at the bottom. Object fields:</p>
+        <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+            <tbody>
+                <tr><td><code>textKey</code></td><td>string</td><td>Localization key</td></tr>
+                <tr><td><code>position</code></td><td>object</td><td><code>x</code> and <code>y</code> expressions, top‑left corner of the text</td></tr>
+                <tr><td><code>color</code></td><td>string</td><td>Color, default <code>"#808080"</code></td></tr>
+            </tbody>
+        </table>
+
+        <h2 id="button-style">Button Style</h2>
+        <p>A button style file (e.g. <code>buttons/default.json</code>) must contain a top‑level object <code>button</code> with the following fields:</p>
+        <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+            <tbody>
+                <tr><td><code>text_key</code></td><td>string</td><td>Default localization key for the button text (can be overridden by the button element's <code>text_key</code>)</td></tr>
+                <tr><td><code>texture</code></td><td>object</td><td>Contains <code>normal</code>, <code>hovered</code>, <code>disabled</code> fields – texture identifiers (without <code>.png</code>). Textures must be placed under <code>assets/namespace/textures/gui/sprites/</code>.</td></tr>
+                <tr><td><code>text_color</code></td><td>string or int</td><td>Normal state text color, recommended to use a string like <code>"#FFFFFF"</code></td></tr>
+                <tr><td><code>hover_text_color</code></td><td>string or int</td><td>Hover state text color</td></tr>
+                <tr><td><code>disabled_text_color</code></td><td>string or int</td><td>Disabled state text color</td></tr>
+                <tr><td><code>text_offset_x</code></td><td>string (expression)</td><td>X offset of text relative to button's top‑left corner, default <code>"center"</code> (horizontal center)</td></tr>
+                <tr><td><code>text_offset_y</code></td><td>string (expression)</td><td>Y offset of text relative to button's top‑left corner, recommended <code>"(height - elementHeight)/2"</code> for vertical centering</td></tr>
+            </tbody>
+        </table>
+        <div class="note">📌 Note: Button textures use nine‑slice scaling. You need to define <code>gui</code> metadata (e.g., <code>gui_metadata.json</code>) or rely on default stretching. Vanilla button textures usually have nine‑slice already configured.</div>
+
+        <h2 id="actions">Actions</h2>
+        <p>The <code>action</code> field of a button is an object containing <code>type</code> and optional parameters. Supported action types:</p>
+        <table>
+            <thead><tr><th>type</th><th>Parameters</th><th>Description</th></tr></thead>
+            <tbody>
+                <tr><td><code>open_screen</code></td><td><code>screenId</code></td><td>Opens a screen. Predefined screenIds include: <code>singleplayer</code>, <code>multiplayer</code>, <code>options</code>, <code>realms</code>, <code>selectGame</code>, <code>language</code>, <code>accessibility</code>, <code>advancements</code>, <code>stats</code>, <code>share_to_lan</code>, <code>player_social</code>, etc.</td></tr>
+                <tr><td><code>quit_game</code></td><td>none</td><td>Exits the game</td></tr>
+                <tr><td><code>close_screen</code></td><td>none</td><td>Closes current screen and returns to the parent screen (if any)</td></tr>
+                <tr><td><code>resume_game</code></td><td>none</td><td>Resumes the game, closes pause screen and releases mouse (for pause screen)</td></tr>
+                <tr><td><code>disconnect</code></td><td>none</td><td>Disconnects from current world and returns to title screen</td></tr>
+                <tr><td><code>open_link</code></td><td><code>url</code></td><td>Opens an external link, shows a confirmation dialog first. Example: <code>{ "type": "open_link", "url": "https://example.com" }</code></td></tr>
+                <tr><td><code>respawn</code></td><td>none</td><td>Respawns the player (for death screen)</td></tr>
+                <tr><td><code>exit_to_title</code></td><td>none</td><td>Exits to title screen (for death screen)</td></tr>
+            </tbody>
+        </table>
 
         <h2 id="coordinates">Coordinate System & Expressions</h2>
         <h3 id="coord-origin">Origin</h3>
@@ -423,7 +460,7 @@
                 <text x="5" y="15" fill="#ef4444" font-size="12">(0,0)</text>
                 <rect x="140" y="80" width="120" height="50" fill="#3b82f6" fill-opacity="0.3" stroke="#3b82f6" stroke-width="2"/>
                 <circle cx="140" cy="80" r="5" fill="#2563eb"/>
-                <text x="145" y="75" fill="#1e40af" font-size="11">Button top‑left (x,y)</text>
+                <text x="145" y="75" fill="#1e40af" font-size="11">Element top‑left (x,y)</text>
                 <defs>
                     <marker id="arrowX" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
                         <path d="M0,0 L0,6 L9,3 z" fill="#ef4444"/>
@@ -439,113 +476,112 @@
         <h3 id="anchor-point">Element Anchor</h3>
         <p>The <code>position</code> field defines the <strong>top‑left corner</strong> of the element, not its center.</p>
         <div class="warning">
-            ⚠️ Common mistake: <code>"x": "width/2", "y": "height/2"</code> does <strong>not</strong> center the element – it places the top‑left corner at the screen center.
+            ⚠️ Common mistake: <code>"x": "width/2", "y": "height/2"</code> does <strong>not</strong> center the element – it places the element's top‑left corner at the screen center.
         </div>
         <p>Correct centering expressions:</p>
         <pre><code>"x": "(width - elementWidth)/2"
 "y": "(height - elementHeight)/2"</code></pre>
 
-        <h3 id="expression-vars">Expression Variables & Operations</h3>
-        <p>Available variables:</p>
+        <h3 id="expression-vars">Expression Variables & Operators</h3>
+        <p>Supported variables:</p>
         <ul>
-            <li><code>width</code> — screen width (scaled)</li>
-            <li><code>height</code> — screen height</li>
-            <li><code>elementWidth</code> — element width (from <code>size.width</code>)</li>
-            <li><code>elementHeight</code> — element height (from <code>size.height</code>)</li>
+            <li><code>width</code> — current screen width (scaled pixels)</li>
+            <li><code>height</code> — current screen height</li>
+            <li><code>elementWidth</code> — element's own width (for buttons, from <code>size.width</code>; for text, the rendered width, affected by <code>scale</code>)</li>
+            <li><code>elementHeight</code> — element's own height (similar)</li>
         </ul>
-        <p>Operators: <code>+ - * / ( )</code>; division is integer truncation. Shortcuts:</p>
+        <p>Operators: <code>+ - * / ( )</code>, integer division truncates. Shortcuts:</p>
         <ul>
-            <li><code>"center"</code> → <code>"(width - elementWidth)/2"</code> (only for element x)</li>
-            <li><code>"bottom-20"</code> → <code>"height - elementHeight - 20"</code> (only for element y)</li>
+            <li><code>"center"</code> → <code>"(width - elementWidth)/2"</code> (for x coordinate only)</li>
+            <li><code>"bottom-20"</code> → <code>"height - elementHeight - 20"</code> (for y coordinate only)</li>
         </ul>
 
         <h3 id="alignment">Common Alignment Formulas</h3>
         <table>
-            <thead>
-                <tr><th>Effect</th><th>X Expression</th><th>Y Expression</th></tr>
-            </thead>
+            <thead><tr><th>Effect</th><th>X Expression</th><th>Y Expression</th></tr></thead>
             <tbody>
-                <tr><td>Horizontal center</td><td><code>"center"</code> or <code>"(width - elementWidth)/2"</code></td><td>any (kept as‑is)</td></tr>
+                <tr><td>Horizontal center</td><td><code>"center"</code> or <code>"(width - elementWidth)/2"</code></td><td>any</td></tr>
                 <tr><td>Vertical center</td><td>any</td><td><code>"(height - elementHeight)/2"</code></td></tr>
-                <tr><td>Fully centered</td><td><code>"center"</code> or <code>"(width - elementWidth)/2"</code></td><td><code>"(height - elementHeight)/2"</code></td></tr>
-                <tr><td>Top‑left margin 10px</td><td><code>10</code></td><td><code>10</code></td></tr>
-                <tr><td>Top‑right (20px from right)</td><td><code>"width - elementWidth - 20"</code></td><td><code>20</code></td></tr>
-                <tr><td>Bottom‑left (30px from bottom)</td><td><code>20</code></td><td><code>"bottom-30"</code> or <code>"height - elementHeight - 30"</code></td></tr>
+                <tr><td>Fully centered</td><td><code>"center"</code></td><td><code>"(height - elementHeight)/2"</code></td></tr>
+                <tr><td>Top‑left offset (20,20)</td><td><code>20</code></td><td><code>20</code></td></tr>
+                <tr><td>Top‑right, 20px from right edge</td><td><code>"width - elementWidth - 20"</code></td><td><code>20</code></td></tr>
+                <tr><td>Bottom‑left, 30px from bottom edge</td><td><code>20</code></td><td><code>"height - elementHeight - 30"</code> or <code>"bottom-30"</code></td></tr>
                 <tr><td>Bottom‑right</td><td><code>"width - elementWidth - 15"</code></td><td><code>"height - elementHeight - 15"</code></td></tr>
             </tbody>
         </table>
 
-        <h3 id="different-sizes">Aligning Different‑sized Elements</h3>
-        <ul>
-            <li><strong>Left / right / horizontal center</strong>: use the same <code>x</code> expression for all elements.</li>
-            <li><strong>Bottom alignment</strong>: use <code>"y": "baseY - elementHeight"</code>, where <code>baseY</code> is the desired baseline.</li>
-            <li><strong>Vertical stack</strong>: manually accumulate <code>y</code> values, e.g., <code>"y": "100 + 20 + 10"</code> (first button height 20, gap 10).</li>
-        </ul>
-        <div class="tip">Core formula: <strong>top‑left corner = target reference point - element size offset</strong> (e.g., for right alignment: reference point = <code>width</code>, offset = <code>elementWidth</code>).</div>
-
-        <h2 id="examples">Configuration Example</h2>
-        <p>Complete Title Screen configuration (dark theme, custom logo, three buttons, top title):</p>
+        <h2 id="examples">Configuration Examples</h2>
+        <p>Complete death screen configuration demonstrating all features:</p>
         <pre><code>{
   "screen": {
-    "panorama": { "type": "image", "texture": "sirius_ui:textures/gui/background.png" },
+    "panorama": "vanilla",
     "graphicsDraw": [
-      { "x": "0", "y": "0", "width": "width", "height": "height", "color": "#0A0A0A" },
-      { "x": "0", "y": "height - 4", "width": "width", "height": "4", "color": "#FFAA00" }
+      { "x": "0", "y": "0", "width": "width", "height": "height", "color": "#88000000" },
+      { "x": "width/2 - 140", "y": "height/2", "width": 280, "height": 1, "color": "#88FF0000" }
     ],
     "elements": [
       {
         "type": "text",
-        "text_key": "auui.title",
-        "position": { "x": "center", "y": 12 },
-        "color": 16777215,
+        "text_key": "deathScreen.title",
+        "position": { "x": "center", "y": "height/5" },
+        "color": "#FF0000",
+        "scale": 2.5,
         "shadow": true
       },
       {
-        "type": "logo",
-        "texture": "sirius_ui:textures/gui/fancy_logo.png",
-        "position": { "x": "center", "y": 40 },
-        "size": { "width": 300, "height": 90 }
+        "type": "text",
+        "dynamicType": "death_cause",
+        "position": { "x": "width/2 - 140", "y": "height/2 - 30" },
+        "color": "#FFFFFF"
+      },
+      {
+        "type": "text",
+        "dynamicType": "score",
+        "position": { "x": "width/2 + 140", "y": "height/2 - 30" },
+        "color": "#FFFFAA"
       },
       {
         "type": "button",
-        "text_key": "menu.singleplayer",
-        "style": "sirius_ui:buttons/custom_play.json",
-        "position": { "x": "center", "y": "(height - elementHeight)/2 - 40" },
-        "size": { "width": 200, "height": 24 },
-        "action": { "type": "open_screen", "screenId": "singleplayer" }
+        "text_key": "deathScreen.respawn",
+        "style": "sirius_ui:buttons/death/button_re.json",
+        "position": { "x": "width/2 - 130", "y": "height * 3 / 4" },
+        "size": { "width": 120, "height": 20 },
+        "action": { "type": "respawn" }
       },
       {
         "type": "button",
-        "text_key": "menu.multiplayer",
-        "style": "sirius_ui:buttons/custom_multi.json",
-        "position": { "x": "center", "y": "(height - elementHeight)/2" },
-        "size": { "width": 200, "height": 24 },
-        "action": { "type": "open_screen", "screenId": "multiplayer" }
-      },
-      {
-        "type": "button",
-        "text_key": "menu.quit",
-        "style": "sirius_ui:buttons/custom_quit.json",
-        "position": { "x": "center", "y": "(height - elementHeight)/2 + 40" },
-        "size": { "width": 200, "height": 24 },
-        "action": { "type": "quit_game" }
+        "text_key": "deathScreen.titleScreen",
+        "style": "sirius_ui:buttons/death/button_quit.json",
+        "position": { "x": "width/2 + 10", "y": "height * 3 / 4" },
+        "size": { "width": 120, "height": 20 },
+        "action": { "type": "exit_to_title" }
       }
-    ]
+    ],
+    "copyright": {
+      "textKey": "auui.copyright",
+      "position": { "x": "width - 10", "y": "height - 10" },
+      "color": "#666666"
+    }
   }
 }</code></pre>
 
         <h2 id="faq">Troubleshooting</h2>
         <table>
-            <thead><tr><th>Issue</th><th>Possible cause & solution</th></tr</thead>
+            <thead><tr><th>Issue</th><th>Possible Cause & Solution</th></tr></thead>
             <tbody>
-                <tr><td>Button does nothing</td><td>Check <code>action</code> and <code>screenId</code>; ensure <code>enabled</code> is true.</td></tr>
-                <tr><td>Texture shows pink/black checkerboard</td><td>Wrong path or missing file; verify namespace and <code>.png</code> extension.</td></tr>
-                <tr><td>Expression error “Unknown variable”</td><td>Only <code>width, height, elementWidth, elementHeight</code> are allowed; check spelling.</td></tr>
-                <tr><td>Background layer not shown</td><td>Check colour format (e.g., <code>#RRGGBB</code>) and coordinate range.</td></tr>
-                <tr><td>Custom panorama image not shown</td><td>Confirm <code>panorama.type</code> is <code>"image"</code>, <code>texture</code> path includes <code>.png</code>, and file exists.</td></tr>
+                <tr><td>Button does nothing</td><td>Check <code>action</code> and <code>screenId</code>; ensure <code>enabled</code> is <code>true</code> (default true).</td></tr>
+                <tr><td>Texture shows pink/black checkerboard</td><td>Wrong path or missing file; verify the namespace and path, and that the <code>.png</code> extension is not included in the identifier.</td></tr>
+                <tr><td>Expression error "unknown variable"</td><td>Only <code>width</code>, <code>height</code>, <code>elementWidth</code>, <code>elementHeight</code> are allowed; check spelling.</td></tr>
+                <tr><td>Background layer not showing</td><td>Check color format (e.g. <code>"#RRGGBB"</code> or <code>"0xAARRGGBB"</code>) and that coordinates/size are within screen bounds.</td></tr>
+                <tr><td>Custom panorama not showing</td><td>Confirm <code>panorama.type</code> is <code>"image"</code>, <code>texture</code> path includes correct namespace and file, and the image exists.</td></tr>
+                <tr><td>Text color invisible or transparent</td><td>Ensure color is a quoted string, e.g. <code>"#FFFFFF"</code>; if using <code>0xFFFFFF</code> format, quotes are required and <code>0x</code> must be present.</td></tr>
+                <tr><td>Dynamic text (score/death cause) not showing</td><td>Check spelling of <code>dynamicType</code>, and that the screen supports it (e.g. <code>death_cause</code> only works on death screen).</td></tr>
+                <tr><td>Changes to JSON not applied</td><td>Since version 0.3.0, re‑opening the screen applies changes without restarting the game. If still not, press <kbd>F3+T</kbd> to reload resource pack.</td></tr>
+                <tr><td>Button text not centered</td><td>Check that <code>text_offset_y</code> in the style file is set to <code>"(height - elementHeight)/2"</code>.</td></tr>
             </tbody>
         </table>
-        <div class="tip">🔧 Press <kbd>F3+T</kbd> to reload resource packs – UI updates without restarting the game.</div>
+        <div class="tip">🔧 Press <kbd>F3+T</kbd> to quickly reload resource packs – very handy for layout debugging.</div>
+        <div class="note">📢 Version 0.3.1 Important Changes: Color values must be quoted strings (e.g. <code>"color": "#FFFFFF"</code>), no longer support plain integers. Also added pause screen, death screen, dynamic text, text scaling, and many other powerful features. See the changelog included with the mod for details.</div>
     </main>
 </div>
 </body>

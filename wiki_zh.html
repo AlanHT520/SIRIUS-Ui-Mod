@@ -200,6 +200,7 @@
             border: 1px solid #e1e4e8;
             padding: 0.6rem 0.8rem;
             text-align: left;
+            vertical-align: top;
         }
         th {
             background-color: #f6f8fa;
@@ -251,10 +252,17 @@
                 <li><a href="#screen-config">屏幕配置</a>
                     <ul class="level-2">
                         <li><a href="#panorama">背景（panorama）</a></li>
-                        <li><a href="#elements">元素（elements）</a></li>
+                        <li><a href="#graphicsdraw">背景图层（graphicsDraw）</a></li>
+                        <li><a href="#elements">元素（elements）</a>
+                            <ul class="level-2">
+                                <li><a href="#logo-element">Logo 元素</a></li>
+                                <li><a href="#button-element">Button 元素</a></li>
+                                <li><a href="#text-element">Text 元素</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#copyright">版权信息（copyright）</a></li>
                     </ul>
                 </li>
-                <li><a href="#graphicsdraw">背景图层（graphicsDraw）</a></li>
                 <li><a href="#button-style">按钮样式（button style）</a></li>
                 <li><a href="#actions">动作（action）</a></li>
                 <li><a href="#coordinates">坐标系与表达式</a>
@@ -263,7 +271,6 @@
                         <li><a href="#anchor-point">元素锚点</a></li>
                         <li><a href="#expression-vars">表达式变量</a></li>
                         <li><a href="#alignment">常用对齐公式</a></li>
-                        <li><a href="#different-sizes">不同尺寸元素的对齐</a></li>
                     </ul>
                 </li>
                 <li><a href="#examples">配置范例</a></li>
@@ -274,29 +281,21 @@
 
     <main class="main-content">
         <h1>📦 SIRIUS Ui 维基</h1>
-        <p><span class="badge">适用 Minecraft 26.1.1 | 数据驱动型界面框架（开发中）</span></p>
-        <p>SIRIUS Ui 是一款模组，允许您通过简洁的 JSON 配置与纹理资源自定义 Minecraft 的标题画面与游戏选择画面。无需编写 Java 代码，即可轻松添加图像、按钮、背景以及动态布局。</p>
+        <p><span class="badge">适用 Minecraft 26.1.1 | 数据驱动型界面框架（版本 0.3.1）</span></p>
+        <p>SIRIUS Ui 是一款模组，允许您通过简洁的 JSON 配置与纹理资源自定义 Minecraft 的标题画面、游戏选择画面、暂停屏幕以及死亡屏幕。无需编写 Java 代码，即可轻松添加图像、按钮、背景以及动态布局。</p>
         <div class="note">
-            📌 目前支持两种屏幕：<strong>标题画面（title_screen）</strong>与<strong>游戏选择画面（game_selection_screen）</strong>。模组名称为 SIRIUS Ui。
+            📌 目前支持四种屏幕：<strong>标题画面（title_screen）</strong>、<strong>游戏选择画面（game_selection_screen）</strong>、<strong>暂停屏幕（pause_screen）</strong> 与 <strong>死亡屏幕（death_screen）</strong>。模组名称为 SIRIUS Ui。
         </div>
 
         <h2 id="overview">总览</h2>
-        <p>SIRIUS Ui 将硬编码的标题画面与游戏选择画面替换为基于 JSON 的动态渲染系统。资源包可覆写下列文件：</p>
+        <p>SIRIUS Ui 将硬编码的界面替换为基于 JSON 的动态渲染系统。资源包可覆写下列文件：</p>
         <ul>
             <li><code>assets/sirius_ui/screens/title_screen.json</code> — 标题画面布局</li>
             <li><code>assets/sirius_ui/screens/game_selection_screen.json</code> — 游戏选择画面布局</li>
+            <li><code>assets/sirius_ui/screens/pause_screen.json</code> — 暂停屏幕布局</li>
+            <li><code>assets/sirius_ui/screens/death_screen.json</code> — 死亡屏幕布局</li>
             <li><code>assets/sirius_ui/buttons/*.json</code> — 按钮样式定义</li>
             <li>任意 PNG 纹理文件</li>
-        </ul>
-        <p>核心特性：</p>
-        <ul>
-            <li>图像显示（<code>logo</code> 元素）</li>
-            <li>可交互按钮（常态 / 悬停 / 禁用纹理）</li>
-            <li>基于表达式的动态坐标（基于屏幕尺寸与元素尺寸）</li>
-            <li>按钮动作：打开屏幕、退出游戏、返回</li>
-            <li>背景全景控制（原版、无、自定义图像）</li>
-            <li>自定义背景图层（<code>graphicsDraw</code>）—— 支持表达式的彩色矩形</li>
-            <li>静态文本元素（<code>text</code>）</li>
         </ul>
 
         <h2 id="pack-structure">资源包结构</h2>
@@ -306,7 +305,9 @@
     └── 📁 sirius_ui/
         ├── 📁 screens/
         │   ├── 📄 title_screen.json
-        │   └── 📄 game_selection_screen.json
+        │   ├── 📄 game_selection_screen.json
+        │   ├── 📄 pause_screen.json
+        │   └── 📄 death_screen.json
         ├── 📁 buttons/
         │   ├── singleplayer.json
         │   ├── multiplayer.json
@@ -326,88 +327,124 @@
 }</code></pre>
 
         <h2 id="screen-config">屏幕配置</h2>
-        <p>每个屏幕 JSON 的根对象为 <code>screen</code>，其可包含：</p>
+        <p>每个屏幕 JSON 的根对象为 <code>screen</code>，其可包含以下字段：</p>
         <ul>
-            <li><code>panorama</code> — 背景配置</li>
-            <li><code>graphicsDraw</code> — 背景图层数组</li>
-            <li><code>elements</code> — 界面元素数组</li>
-            <li><code>copyright</code> — 版权文本（仅标题画面）</li>
+            <li><code>panorama</code> — 背景配置（对象或字符串）</li>
+            <li><code>graphicsDraw</code> — 背景图层数组（可选）</li>
+            <li><code>elements</code> — 界面元素数组（必填）</li>
+            <li><code>copyright</code> — 版权文本对象（仅标题画面使用，可选）</li>
         </ul>
 
         <h3 id="panorama">背景（panorama）</h3>
         <p>支持三种形式：</p>
         <ul>
-            <li><code>"panorama": "vanilla"</code> — 原版动态全景</li>
+            <li><code>"panorama": "vanilla"</code> — 原版动态全景背景</li>
             <li><code>"panorama": "none"</code> — 纯黑背景</li>
-            <li><code>"panorama": { "type": "image", "texture": "sirius_ui:textures/gui/background.png" }</code> — 自定义图像（缩放填充，居中）</li>
+            <li><code>"panorama": { "type": "image", "texture": "命名空间:路径/图片名" }</code> — 自定义图像，会自动缩放并居中填充屏幕（保持宽高比，类似 CSS background-size: cover）。纹理路径示例：<code>"sirius_ui:textures/gui/background.png"</code>。</li>
         </ul>
+
+        <h3 id="graphicsdraw">背景图层（graphicsDraw）</h3>
+        <p><code>graphicsDraw</code> 是一个数组，每个元素定义一个彩色矩形，绘制于背景与常规元素之间。可用于制作遮罩、装饰线、半透明层等。每个矩形对象包含：</p>
+        <table>
+            <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
+            <tbody>
+                <tr><td><code>x</code></td><td>字符串（表达式）</td><td>矩形左上角 X 坐标</td></tr>
+                <tr><td><code>y</code></td><td>字符串（表达式）</td><td>矩形左上角 Y 坐标</td></tr>
+                <tr><td><code>width</code></td><td>字符串（表达式）</td><td>矩形宽度</td></tr>
+                <tr><td><code>height</code></td><td>字符串（表达式）</td><td>矩形高度</td></tr>
+                <tr><td><code>color</code></td><td>字符串</td><td>颜色，格式支持 <code>"#RRGGBB"</code>、<code>"0xRRGGBB"</code>、<code>"0xAARRGGBB"</code>（带透明度）</td></tr>
+                <tr><td><code>comment</code></td><td>字符串</td><td>可选注释，不会被解析</td></tr>
+            </tbody>
+        </table>
 
         <h3 id="elements">元素（elements）</h3>
-        <p><code>elements</code> 数组可包含以下类型的对象：</p>
-        <ul>
-            <li><strong><code>logo</code></strong> ：显示静态图像。必填字段：<code>texture</code>、<code>position</code>、<code>size</code>。</li>
-            <li><strong><code>button</code></strong> ：可交互按钮。必填字段：<code>style</code>、<code>position</code>、<code>size</code>、<code>action</code>。可选：<code>enabled</code>（默认为 true）、<code>text_key</code>（覆写样式的文本）。</li>
-            <li><strong><code>text</code></strong> ：静态文本。必填字段：<code>text_key</code>、<code>position</code>。可选：<code>color</code>（默认为 0xFFFFFF）、<code>shadow</code>（默认为 true）。</li>
-        </ul>
+        <p><code>elements</code> 数组可包含以下三种类型的对象，每个对象必须包含 <code>"type"</code> 字段来区分类型。</p>
 
-        <h2 id="graphicsdraw">背景图层（graphicsDraw）</h2>
-        <p><code>graphicsDraw</code> 是一组彩色矩形数组，绘制于背景与常规元素之间。每个图层均支持表达式：</p>
-        <ul>
-            <li><code>x</code>、<code>y</code> — 左上角坐标</li>
-            <li><code>width</code>、<code>height</code> — 宽高尺寸</li>
-            <li><code>color</code> — 颜色字符串：<code>"#RRGGBB"</code>、<code>"0xRRGGBB"</code> 或 <code>"0xAARRGGBB"</code></li>
-        </ul>
-        <p>示例：底部一条红色装饰线</p>
-        <pre><code>{
-  "x": "0",
-  "y": "height - 4",
-  "width": "width",
-  "height": "4",
-  "color": "#AA0000"
-}</code></pre>
+        <h4 id="logo-element">🖼️ Logo 元素（type: "logo"）</h4>
+        <p>用于显示静态图片（如 Mod 徽标、装饰图）。</p>
+        <table>
+            <thead><tr><th>字段</th><th>类型</th><th>必填</th><th>说明</th></tr></thead>
+            <tbody>
+                <tr><td><code>type</code></td><td>字符串</td><td>是</td><td>固定为 <code>"logo"</code></td></tr>
+                <tr><td><code>texture</code></td><td>字符串</td><td>是</td><td>纹理标识符，例如 <code>"sirius_ui:textures/gui/logo.png"</code></td></tr>
+                <tr><td><code>position</code></td><td>对象</td><td>是</td><td>包含 <code>x</code> 和 <code>y</code> 字段（表达式字符串），定义图片左上角位置</td></tr>
+                <tr><td><code>size</code></td><td>对象</td><td>是</td><td>包含 <code>width</code> 和 <code>height</code> 字段（整数），定义图片显示尺寸（像素）</td></tr>
+            </tbody>
+        </table>
+
+        <h4 id="button-element">🔘 Button 元素（type: "button"）</h4>
+        <p>可交互按钮，支持不同状态纹理、文字、动作。</p>
+        <table>
+            <thead><tr><th>字段</th><th>类型</th><th>必填</th><th>说明</th></tr></thead>
+            <tbody>
+                <tr><td><code>type</code></td><td>字符串</td><td>是</td><td>固定为 <code>"button"</code></td></tr>
+                <tr><td><code>style</code></td><td>字符串</td><td>是</td><td>按钮样式文件的标识符，例如 <code>"sirius_ui:buttons/default.json"</code></td></tr>
+                <tr><td><code>position</code></td><td>对象</td><td>是</td><td><code>x</code> 和 <code>y</code> 表达式，按钮左上角坐标</td></tr>
+                <tr><td><code>size</code></td><td>对象</td><td>是</td><td><code>width</code> 和 <code>height</code>（整数），按钮尺寸</td></tr>
+                <tr><td><code>action</code></td><td>对象</td><td>是</td><td>定义点击后的行为，详见 <a href="#actions">动作（action）</a> 章节</td></tr>
+                <tr><td><code>text_key</code></td><td>字符串</td><td>否</td><td>覆盖样式文件中定义的文本键，用于动态更改按钮文字</td></tr>
+                <tr><td><code>enabled</code></td><td>布尔</td><td>否</td><td>默认为 <code>true</code>，设为 <code>false</code> 可禁用按钮（显示禁用纹理且不可点击）</td></tr>
+            </tbody>
+        </table>
+
+        <h4 id="text-element">📝 Text 元素（type: "text"）</h4>
+        <p>显示文本，支持静态本地化键、动态游戏数据、缩放、阴影、颜色自定义。</p>
+        <table>
+            <thead><tr><th>字段</th><th>类型</th><th>必填</th><th>说明</th></tr></thead>
+            <tbody>
+                <tr><td><code>type</code></td><td>字符串</td><td>是</td><td>固定为 <code>"text"</code></td></tr>
+                <tr><td><code>text_key</code></td><td>字符串</td><td>条件</td><td>本地化键名（例如 <code>"menu.paused"</code>）。如果未提供 <code>dynamicType</code>，则必须提供此项。</td></tr>
+                <tr><td><code>dynamicType</code></td><td>字符串</td><td>条件</td><td>动态数据类型，可选值：<br> • <code>"score"</code> — 玩家当前得分（纯数字）<br> • <code>"death_cause"</code> — 死亡原因文本（仅死亡屏幕有效）<br> • <code>"player_name"</code> — 玩家名字<br>如果提供此项且未提供 <code>text_key</code>，则只显示动态值；若同时提供，则 <code>text_key</code> 被忽略。</td></tr>
+                <tr><td><code>position</code></td><td>对象</td><td>是</td><td><code>x</code> 和 <code>y</code> 表达式，文本左上角坐标（注意文本的宽高由实际渲染内容决定，表达式中可使用 <code>elementWidth</code>/<code>elementHeight</code>）</td></tr>
+                <tr><td><code>color</code></td><td>字符串</td><td>否</td><td>颜色，格式同背景图层，默认 <code>"#FFFFFF"</code>（白色）</td></tr>
+                <tr><td><code>shadow</code></td><td>布尔</td><td>否</td><td>是否绘制文字阴影，默认为 <code>true</code></td></tr>
+                <tr><td><code>scale</code></td><td>浮点数</td><td>否</td><td>文字缩放倍数，默认 <code>1.0</code>。例如 <code>"scale": 1.5</code> 放大 50%。</td></tr>
+            </tbody>
+        </table>
+        <div class="tip">💡 提示：如果要显示原版风格的“分数：123”，建议使用两个文本元素：一个显示 <code>"text_key": "deathScreen.score"</code>（输出“分数：”），另一个使用 <code>"dynamicType": "score"</code>（输出数字），并通过 <code>position</code> 将它们并排。</div>
+
+        <h3 id="copyright">版权信息（copyright）</h3>
+        <p>仅标题画面可使用，用于在屏幕底部显示版权文字。对象字段：</p>
+        <table>
+            <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
+            <tbody>
+                <tr><td><code>textKey</code></td><td>字符串</td><td>本地化键名</td></tr>
+                <tr><td><code>position</code></td><td>对象</td><td><code>x</code> 和 <code>y</code> 表达式，定义文字左上角位置</td></tr>
+                <tr><td><code>color</code></td><td>字符串</td><td>颜色，默认 <code>"#808080"</code></td></tr>
+            </tbody>
+        </table>
 
         <h2 id="button-style">按钮样式（button style）</h2>
-        <p>按钮样式文件（例如 <code>singleplayer.json</code>）必须包含顶层对象 <code>button</code>：</p>
-        <pre><code>{
-  "button": {
-    "text_key": "menu.singleplayer",
-    "texture": {
-      "normal": "minecraft:widget/button",
-      "hovered": "minecraft:widget/button_highlighted",
-      "disabled": "minecraft:widget/button_disabled"
-    },
-    "text_color": 16777215,
-    "hover_text_color": 16777088,
-    "disabled_text_color": 10526880,
-    "text_offset_x": "center",
-    "text_offset_y": "(height - elementHeight)/2"
-  }
-}</code></pre>
-        <ul>
-            <li><code>text_key</code> — 显示在按钮上的本地化键名。</li>
-            <li><code>texture</code> — 三种状态的纹理标识符（不含 <code>.png</code> 扩展名；纹理须置于 <code>assets/namespace/textures/gui/sprites/</code> 目录）。</li>
-            <li><code>text_color</code> / <code>hover_text_color</code> / <code>disabled_text_color</code> — 十进制整数表示的 ARGB 颜色值。</li>
-            <li><code>text_offset_x</code> / <code>text_offset_y</code> — 文本相对于按钮左上角的偏移量（允许表达式）。您也可以使用 <code>hovered_text_offset_*</code> 和 <code>disabled_text_offset_*</code> 来实现状态相关的偏移。</li>
-        </ul>
+        <p>按钮样式文件（例如 <code>buttons/default.json</code>）必须包含顶层对象 <code>button</code>，其字段如下：</p>
+        <table>
+            <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
+            <tbody>
+                <tr><td><code>text_key</code></td><td>字符串</td><td>按钮默认显示的本地化文本键（可在按钮元素中用 <code>text_key</code> 覆盖）</td></tr>
+                <tr><td><code>texture</code></td><td>对象</td><td>包含 <code>normal</code>、<code>hovered</code>、<code>disabled</code> 三个字段，值为纹理标识符（不含 .png），纹理需放在 <code>assets/命名空间/textures/gui/sprites/</code> 目录下。</td></tr>
+                <tr><td><code>text_color</code></td><td>字符串或整数</td><td>普通状态文字颜色，推荐使用字符串如 <code>"#FFFFFF"</code></td></tr>
+                <tr><td><code>hover_text_color</code></td><td>字符串或整数</td><td>悬停状态文字颜色</td></tr>
+                <tr><td><code>disabled_text_color</code></td><td>字符串或整数</td><td>禁用状态文字颜色</td></tr>
+                <tr><td><code>text_offset_x</code></td><td>字符串（表达式）</td><td>文字相对于按钮左上角的 X 偏移，默认 <code>"center"</code>（水平居中）</td></tr>
+                <tr><td><code>text_offset_y</code></td><td>字符串（表达式）</td><td>文字相对于按钮左上角的 Y 偏移，推荐使用 <code>"(height - elementHeight)/2"</code> 实现垂直居中</td></tr>
+            </tbody>
+        </table>
+        <div class="note">📌 注意：按钮纹理使用九宫格缩放（Nine-slice scaling），纹理文件中需要定义 <code>gui</code> 元数据（如 <code>gui_metadata.json</code>）或使用默认拉伸。通常原版按钮纹理已配置好九宫格。</div>
 
         <h2 id="actions">动作（action）</h2>
-        <p>按钮的 <code>action</code> 字段支持以下类型：</p>
-        <ul>
-            <li><strong>打开屏幕</strong>：<code>{ "type": "open_screen", "screenId": "singleplayer" }</code><br>
-            预定义的 <code>screenId</code> 取值：
-                <ul>
-                    <li><code>singleplayer</code> — 单人游戏世界选择</li>
-                    <li><code>multiplayer</code> — 多人游戏屏幕</li>
-                    <li><code>options</code> — 选项屏幕</li>
-                    <li><code>realms</code> — Realms 主屏幕</li>
-                    <li><code>selectGame</code> — 模组提供的自定义游戏选择屏幕</li>
-                    <li><code>language</code> — 语言设置</li>
-                    <li><code>accessibility</code> — 辅助功能设置</li>
-                </ul>
-            </li>
-            <li><strong>退出游戏</strong>：<code>{ "type": "quit_game" }</code></li>
-            <li><strong>关闭当前屏幕（返回）</strong>：<code>{ "type": "close_screen" }</code></li>
-        </ul>
+        <p>按钮的 <code>action</code> 字段是一个对象，包含 <code>type</code> 和特定参数。支持以下动作类型：</p>
+        <table>
+            <thead><tr><th>type</th><th>参数</th><th>说明</th></tr></thead>
+            <tbody>
+                <tr><td><code>open_screen</code></td><td><code>screenId</code></td><td>打开指定屏幕。预定义的 screenId 包括：<code>singleplayer</code>, <code>multiplayer</code>, <code>options</code>, <code>realms</code>, <code>selectGame</code>, <code>language</code>, <code>accessibility</code>, <code>advancements</code>, <code>stats</code>, <code>share_to_lan</code>, <code>player_social</code> 等。</td></tr>
+                <tr><td><code>quit_game</code></td><td>无</td><td>退出游戏</td></tr>
+                <tr><td><code>close_screen</code></td><td>无</td><td>关闭当前屏幕，返回父屏幕（如果存在）</td></tr>
+                <tr><td><code>resume_game</code></td><td>无</td><td>继续游戏，关闭暂停屏幕并释放鼠标（用于暂停屏幕）</td></tr>
+                <tr><td><code>disconnect</code></td><td>无</td><td>断开当前连接并返回标题屏幕</td></tr>
+                <tr><td><code>open_link</code></td><td><code>url</code></td><td>打开外部链接，会先弹出确认对话框。示例：<code>{ "type": "open_link", "url": "https://example.com" }</code></td></tr>
+                <tr><td><code>respawn</code></td><td>无</td><td>重生玩家（用于死亡屏幕）</td></tr>
+                <tr><td><code>exit_to_title</code></td><td>无</td><td>退出到标题屏幕（用于死亡屏幕）</td></tr>
+            </tbody>
+        </table>
 
         <h2 id="coordinates">坐标系与表达式</h2>
         <h3 id="coord-origin">原点</h3>
@@ -423,7 +460,7 @@
                 <text x="5" y="15" fill="#ef4444" font-size="12">(0,0)</text>
                 <rect x="140" y="80" width="120" height="50" fill="#3b82f6" fill-opacity="0.3" stroke="#3b82f6" stroke-width="2"/>
                 <circle cx="140" cy="80" r="5" fill="#2563eb"/>
-                <text x="145" y="75" fill="#1e40af" font-size="11">按钮左上角 (x,y)</text>
+                <text x="145" y="75" fill="#1e40af" font-size="11">元素左上角 (x,y)</text>
                 <defs>
                     <marker id="arrowX" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
                         <path d="M0,0 L0,6 L9,3 z" fill="#ef4444"/>
@@ -446,91 +483,85 @@
 "y": "(height - elementHeight)/2"</code></pre>
 
         <h3 id="expression-vars">表达式变量与运算</h3>
-        <p>可用变量：</p>
+        <p>表达式支持以下变量：</p>
         <ul>
-            <li><code>width</code> — 屏幕宽度（缩放后）</li>
-            <li><code>height</code> — 屏幕高度</li>
-            <li><code>elementWidth</code> — 元素宽度（来自 <code>size.width</code>）</li>
-            <li><code>elementHeight</code> — 元素高度（来自 <code>size.height</code>）</li>
+            <li><code>width</code> — 当前屏幕宽度（缩放后的像素）</li>
+            <li><code>height</code> — 当前屏幕高度</li>
+            <li><code>elementWidth</code> — 元素自身的宽度（对于按钮，来自 <code>size.width</code>；对于文本，为渲染后的文本宽度，受 <code>scale</code> 影响）</li>
+            <li><code>elementHeight</code> — 元素自身的高度（同理）</li>
         </ul>
-        <p>运算符：<code>+ - * / ( )</code>；除法为整数截断。快捷写法：</p>
+        <p>支持运算符：<code>+ - * / ( )</code>，除法为整数截断。快捷写法：</p>
         <ul>
-            <li><code>"center"</code> → <code>"(width - elementWidth)/2"</code>（仅用于元素 x 坐标）</li>
-            <li><code>"bottom-20"</code> → <code>"height - elementHeight - 20"</code>（仅用于元素 y 坐标）</li>
+            <li><code>"center"</code> → <code>"(width - elementWidth)/2"</code>（仅用于 x 坐标）</li>
+            <li><code>"bottom-20"</code> → <code>"height - elementHeight - 20"</code>（仅用于 y 坐标）</li>
         </ul>
 
         <h3 id="alignment">常用对齐公式</h3>
         <table>
-            <thead>
-                <tr><th>效果</th><th>X 表达式</th><th>Y 表达式</th></tr>
-            </thead>
+            <thead><tr><th>效果</th><th>X 表达式</th><th>Y 表达式</th></tr></thead>
             <tbody>
-                <tr><td>水平居中</td><td><code>"center"</code> 或 <code>"(width - elementWidth)/2"</code></td><td>任意（保持原值）</td></tr>
+                <tr><td>水平居中</td><td><code>"center"</code> 或 <code>"(width - elementWidth)/2"</code></td><td>任意</td></tr>
                 <tr><td>垂直居中</td><td>任意</td><td><code>"(height - elementHeight)/2"</code></td></tr>
-                <tr><td>完全居中</td><td><code>"center"</code> 或 <code>"(width - elementWidth)/2"</code></td><td><code>"(height - elementHeight)/2"</code></td></tr>
-                <tr><td>左上边距 10px</td><td><code>10</code></td><td><code>10</code></td></tr>
-                <tr><td>右上（距右边缘 20px）</td><td><code>"width - elementWidth - 20"</code></td><td><code>20</code></td></tr>
-                <tr><td>左下（距底边缘 30px）</td><td><code>20</code></td><td><code>"bottom-30"</code> 或 <code>"height - elementHeight - 30"</code></td></tr>
-                <tr><td>右下</td><td><code>"width - elementWidth - 15"</code></td><td><code>"height - elementHeight - 15"</code></td></tr>
+                <tr><td>完全居中</td><td><code>"center"</code></td><td><code>"(height - elementHeight)/2"</code></td></tr>
+                <tr><td>左上角偏移 (20,20)</td><td><code>20</code></td><td><code>20</code></td></tr>
+                <tr><td>右上角距右边缘 20px</td><td><code>"width - elementWidth - 20"</code></td><td><code>20</code></td></tr>
+                <tr><td>左下角距底边缘 30px</td><td><code>20</code></td><td><code>"height - elementHeight - 30"</code> 或 <code>"bottom-30"</code></td></tr>
+                <tr><td>右下角</td><td><code>"width - elementWidth - 15"</code></td><td><code>"height - elementHeight - 15"</code></td></tr>
             </tbody>
         </table>
 
-        <h3 id="different-sizes">不同尺寸元素的对齐</h3>
-        <ul>
-            <li><strong>左 / 右 / 水平居中</strong>：对所有元素使用相同的 <code>x</code> 表达式。</li>
-            <li><strong>底部对齐</strong>：使用 <code>"y": "baseY - elementHeight"</code>，其中 <code>baseY</code> 为目标基线。</li>
-            <li><strong>垂直堆叠</strong>：手动累加 <code>y</code> 值，例如 <code>"y": "100 + 20 + 10"</code>（首个按钮高度 20，间距 10）。</li>
-        </ul>
-        <div class="tip">核心公式：<strong>左上角坐标 = 目标参考点 - 元素尺寸偏移</strong>（例如右对齐：参考点 = <code>width</code>，偏移 = <code>elementWidth</code>）。</div>
-
         <h2 id="examples">配置范例</h2>
-        <p>完整的标题画面配置（深色主题、自定义徽标、三个按钮、顶部标题）：</p>
+        <p>以下是一个完整的死亡屏幕配置，展示了上述所有特性：</p>
         <pre><code>{
   "screen": {
-    "panorama": { "type": "image", "texture": "sirius_ui:textures/gui/background.png" },
+    "panorama": "vanilla",
     "graphicsDraw": [
-      { "x": "0", "y": "0", "width": "width", "height": "height", "color": "#0A0A0A" },
-      { "x": "0", "y": "height - 4", "width": "width", "height": "4", "color": "#FFAA00" }
+      { "x": "0", "y": "0", "width": "width", "height": "height", "color": "#88000000" },
+      { "x": "width/2 - 140", "y": "height/2", "width": 280, "height": 1, "color": "#88FF0000" }
     ],
     "elements": [
       {
         "type": "text",
-        "text_key": "auui.title",
-        "position": { "x": "center", "y": 12 },
-        "color": 16777215,
+        "text_key": "deathScreen.title",
+        "position": { "x": "center", "y": "height/5" },
+        "color": "#FF0000",
+        "scale": 2.5,
         "shadow": true
       },
       {
-        "type": "logo",
-        "texture": "sirius_ui:textures/gui/fancy_logo.png",
-        "position": { "x": "center", "y": 40 },
-        "size": { "width": 300, "height": 90 }
+        "type": "text",
+        "dynamicType": "death_cause",
+        "position": { "x": "width/2 - 140", "y": "height/2 - 30" },
+        "color": "#FFFFFF"
+      },
+      {
+        "type": "text",
+        "dynamicType": "score",
+        "position": { "x": "width/2 + 140", "y": "height/2 - 30" },
+        "color": "#FFFFAA"
       },
       {
         "type": "button",
-        "text_key": "menu.singleplayer",
-        "style": "sirius_ui:buttons/custom_play.json",
-        "position": { "x": "center", "y": "(height - elementHeight)/2 - 40" },
-        "size": { "width": 200, "height": 24 },
-        "action": { "type": "open_screen", "screenId": "singleplayer" }
+        "text_key": "deathScreen.respawn",
+        "style": "sirius_ui:buttons/death/button_re.json",
+        "position": { "x": "width/2 - 130", "y": "height * 3 / 4" },
+        "size": { "width": 120, "height": 20 },
+        "action": { "type": "respawn" }
       },
       {
         "type": "button",
-        "text_key": "menu.multiplayer",
-        "style": "sirius_ui:buttons/custom_multi.json",
-        "position": { "x": "center", "y": "(height - elementHeight)/2" },
-        "size": { "width": 200, "height": 24 },
-        "action": { "type": "open_screen", "screenId": "multiplayer" }
-      },
-      {
-        "type": "button",
-        "text_key": "menu.quit",
-        "style": "sirius_ui:buttons/custom_quit.json",
-        "position": { "x": "center", "y": "(height - elementHeight)/2 + 40" },
-        "size": { "width": 200, "height": 24 },
-        "action": { "type": "quit_game" }
+        "text_key": "deathScreen.titleScreen",
+        "style": "sirius_ui:buttons/death/button_quit.json",
+        "position": { "x": "width/2 + 10", "y": "height * 3 / 4" },
+        "size": { "width": 120, "height": 20 },
+        "action": { "type": "exit_to_title" }
       }
-    ]
+    ],
+    "copyright": {
+      "textKey": "auui.copyright",
+      "position": { "x": "width - 10", "y": "height - 10" },
+      "color": "#666666"
+    }
   }
 }</code></pre>
 
@@ -538,14 +569,19 @@
         <table>
             <thead><tr><th>问题</th><th>可能原因与解决方案</th></tr></thead>
             <tbody>
-                <tr><td>按钮无响应</td><td>检查 <code>action</code> 与 <code>screenId</code>；确保 <code>enabled</code> 为 true。</td></tr>
-                <tr><td>纹理显示粉黑棋盘格</td><td>路径错误或文件缺失；确认命名空间与 <code>.png</code> 扩展名。</td></tr>
-                <tr><td>表达式错误“未知变量”</td><td>仅允许 <code>width, height, elementWidth, elementHeight</code>；检查拼写。</td></tr>
-                <tr><td>背景图层未显示</td><td>检查颜色格式（例如 <code>#RRGGBB</code>）及坐标范围。</td></tr>
-                <tr><td>自定义全景图未显示</td><td>确认 <code>panorama.type</code> 为 <code>"image"</code>，<code>texture</code> 路径包含 <code>.png</code>，且文件存在。</td></tr>
+                <tr><td>按钮无响应</td><td>检查 <code>action</code> 与 <code>screenId</code> 是否正确；确保按钮的 <code>enabled</code> 为 <code>true</code>（默认为 true）。</td></tr>
+                <tr><td>纹理显示粉黑棋盘格</td><td>路径错误或文件缺失；确认纹理文件位于正确的命名空间和路径，且 <code>.png</code> 扩展名不需要写在标识符中。</td></tr>
+                <tr><td>表达式错误“未知变量”</td><td>仅允许使用 <code>width</code>, <code>height</code>, <code>elementWidth</code>, <code>elementHeight</code>，检查拼写。</td></tr>
+                <tr><td>背景图层未显示</td><td>检查颜色格式是否正确（例如 <code>"#RRGGBB"</code> 或 <code>"0xAARRGGBB"</code>），以及坐标/尺寸是否在屏幕范围内。</td></tr>
+                <tr><td>自定义全景图未显示</td><td>确认 <code>panorama.type</code> 为 <code>"image"</code>，<code>texture</code> 路径包含正确的命名空间和文件，且图片文件存在。</td></tr>
+                <tr><td>文字颜色不显示或透明</td><td>确保颜色值为字符串，例如 <code>"#FFFFFF"</code>；若使用 <code>0xFFFFFF</code> 格式，必须带引号且不能省略 <code>0x</code>。</td></tr>
+                <tr><td>动态文本（得分/死亡原因）不显示</td><td>确认 <code>dynamicType</code> 拼写正确，且当前屏幕支持该类型（例如 <code>death_cause</code> 仅在死亡屏幕有效）。</td></tr>
+                <tr><td>修改 JSON 后界面未变化</td><td>从版本 0.3.0 开始，重新打开屏幕即可生效，无需重启游戏。如果仍无效，按 <kbd>F3+T</kbd> 重载资源包。</td></tr>
+                <tr><td>按钮文字未居中</td><td>检查样式文件中的 <code>text_offset_y</code> 是否设置为 <code>"(height - elementHeight)/2"</code>。</td></tr>
             </tbody>
         </table>
-        <div class="tip">🔧 按下 <kbd>F3+T</kbd> 可重载资源包 —— 界面更新无需重启游戏。</div>
+        <div class="tip">🔧 按下 <kbd>F3+T</kbd> 可快速重载资源包 —— 调试布局时非常方便。</div>
+        <div class="note">📢 版本 0.3.1 重要变更：颜色值必须使用带引号的字符串（例如 <code>"color": "#FFFFFF"</code>），不再支持纯数字。同时新增了暂停屏幕、死亡屏幕、动态文本、文字缩放等强大功能。详情请查阅随模组发布的更新日志。</div>
     </main>
 </div>
 </body>
