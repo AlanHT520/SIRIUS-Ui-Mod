@@ -258,12 +258,17 @@
                                 <li><a href="#logo-element">Logo 元素</a></li>
                                 <li><a href="#button-element">Button 元素</a></li>
                                 <li><a href="#text-element">Text 元素</a></li>
+                                <li><a href="#slider-element">Slider 元素</a></li>
+                                <li><a href="#cycle-element">Cycle 元素</a></li>
+                                <li><a href="#list-element">List 元素</a></li>
+                                <li><a href="#catalog-element">Catalog 元素</a></li>
                             </ul>
                         </li>
                         <li><a href="#copyright">版权信息（copyright）</a></li>
                     </ul>
                 </li>
                 <li><a href="#button-style">按钮样式（button style）</a></li>
+                <li><a href="#slider-cycle-style">Slider / Cycle 样式</a></li>
                 <li><a href="#actions">动作（action）</a></li>
                 <li><a href="#coordinates">坐标系与表达式</a>
                     <ul class="level-2">
@@ -281,20 +286,21 @@
 
     <main class="main-content">
         <h1>📦 SIRIUS Ui 维基</h1>
-        <p><span class="badge">适用 Minecraft 26.1.1 | 数据驱动型界面框架（版本 0.3.1）</span></p>
-        <p>SIRIUS Ui 是一款模组，允许您通过简洁的 JSON 配置与纹理资源自定义 Minecraft 的标题画面、游戏选择画面、暂停屏幕以及死亡屏幕。无需编写 Java 代码，即可轻松添加图像、按钮、背景以及动态布局。</p>
+        <p><span class="badge">适用 SIRIUS Ui v-0.3.2</span></p>
+        <p>SIRIUS Ui 是一款模组，允许您通过简洁的 JSON 配置与纹理资源自定义 Minecraft 的标题画面、游戏选择画面、暂停屏幕、死亡屏幕以及设置界面。无需编写 Java 代码，即可轻松添加图像、按钮、背景、滑动条、循环选项、列表、目录等高级控件。</p>
         <div class="note">
-            📌 目前支持四种屏幕：<strong>标题画面（title_screen）</strong>、<strong>游戏选择画面（game_selection_screen）</strong>、<strong>暂停屏幕（pause_screen）</strong> 与 <strong>死亡屏幕（death_screen）</strong>。模组名称为 SIRIUS Ui。
+            📌 目前支持：<strong>标题画面（title_screen）</strong>、<strong>游戏选择画面（game_selection_screen）</strong>、<strong>暂停屏幕（pause_screen）</strong>、<strong>死亡屏幕（death_screen）</strong>以及<strong>设置屏幕（game_settings_screen）</strong>。模组名称为 SIRIUS Ui。
         </div>
 
         <h2 id="overview">总览</h2>
         <p>SIRIUS Ui 将硬编码的界面替换为基于 JSON 的动态渲染系统。资源包可覆写下列文件：</p>
         <ul>
-            <li><code>assets/sirius_ui/screens/title_screen.json</code> — 标题画面布局</li>
-            <li><code>assets/sirius_ui/screens/game_selection_screen.json</code> — 游戏选择画面布局</li>
-            <li><code>assets/sirius_ui/screens/pause_screen.json</code> — 暂停屏幕布局</li>
-            <li><code>assets/sirius_ui/screens/death_screen.json</code> — 死亡屏幕布局</li>
+            <li><code>assets/sirius_ui/screens/*.json</code> — 各屏幕布局</li>
             <li><code>assets/sirius_ui/buttons/*.json</code> — 按钮样式定义</li>
+            <li><code>assets/sirius_ui/slider_styles/*.json</code> — 滑动条样式定义</li>
+            <li><code>assets/sirius_ui/cycle_styles/*.json</code> — 循环按钮样式定义</li>
+            <li><code>assets/sirius_ui/catalogs/*.json</code> — 目录定义文件</li>
+            <li><code>assets/sirius_ui/panels/*.json</code> — 面板/列表内容定义</li>
             <li>任意 PNG 纹理文件</li>
         </ul>
 
@@ -307,10 +313,19 @@
         │   ├── 📄 title_screen.json
         │   ├── 📄 game_selection_screen.json
         │   ├── 📄 pause_screen.json
-        │   └── 📄 death_screen.json
+        │   ├── 📄 death_screen.json
+        │   └── 📄 game_settings_screen.json
         ├── 📁 buttons/
-        │   ├── singleplayer.json
-        │   ├── multiplayer.json
+        │   └── default.json
+        ├── 📁 slider_styles/
+        │   └── default.json
+        ├── 📁 cycle_styles/
+        │   └── default.json
+        ├── 📁 catalogs/
+        │   └── settings_catalog.json
+        ├── 📁 panels/
+        │   ├── general_settings.json
+        │   ├── video_settings.json
         │   └── ...
         └── 📁 textures/
             └── 📁 gui/
@@ -340,7 +355,7 @@
         <ul>
             <li><code>"panorama": "vanilla"</code> — 原版动态全景背景</li>
             <li><code>"panorama": "none"</code> — 纯黑背景</li>
-            <li><code>"panorama": { "type": "image", "texture": "命名空间:路径/图片名" }</code> — 自定义图像，会自动缩放并居中填充屏幕（保持宽高比，类似 CSS background-size: cover）。纹理路径示例：<code>"sirius_ui:textures/gui/background.png"</code>。</li>
+            <li><code>"panorama": { "type": "image", "texture": "命名空间:路径/图片名" }</code> — 自定义图像，会自动缩放并居中填充屏幕（保持宽高比）。</li>
         </ul>
 
         <h3 id="graphicsdraw">背景图层（graphicsDraw）</h3>
@@ -358,7 +373,7 @@
         </table>
 
         <h3 id="elements">元素（elements）</h3>
-        <p><code>elements</code> 数组可包含以下三种类型的对象，每个对象必须包含 <code>"type"</code> 字段来区分类型。</p>
+        <p><code>elements</code> 数组可包含以下多种类型的对象，每个对象必须包含 <code>"type"</code> 字段来区分类型。</p>
 
         <h4 id="logo-element">🖼️ Logo 元素（type: "logo"）</h4>
         <p>用于显示静态图片（如 Mod 徽标、装饰图）。</p>
@@ -403,6 +418,131 @@
         </table>
         <div class="tip">💡 提示：如果要显示原版风格的“分数：123”，建议使用两个文本元素：一个显示 <code>"text_key": "deathScreen.score"</code>（输出“分数：”），另一个使用 <code>"dynamicType": "score"</code>（输出数字），并通过 <code>position</code> 将它们并排。</div>
 
+        <!-- Slider 元素 -->
+        <h4 id="slider-element">🎚️ Slider 元素（type: "slider"）</h4>
+        <p>滑动条控件，用于调节数值选项（如 FOV、音量、鼠标灵敏度）。</p>
+        <table>
+            <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
+            <tbody>
+                <tr><td><code>type</code></td><td>字符串</td><td>固定为 <code>"slider"</code></td></tr>
+                <tr><td><code>option_key</code></td><td>字符串</td><td>绑定的游戏选项键，例如 <code>"fov"</code>、<code>"mouseSensitivity"</code>、<code>"soundVolume"</code>、<code>"musicVolume"</code> 等</td></tr>
+                <tr><td><code>position</code></td><td>对象</td><td><code>x</code> 和 <code>y</code> 表达式</td></tr>
+                <tr><td><code>size</code></td><td>对象</td><td><code>width</code> 和 <code>height</code>（整数）</td></tr>
+                <tr><td><code>style</code></td><td>字符串</td><td>滑动条样式标识符，例如 <code>"sirius_ui:slider_styles/default"</code></td></tr>
+                <tr><td><code>enabled</code></td><td>布尔</td><td>是否启用，默认 <code>true</code></td></tr>
+            </tbody>
+        </table>
+        <p>示例：</p>
+        <pre><code>{
+  "type": "slider",
+  "option_key": "fov",
+  "position": { "x": "width/2 - 100", "y": "height/2" },
+  "size": { "width": 200, "height": 20 },
+  "style": "sirius_ui:slider_styles/default"
+}</code></pre>
+
+        <!-- Cycle 元素 -->
+        <h4 id="cycle-element">🔄 Cycle 元素（type: "cycle"）</h4>
+        <p>循环切换按钮，用于选择枚举选项（如图形品质、云渲染、粒子效果）。</p>
+        <table>
+            <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
+            <tbody>
+                <tr><td><code>type</code></td><td>字符串</td><td>固定为 <code>"cycle"</code></td></tr>
+                <tr><td><code>option_key</code></td><td>字符串</td><td>绑定的游戏选项键，例如 <code>"graphicsMode"</code>、<code>"cloudStatus"</code>、<code>"particles"</code>、<code>"chatVisibility"</code>、<code>"narrator"</code>、<code>"mainHand"</code> 等</td></tr>
+                <tr><td><code>position</code></td><td>对象</td><td><code>x</code> 和 <code>y</code> 表达式</td></tr>
+                <tr><td><code>size</code></td><td>对象</td><td><code>width</code> 和 <code>height</code>（整数）</td></tr>
+                <tr><td><code>style</code></td><td>字符串</td><td>循环按钮样式标识符，例如 <code>"sirius_ui:cycle_styles/default"</code></td></tr>
+                <tr><td><code>enabled</code></td><td>布尔</td><td>是否启用，默认 <code>true</code></td></tr>
+            </tbody>
+        </table>
+        <p>示例：</p>
+        <pre><code>{
+  "type": "cycle",
+  "option_key": "graphicsMode",
+  "position": { "x": "width/2 - 100", "y": "height/2 + 30" },
+  "size": { "width": 200, "height": 20 },
+  "style": "sirius_ui:cycle_styles/default"
+}</code></pre>
+
+        <!-- List 元素 -->
+        <h4 id="list-element">📋 List 元素（type: "list"）</h4>
+        <p>可滚动的列表容器，内部可放置任意类型的子元素（按钮、文本、滑动条等）。支持自动垂直布局。</p>
+        <table>
+            <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
+            <tbody>
+                <tr><td><code>type</code></td><td>字符串</td><td>固定为 <code>"list"</code></td></tr>
+                <tr><td><code>id</code></td><td>字符串</td><td>可选，用于 <code>switch_panel</code> 动作定位</td></tr>
+                <tr><td><code>position</code></td><td>对象</td><td><code>x</code> 和 <code>y</code> 表达式</td></tr>
+                <tr><td><code>size</code></td><td>对象</td><td><code>width</code> 和 <code>height</code>（整数），定义可见区域尺寸</td></tr>
+                <tr><td><code>source</code></td><td>字符串</td><td>列表内容定义文件的标识符，例如 <code>"sirius_ui:panels/video_settings"</code></td></tr>
+                <tr><td><code>style</code></td><td>字符串</td><td>可选，列表背景样式（按钮样式标识符）</td></tr>
+                <tr><td><code>enabled</code></td><td>布尔</td><td>是否启用，默认 <code>true</code></td></tr>
+            </tbody>
+        </table>
+        <p>列表内容文件（如 <code>panels/video_settings.json</code>）结构：</p>
+        <pre><code>{
+  "layout": "vertical",
+  "item_spacing": 6,
+  "padding": { "top": 10, "left": 10, "right": 10, "bottom": 10 },
+  "items": [ ... ]
+}</code></pre>
+        <ul>
+            <li><code>layout</code>：目前仅支持 <code>"vertical"</code>，子元素自动向下排列。</li>
+            <li><code>item_spacing</code>：子元素之间的垂直间距（像素）。</li>
+            <li><code>padding</code>：内边距，可省略各方向。</li>
+            <li><code>items</code>：子元素数组，类型同屏幕元素（但无需指定 <code>position.y</code>，由布局自动计算）。</li>
+        </ul>
+        <p>示例：</p>
+        <pre><code>{
+  "type": "list",
+  "id": "content_panel",
+  "position": { "x": "width/2 + 20", "y": "height/4" },
+  "size": { "width": 260, "height": 300 },
+  "source": "sirius_ui:panels/video_settings"
+}</code></pre>
+
+        <!-- Catalog 元素 -->
+        <h4 id="catalog-element">🗂️ Catalog 元素（type: "catalog"）</h4>
+        <p>目录/菜单栏，通常用于设置界面的左侧导航。内部包含多个目录项，点击可切换右侧面板内容。</p>
+        <table>
+            <thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
+            <tbody>
+                <tr><td><code>type</code></td><td>字符串</td><td>固定为 <code>"catalog"</code></td></tr>
+                <tr><td><code>id</code></td><td>字符串</td><td>可选，目录标识</td></tr>
+                <tr><td><code>position</code></td><td>对象</td><td><code>x</code> 和 <code>y</code> 表达式</td></tr>
+                <tr><td><code>size</code></td><td>对象</td><td><code>width</code> 和 <code>height</code>（整数）</td></tr>
+                <tr><td><code>source</code></td><td>字符串</td><td>目录定义文件的标识符，例如 <code>"sirius_ui:catalogs/settings_catalog"</code></td></tr>
+                <tr><td><code>style</code></td><td>字符串</td><td>可选，目录背景样式</td></tr>
+                <tr><td><code>enabled</code></td><td>布尔</td><td>是否启用，默认 <code>true</code></td></tr>
+            </tbody>
+        </table>
+        <p>目录定义文件（如 <code>catalogs/settings_catalog.json</code>）结构：</p>
+        <pre><code>{
+  "layout": "vertical",
+  "item_spacing": 2,
+  "padding": { "top": 5, "left": 5, "right": 5, "bottom": 5 },
+  "items": [
+    {
+      "text_key": "options.video",
+      "action": { "type": "switch_panel", "target": "content_panel", "content": "sirius_ui:panels/video_settings" }
+    },
+    ...
+  ],
+  "selected_style": "sirius_ui:catalog_item_selected"
+}</code></pre>
+        <ul>
+            <li><code>items</code>：目录项数组，每个项包含 <code>text_key</code>、<code>action</code>（通常为 <code>switch_panel</code>）、可选的 <code>icon</code> 和 <code>style</code>。</li>
+            <li><code>selected_style</code>：选中项的高亮样式（可选）。</li>
+        </ul>
+        <p>示例：</p>
+        <pre><code>{
+  "type": "catalog",
+  "id": "settings_catalog",
+  "position": { "x": "width/4 - 120", "y": "height/4" },
+  "size": { "width": 200, "height": 300 },
+  "source": "sirius_ui:catalogs/settings_catalog"
+}</code></pre>
+
         <h3 id="copyright">版权信息（copyright）</h3>
         <p>仅标题画面可使用，用于在屏幕底部显示版权文字。对象字段：</p>
         <table>
@@ -430,6 +570,31 @@
         </table>
         <div class="note">📌 注意：按钮纹理使用九宫格缩放（Nine-slice scaling），纹理文件中需要定义 <code>gui</code> 元数据（如 <code>gui_metadata.json</code>）或使用默认拉伸。通常原版按钮纹理已配置好九宫格。</div>
 
+        <h2 id="slider-cycle-style">Slider / Cycle 样式</h2>
+        <h3>Slider 样式文件</h3>
+        <p>位于 <code>slider_styles/</code> 目录下，结构：</p>
+        <pre><code>{
+  "track": {
+    "texture": { "normal": "...", "hovered": "...", "disabled": "..." },
+    "color": 0xFF555555
+  },
+  "handle": {
+    "texture": { "normal": "...", "hovered": "...", "disabled": "..." },
+    "color": 0xFFFFFFFF
+  },
+  "text_color": 0xFFFFFF,
+  "show_value_text": true
+}</code></pre>
+        <h3>Cycle 样式文件</h3>
+        <p>位于 <code>cycle_styles/</code> 目录下，结构：</p>
+        <pre><code>{
+  "background": { "normal": "...", "hovered": "...", "disabled": "..." },
+  "left_arrow": { "normal": "...", "hovered": "...", "disabled": "..." },
+  "right_arrow": { "normal": "...", "hovered": "...", "disabled": "..." },
+  "text_color": 0xFFFFFF,
+  "show_value_text": true
+}</code></pre>
+
         <h2 id="actions">动作（action）</h2>
         <p>按钮的 <code>action</code> 字段是一个对象，包含 <code>type</code> 和特定参数。支持以下动作类型：</p>
         <table>
@@ -443,6 +608,7 @@
                 <tr><td><code>open_link</code></td><td><code>url</code></td><td>打开外部链接，会先弹出确认对话框。示例：<code>{ "type": "open_link", "url": "https://example.com" }</code></td></tr>
                 <tr><td><code>respawn</code></td><td>无</td><td>重生玩家（用于死亡屏幕）</td></tr>
                 <tr><td><code>exit_to_title</code></td><td>无</td><td>退出到标题屏幕（用于死亡屏幕）</td></tr>
+                <tr><td><code>switch_panel</code></td><td><code>target</code> (目标 List 的 id)、<code>content</code> (新内容定义文件标识符)</td><td>切换指定列表的内容面板。通常由目录项触发。</td></tr>
             </tbody>
         </table>
 
@@ -490,6 +656,11 @@
             <li><code>elementWidth</code> — 元素自身的宽度（对于按钮，来自 <code>size.width</code>；对于文本，为渲染后的文本宽度，受 <code>scale</code> 影响）</li>
             <li><code>elementHeight</code> — 元素自身的高度（同理）</li>
         </ul>
+        <p>在列表/目录子元素内部还可使用：</p>
+        <ul>
+            <li><code>containerWidth</code> — 容器（List/Catalog）的宽度</li>
+            <li><code>containerHeight</code> — 容器高度</li>
+        </ul>
         <p>支持运算符：<code>+ - * / ( )</code>，除法为整数截断。快捷写法：</p>
         <ul>
             <li><code>"center"</code> → <code>"(width - elementWidth)/2"</code>（仅用于 x 坐标）</li>
@@ -511,57 +682,34 @@
         </table>
 
         <h2 id="examples">配置范例</h2>
-        <p>以下是一个完整的死亡屏幕配置，展示了上述所有特性：</p>
+        <p>一个包含目录和列表的设置屏幕示例：</p>
         <pre><code>{
   "screen": {
-    "panorama": "vanilla",
-    "graphicsDraw": [
-      { "x": "0", "y": "0", "width": "width", "height": "height", "color": "#88000000" },
-      { "x": "width/2 - 140", "y": "height/2", "width": 280, "height": 1, "color": "#88FF0000" }
-    ],
+    "panorama": { "type": "vanilla" },
     "elements": [
       {
-        "type": "text",
-        "text_key": "deathScreen.title",
-        "position": { "x": "center", "y": "height/5" },
-        "color": "#FF0000",
-        "scale": 2.5,
-        "shadow": true
+        "type": "catalog",
+        "id": "settings_catalog",
+        "position": { "x": "width/4 - 120", "y": "height/4" },
+        "size": { "width": 200, "height": 300 },
+        "source": "sirius_ui:catalogs/settings_catalog"
       },
       {
-        "type": "text",
-        "dynamicType": "death_cause",
-        "position": { "x": "width/2 - 140", "y": "height/2 - 30" },
-        "color": "#FFFFFF"
-      },
-      {
-        "type": "text",
-        "dynamicType": "score",
-        "position": { "x": "width/2 + 140", "y": "height/2 - 30" },
-        "color": "#FFFFAA"
+        "type": "list",
+        "id": "content_panel",
+        "position": { "x": "width/2 + 20", "y": "height/4" },
+        "size": { "width": 260, "height": 300 },
+        "source": "sirius_ui:panels/general_settings"
       },
       {
         "type": "button",
-        "text_key": "deathScreen.respawn",
-        "style": "sirius_ui:buttons/death/button_re.json",
-        "position": { "x": "width/2 - 130", "y": "height * 3 / 4" },
-        "size": { "width": 120, "height": 20 },
-        "action": { "type": "respawn" }
-      },
-      {
-        "type": "button",
-        "text_key": "deathScreen.titleScreen",
-        "style": "sirius_ui:buttons/death/button_quit.json",
-        "position": { "x": "width/2 + 10", "y": "height * 3 / 4" },
-        "size": { "width": 120, "height": 20 },
-        "action": { "type": "exit_to_title" }
+        "text_key": "gui.done",
+        "position": { "x": "width/2 - 100", "y": "height - 40" },
+        "size": { "width": 200, "height": 20 },
+        "style": "sirius_ui:buttons/default",
+        "action": { "type": "close_screen" }
       }
-    ],
-    "copyright": {
-      "textKey": "auui.copyright",
-      "position": { "x": "width - 10", "y": "height - 10" },
-      "color": "#666666"
-    }
+    ]
   }
 }</code></pre>
 
@@ -578,10 +726,13 @@
                 <tr><td>动态文本（得分/死亡原因）不显示</td><td>确认 <code>dynamicType</code> 拼写正确，且当前屏幕支持该类型（例如 <code>death_cause</code> 仅在死亡屏幕有效）。</td></tr>
                 <tr><td>修改 JSON 后界面未变化</td><td>从版本 0.3.0 开始，重新打开屏幕即可生效，无需重启游戏。如果仍无效，按 <kbd>F3+T</kbd> 重载资源包。</td></tr>
                 <tr><td>按钮文字未居中</td><td>检查样式文件中的 <code>text_offset_y</code> 是否设置为 <code>"(height - elementHeight)/2"</code>。</td></tr>
+                <tr><td>滑动条不显示数值</td><td>检查样式文件中 <code>show_value_text</code> 是否为 <code>true</code>。</td></tr>
+                <tr><td>列表内容不滚动</td><td>确保内容总高度超过列表高度，且鼠标在列表区域内滚动。</td></tr>
+                <tr><td>面板切换无效</td><td>确认 <code>switch_panel</code> 的 <code>target</code> 与 List 元素的 <code>id</code> 匹配，且 <code>content</code> 指向有效的面板定义文件。</td></tr>
             </tbody>
         </table>
         <div class="tip">🔧 按下 <kbd>F3+T</kbd> 可快速重载资源包 —— 调试布局时非常方便。</div>
-        <div class="note">📢 版本 0.3.1 重要变更：颜色值必须使用带引号的字符串（例如 <code>"color": "#FFFFFF"</code>），不再支持纯数字。同时新增了暂停屏幕、死亡屏幕、动态文本、文字缩放等强大功能。详情请查阅随模组发布的更新日志。</div>
+        <div class="note">📢 版本 0.3.2 新增：Slider、Cycle、List、Catalog 元素，以及自动布局和面板切换功能。现在您可以构建完整的自定义设置界面！</div>
     </main>
 </div>
 </body>
