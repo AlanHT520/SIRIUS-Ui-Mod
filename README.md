@@ -1,27 +1,47 @@
-# SIRIUS UI (formerly Alan's Unified UI)
+<div align="center">
 
-##  **✨ You can modify the UI using resourcepacks.！**  
+# SIRIUS Ui
 
+### Minecraft UI Enhancement Mod
 
-## Introduction
-SIRIUS UI (formerly Alan's Unified UI) is a visual renewal project dedicated to reimagining the Minecraft user experience. This initiative establishes a cohesive design language that harmonizes modern minimalist aesthetics with refined visual elements.
+A fresh UI experience for Minecraft Java Edition
 
-With the migration of its core architecture, the project has evolved from a simple visual overhaul into a customization framework powered by the **Json UI Engine**. Interface layouts and logic are no longer hard-coded but are instead defined freely by users through JSON files.
+[![Alpha](https://img.shields.io/badge/Status-Alpha-ff4444?style=flat-square)]()
 
-## Technical Shifts & Core Features
+[![Modrinth](https://img.shields.io/badge/Modrinth-Download-00AF5C?style=flat-square&logo=modrinth)](https://modrinth.com/mod/alan-unified-ui)
+[![CurseForge](https://img.shields.io/badge/CurseForge-Download-F16436?style=flat-square&logo=curseforge)](https://www.curseforge.com/minecraft/mc-mods/alans-unified-ui)
+[![GitHub](https://img.shields.io/badge/GitHub-Source-181717?style=flat-square&logo=github)](https://github.com/AlanHT520/SIRIUS-Ui-Mod)
+[![License](https://img.shields.io/badge/License-HaoTianA%20v1.0-blue?style=flat-square)](https://github.com/AlanHT520/SIRIUS-Ui-Mod/blob/main/LICENSE.md)
 
-### 🎉 Core Achievement: Json UI Engine
-We have introduced the Json UI Engine, enabling a complete separation between interface presentation and functional code. Resource pack creators can now take full control of layouts, textures, and components by writing simple JSON files without modifying Java source code.
+</div>
 
-### 🎨 Dynamic & Responsive Layouts
-The engine features a flexible coordinate expression system with shortcuts like `center` and `bottom-20`, ensuring that your custom UI remains perfectly aligned across all screen aspect ratios.
+---
 
-### 🚧 Under Active Development
-Currently, the Json UI Engine fully supports the restructuring of the "Title Screen" and "Game Selection Screen".  
-**Please note:** The Options Menu is still driven by the vanilla system and cannot be modified via the engine at this time. We are working to extend engine capabilities to more native screens.
+## What is this?
 
-## Important Notes
+SIRIUS Ui is a UI enhancement mod powered by a **JSON-driven Widget component system**. Define game interfaces by writing JSON files — no Java code required.
 
-### 📢 Version Status: Public Alpha
-Please note: This early alpha release focuses on showcasing the customization potential of the Json UI Engine.  
-Our goal is to provide intuitive tools that empower every creator to easily reshape the game's visuals.
+SIRIUS Ui is open source under the [HaoTianA License v1.0](https://github.com/AlanHT520/SIRIUS-Ui-Mod/blob/main/LICENSE.md).
+
+### Core Features
+
+- **Declarative UI** — Interfaces defined in JSON, with buttons, sliders, dropdowns and more out of the box
+- **Dynamic Expressions** — Positions and sizes support expressions like `screen.width / 2 - 100` for adaptive layouts
+- **Component Reuse** — Reference external component definitions via `ref` and pass parameters with `variables`
+- **Screen Inheritance** — Child screens inherit from a `parent`, defining only the differences
+- **Option Binding** — Widgets can directly bind to Minecraft game options (FOV, difficulty, etc.)
+
+## Installation
+
+1. Place the Mod JAR file into your `.minecraft/mods/` directory
+2. Launch the game
+
+## Author
+
+**AlanHT520**
+
+---
+
+<div align="center">
+
+</div>
