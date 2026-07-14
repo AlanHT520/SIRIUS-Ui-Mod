@@ -1,0 +1,23 @@
+{
+  "type": "button",
+  "size": {
+    "width": 36,
+    "height": 20
+  },
+  "position": {
+    "x": "parent.width - join_button.width - delete_button.width - this.width - 20",
+    "y": "(parent.height - this.height) / 2"
+  },
+  "texture": {
+    "normal": "sirius_ui:buttons/world/edit",
+    "highlighted": "sirius_ui:buttons/world/edit_highlighted"
+  },
+  "text": {
+    "text": " ",
+    "color": "0xFFFFFFFF",
+    "shadow": true
+  },
+  "action": {
+    "type": "edit_world"
+  }
+}

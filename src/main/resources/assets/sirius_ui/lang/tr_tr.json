@@ -1,0 +1,16 @@
+{
+  "sirius_ui.menu.play": "OYNAT",
+  "sirius_ui.menu.settings": "AYARLAR",
+  "sirius_ui.menu.quit": "ÇIKIŞ",
+
+  "sirius_ui.play.back": "Geri",
+  "sirius_ui.setting.general": "GENEL",
+  "sirius_ui.play.realms": "Realms",
+
+  "sirius_ui.select": "Oyun Türü Seçin",
+
+  "menu.other": "Diğer",
+  "menu.return": "Geri",
+
+  "options.general": "Genel"
+}

@@ -1,0 +1,37 @@
+{
+  "type": "button",
+  "variables": {
+    "button_label": "",
+    "text_color": "0xFFFFFFFF"
+  },
+  "ing_duration": 5,
+  "texture": {
+    "normal": "sirius_ui:buttons/default_button",
+    "highlighted": "sirius_ui:buttons/default_button_highlighted",
+    "disabled": "sirius_ui:buttons/default_button_disabled",
+    "ing": "sirius_ui:buttons/default_button_ing"
+  },
+  "children": [
+    {
+      "type": "text",
+      "text_key": "${button_label}",
+      "color": "${text_color}",
+      "position": {
+        "x": "parent.width / 2 - this.width / 2",
+        "y": "parent.height / 2 - this.height / 2"
+      },
+      "shadow": true,
+      "state_v": {
+        "ing": {
+          "position": {
+            "x": "parent.width / 2 - this.width / 2",
+            "y": "parent.height / 2 - this.height / 2 + 1"
+          }
+        },
+        "highlighted": {
+          "scale": "1.0"
+        }
+      }
+    }
+  ]
+}

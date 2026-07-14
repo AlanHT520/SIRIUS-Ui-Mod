@@ -1,0 +1,16 @@
+{
+  "sirius_ui.menu.play": "PLAY",
+  "sirius_ui.menu.settings": "SETTINGS",
+  "sirius_ui.menu.quit": "QUIT",
+
+  "sirius_ui.play.back": "Back",
+  "sirius_ui.setting.general": "GENERAL",
+  "sirius_ui.play.realms": "Realms",
+
+  "sirius_ui.select": "Select Play Type",
+
+  "menu.other": "Other",
+  "menu.return": "Return",
+
+  "options.general": "General"
+}

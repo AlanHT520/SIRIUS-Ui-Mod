@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.alan.gui.client.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "DeathScreenMixin",
+    "LivingEntityRendererMixin",
+    "PauseScreenMixin",
+    "TitleScreenMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}

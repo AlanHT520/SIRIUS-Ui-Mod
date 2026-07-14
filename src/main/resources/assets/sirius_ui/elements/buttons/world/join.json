@@ -1,0 +1,24 @@
+{
+  "type": "button",
+  "size": {
+    "width": 56,
+    "height": 22
+  },
+  "position": {
+    "x": "parent.width - this.width - 12",
+    "y": "(parent.height - this.height) / 2"
+  },
+  "texture": {
+    "normal": "sirius_ui:buttons/world/join",
+    "highlighted": "sirius_ui:buttons/world/join_highlighted",
+    "disabled": "sirius_ui:buttons/world/join_disabled"
+  },
+  "text": {
+    "text": " ",
+    "color": "0xFFFFFFFF",
+    "shadow": true
+  },
+  "action": {
+    "type": "join_world"
+  }
+}

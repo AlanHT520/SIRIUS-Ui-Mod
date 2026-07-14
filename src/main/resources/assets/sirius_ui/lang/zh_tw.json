@@ -1,0 +1,16 @@
+{
+  "sirius_ui.menu.play": "開始遊戲",
+  "sirius_ui.menu.settings": "設定",
+  "sirius_ui.menu.quit": "退出遊戲",
+
+  "sirius_ui.play.back": "返回選單",
+  "sirius_ui.setting.general": "常規設定",
+  "sirius_ui.play.realms": "Realms",
+
+  "sirius_ui.select": "選擇遊戲類型",
+
+  "menu.other": "其他",
+  "menu.return": "返回",
+
+  "options.general": "常規"
+}

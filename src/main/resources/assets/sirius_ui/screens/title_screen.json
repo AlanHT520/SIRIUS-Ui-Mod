@@ -1,0 +1,118 @@
+{
+  "screen": {
+    "parent": "sirius_ui:screens/screen.json",
+    "elements": [
+      {
+        "comment": "主标题 Logo",
+        "type": "image",
+        "image_texture": "sirius_ui:textures/gui/images/title/minecraft_white.png",
+        "position": {
+          "x": "screen.width / 2 - this.width / 2",
+          "y": "30"
+        },
+        "size": {
+          "width": 256,
+          "height": 64
+        }
+      },
+      {
+        "comment": "开始按钮",
+        "ref": "sirius_ui:elements/buttons/titlemenu/play_button.json",
+        "position": {
+          "x": "screen.width - this.width - 20",
+          "y": "screen.height - 20 - 20 - 5 - 20 - 5 - this.height"
+        },
+        "size": { "width": 80, "height": 40 },
+        "action": { "type": "open_screen", "screenId": "selectGame" }
+      },
+      {
+        "comment": "设置按钮",
+        "ref": "sirius_ui:elements/buttons/default.json",
+        "variables": {
+          "button_label": "sirius_ui.menu.settings"
+        },
+        "position": {
+          "x": "screen.width - this.width - 20",
+          "y": "screen.height - 20 - 20 - 5 - this.height"
+        },
+        "size": { "width": 80, "height": 20 },
+        "action": { "type": "open_screen", "screenId": "settings" }
+      },
+      {
+        "comment": "退出按钮",
+        "ref": "sirius_ui:elements/buttons/default.json",
+        "variables": {
+          "button_label": "sirius_ui.menu.quit"
+        },
+        "position": {
+          "x": "screen.width - this.width - 20",
+          "y": "screen.height - 20 - this.height"
+        },
+        "size": { "width": 80, "height": 20 },
+        "action": { "type": "quit_game" }
+      },
+      {
+        "comment": "语言按钮",
+        "ref": "sirius_ui:elements/buttons/titlemenu/language_button.json",
+        "position": {
+          "x": "20",
+          "y": "screen.height - 20 - this.height"
+        },
+        "size": { "width": 20, "height": 20 },
+        "action": { "type": "open_screen", "screenId": "language" }
+      },
+      {
+        "comment": "辅助功能按钮",
+        "ref": "sirius_ui:elements/buttons/titlemenu/accessibility_button.json",
+        "position": {
+          "x": "20",
+          "y": "screen.height - 20 - 5 - this.height - this.height"
+        },
+        "size": { "width": 20, "height": 20 },
+        "action": { "type": "open_screen", "screenId": "accessibility" }
+      },
+      {
+        "comment": "NeoForge按钮",
+        "ref": "sirius_ui:elements/buttons/titlemenu/neoforge_button.json",
+        "position": {
+          "x": "20",
+          "y": "screen.height - 40 - 10 - this.height - this.height"
+        },
+        "size": { "width": 20, "height": 20 },
+        "action": { "type": "open_screen", "screenId": "mods_list" }
+      }
+    ,
+      {
+        "comment": "玩家模型展示",
+        "ref": "sirius_ui:elements/buttons/titlemenu/player.json",
+        "size": { "width": 125, "height": 250 },
+        "position": {
+          "x": "screen.width / 2 - this.width / 2",
+          "y": "screen.height - 195"
+        }
+      },
+      {
+        "comment": "SIRIUS Ui 版本标识",
+        "type": "text",
+        "text": "SIRIUS Ui v-0.4.86-Dev.64",
+        "animations": [
+          {
+            "type": "typewriter",
+            "speed": 5
+          },
+          {
+            "type": "hold",
+            "duration": 3000
+          }
+        ],
+        "color": "0x30FFFFFF",
+        "shadow": true,
+        "position": {
+          "x": "0",
+          "y": "screen.height - this.height"
+        },
+        "size": { "width": "this.width", "height": "this.height" }
+      }
+    ]
+  }
+}

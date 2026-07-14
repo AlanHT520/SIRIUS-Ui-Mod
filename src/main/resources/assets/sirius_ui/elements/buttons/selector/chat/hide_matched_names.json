@@ -1,0 +1,31 @@
+{
+  "type": "selector",
+  "option_key": "hideMatchedNames",
+  "values": [
+    {
+      "key": "true",
+      "text_key": "options.on",
+      "texture": {
+        "normal": "sirius_ui:buttons/default_button",
+        "highlighted": "sirius_ui:buttons/default_button_highlighted",
+        "disabled": "sirius_ui:buttons/default_button_disabled",
+        "selected": "sirius_ui:buttons/default_button_selected"
+      },
+      "width": 50
+    },
+    {
+      "key": "false",
+      "text_key": "options.off",
+      "texture": {
+        "normal": "sirius_ui:buttons/default_button",
+        "highlighted": "sirius_ui:buttons/default_button_highlighted",
+        "disabled": "sirius_ui:buttons/default_button_disabled",
+        "selected": "sirius_ui:buttons/default_button_selected"
+      },
+      "width": 50
+    }
+  ],
+  "text": {
+    "color": "0xCCFFFFFF", "text_key.option": "options.hideMatchedNames"
+  }
+}

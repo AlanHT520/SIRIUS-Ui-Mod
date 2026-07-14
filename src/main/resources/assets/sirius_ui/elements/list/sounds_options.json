@@ -1,0 +1,67 @@
+{
+  "type": "list",
+  "gap": 5,
+  "background_color": "0x50000000",
+  "member": {
+    "label_w": "parent.width * 7 / 18",
+    "label_x": "parent.width / 9",
+    "control_w": "parent.width * 7 / 18",
+    "control_x": "parent.width / 2"
+  },
+  "scrollbar": { "width": 4, "x": "parent.width - 4", "track": { "color": "0x00000000" }, "thumb": { "color": "0x44FFFFFF" } },
+  "rows": [
+    { "height": 5, "children": [] },
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "soundCategory.master" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/sounds/master_volume.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "soundCategory.music" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/sounds/music_volume.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "soundCategory.record" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/sounds/record_volume.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "soundCategory.voice" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/sounds/voice_volume.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "soundCategory.weather" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/sounds/weather_volume.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "soundCategory.block" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/sounds/block_volume.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "soundCategory.hostile" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/sounds/hostile_volume.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "soundCategory.neutral" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/sounds/neutral_volume.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "soundCategory.player" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/sounds/player_volume.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "soundCategory.ambient" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/sounds/ambient_volume.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.audioDevice" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/buttons/arrow_switch/sounds/sound_device.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.showSubtitles" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/buttons/selector/sounds/show_subtitles.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.directionalAudio" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/buttons/selector/sounds/directional_audio.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]}
+  ]
+}

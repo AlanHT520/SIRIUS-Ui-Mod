@@ -1,0 +1,8 @@
+{
+  "screen": {
+    "panorama": {
+      "type": "game.in_level ? vanilla : image",
+      "texture": "sirius_ui:textures/gui/images/backgrounds/background.png"
+    }
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "screen": {
+    "parent": "sirius_ui:screens/screen.json",
+    "graphicsDraw": [
+      {
+        "comment": "全屏半透明遮罩",
+        "x": "0",
+        "y": "0",
+        "width": "screen.width",
+        "height": "screen.height",
+        "color": "0x88000000"
+      }
+    ],
+    "elements": [
+      {
+        "type": "image",
+        "image_texture": "sirius_ui:textures/gui/images/title/minecraft_white.png",
+        "position": { "x": "screen.width/2 - this.width/2", "y": "screen.height/8" },
+        "size": { "width": 192, "height": 48 }
+      },
+      {
+        "ref": "sirius_ui:elements/buttons/default.json",
+        "variables": { "button_label": "menu.returnToGame" },
+        "position": { "x": "screen.width/2 - 75", "y": "screen.height/2 - 40" },
+        "size": { "width": 150, "height": 20 },
+        "action": { "type": "resume_game" }
+      },
+      {
+        "ref": "sirius_ui:elements/buttons/default.json",
+        "variables": { "button_label": "menu.options" },
+        "position": { "x": "screen.width/2 - 75", "y": "screen.height/2 - 12" },
+        "size": { "width": 150, "height": 20 },
+        "action": { "type": "open_screen", "screenId": "settings" }
+      },
+      {
+        "ref": "sirius_ui:elements/buttons/default.json",
+        "variables": { "button_label": "menu.other" },
+        "position": { "x": "screen.width/2 - 75", "y": "screen.height/2 + 16" },
+        "size": { "width": 150, "height": 20 },
+        "action": { "type": "open_screen", "screenId": "pause_other" }
+      },
+      {
+        "ref": "sirius_ui:elements/buttons/default.json",
+        "variables": { "button_label": "menu.disconnect" },
+        "position": { "x": "screen.width/2 - 75", "y": "screen.height/2 + 44" },
+        "size": { "width": 150, "height": 20 },
+        "action": { "type": "disconnect" }
+      }
+    ]
+  }
+}

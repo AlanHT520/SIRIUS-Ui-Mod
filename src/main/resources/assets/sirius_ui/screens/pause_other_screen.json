@@ -1,0 +1,127 @@
+{
+  "screen": {
+    "parent": "sirius_ui:screens/screen.json",
+    "graphicsDraw": [
+      {
+        "comment": "中央半透明卡片（宽400，高占屏幕60%）",
+        "x": "screen.width / 2 - 200",
+        "y": "screen.height * 20 / 100",
+        "width": 400,
+        "height": "screen.height * 60 / 100",
+        "color": "0x88000000"
+      },
+      {
+        "comment": "标题下方装饰线",
+        "x": "screen.width / 2 - 120",
+        "y": "screen.height * 33 / 100",
+        "width": 240,
+        "height": 1,
+        "color": "0x44FFFFFF"
+      },
+      {
+        "comment": "分组线1（信息 / 社区之间）",
+        "x": "screen.width / 2 - 150",
+        "y": "screen.height * 50 / 100",
+        "width": 300,
+        "height": 1,
+        "color": "0x22FFFFFF"
+      },
+      {
+        "comment": "分组线2（社区 / 多人之间）",
+        "x": "screen.width / 2 - 150",
+        "y": "screen.height * 65 / 100",
+        "width": 300,
+        "height": 1,
+        "color": "0x22FFFFFF"
+      }
+    ],
+    "elements": [
+      {
+        "comment": "返回按钮（左上角）",
+        "ref": "sirius_ui:elements/buttons/back.json",
+        "variables": { "button_label": "menu.return" },
+        "position": { "x": 10, "y": 10 },
+        "size": { "width": 100, "height": 20 },
+        "action": { "type": "close_screen" }
+      },
+      {
+        "comment": "标题（30%）",
+        "type": "text",
+        "text_key": "menu.other",
+        "position": {
+          "x": "screen.width / 2 - this.width / 2",
+          "y": "screen.height * 30 / 100 - 15"
+        },
+        "color": "0xFFFFFFFF",
+        "shadow": true,
+        "scale": 2.0
+      },
+      {
+        "comment": "进度按钮（左，42%）",
+        "ref": "sirius_ui:elements/buttons/default.json",
+        "variables": { "button_label": "gui.advancements" },
+        "position": {
+          "x": "screen.width / 2 - 130",
+          "y": "screen.height * 42 / 100 - 5"
+        },
+        "size": { "width": 120, "height": 20 },
+        "action": { "type": "open_screen", "screenId": "advancements" }
+      },
+      {
+        "comment": "统计按钮（右，42%）",
+        "ref": "sirius_ui:elements/buttons/default.json",
+        "variables": { "button_label": "gui.stats" },
+        "position": {
+          "x": "screen.width / 2 + 10",
+          "y": "screen.height * 42 / 100 - 5"
+        },
+        "size": { "width": 120, "height": 20 },
+        "action": { "type": "open_screen", "screenId": "stats" }
+      },
+      {
+        "comment": "反馈按钮（左，57%）",
+        "ref": "sirius_ui:elements/buttons/default.json",
+        "variables": { "button_label": "menu.sendFeedback" },
+        "position": {
+          "x": "screen.width / 2 - 130",
+          "y": "screen.height * 57 / 100 - 5"
+        },
+        "size": { "width": 120, "height": 20 },
+        "action": { "type": "open_link", "url": "https://aka.ms/javafeedback?ref=game" }
+      },
+      {
+        "comment": "报告错误按钮（右，57%）",
+        "ref": "sirius_ui:elements/buttons/default.json",
+        "variables": { "button_label": "menu.reportBugs" },
+        "position": {
+          "x": "screen.width / 2 + 10",
+          "y": "screen.height * 57 / 100 - 5"
+        },
+        "size": { "width": 120, "height": 20 },
+        "action": { "type": "open_link", "url": "https://aka.ms/snapshotbugs?ref=game" }
+      },
+      {
+        "comment": "局域网开放按钮（左，72%）",
+        "ref": "sirius_ui:elements/buttons/default.json",
+        "variables": { "button_label": "menu.shareToLan" },
+        "position": {
+          "x": "screen.width / 2 - 130",
+          "y": "screen.height * 72 / 100 - 5"
+        },
+        "size": { "width": 120, "height": 20 },
+        "action": { "type": "open_screen", "screenId": "share_to_lan" }
+      },
+      {
+        "comment": "玩家举报按钮（右，72%）",
+        "ref": "sirius_ui:elements/buttons/default.json",
+        "variables": { "button_label": "menu.playerReporting" },
+        "position": {
+          "x": "screen.width / 2 + 10",
+          "y": "screen.height * 72 / 100 - 5"
+        },
+        "size": { "width": 120, "height": 20 },
+        "action": { "type": "open_screen", "screenId": "player_social" }
+      }
+    ]
+  }
+}

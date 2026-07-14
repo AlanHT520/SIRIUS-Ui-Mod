@@ -1,0 +1,14 @@
+{
+  "type": "entity_display",
+  "entity_type": "player",
+  "size": { "width": 125, "height": 250 },
+  "scale": 40.0,
+  "look_at_mouse": true,
+  "animation": {
+    "state": "idle",
+    "walk_speed": 0.5,
+    "attack": {
+      "enabled": true
+    }
+  }
+}

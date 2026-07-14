@@ -1,0 +1,28 @@
+{
+  "type": "arrow_switch",
+  "option_key": "telemetryOptInExtra",
+  "values": [
+    {"key": "false", "text_key": "options.off"},
+    {"key": "true", "text_key": "options.on"}
+  ],
+  "text": {
+    "color": "0xCCFFFFFF", "text_key.option": "options.telemetry.button"
+  },
+  "left_button_texture": {
+    "normal": "sirius_ui:buttons/default_button",
+    "highlighted": "sirius_ui:buttons/default_button_highlighted",
+    "disabled": "sirius_ui:buttons/default_button_disabled"
+  },
+  "right_button_texture": {
+    "normal": "sirius_ui:buttons/default_button",
+    "highlighted": "sirius_ui:buttons/default_button_highlighted",
+    "disabled": "sirius_ui:buttons/default_button_disabled"
+  },
+  "center_texture": {
+    "normal": "sirius_ui:buttons/default_button",
+    "highlighted": "sirius_ui:buttons/default_button_highlighted",
+    "disabled": "sirius_ui:buttons/default_button_disabled"
+  },
+  "position": { "x": "0", "y": "0" },
+  "size": { "width": 200, "height": 20 }
+}

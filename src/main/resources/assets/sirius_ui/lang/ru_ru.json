@@ -1,0 +1,16 @@
+{
+  "sirius_ui.menu.play": "Играть",
+  "sirius_ui.menu.settings": "Настройки",
+  "sirius_ui.menu.quit": "Выйти",
+
+  "sirius_ui.play.back": "Назад в меню",
+  "sirius_ui.setting.general": "Общие",
+  "sirius_ui.play.realms": "Realms",
+
+  "sirius_ui.select": "Выбрать тип игры",
+
+  "menu.other": "Прочее",
+  "menu.return": "Назад",
+
+  "options.general": "Общие"
+}

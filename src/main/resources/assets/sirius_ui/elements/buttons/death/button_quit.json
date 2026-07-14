@@ -1,0 +1,24 @@
+{
+  "type": "button",
+  "variables": {
+    "button_label": "deathScreen.titleScreen",
+    "text_color": "0xFFFFFFFF"
+  },
+  "texture": {
+    "normal": "sirius_ui:buttons/death/button_quit",
+    "highlighted": "sirius_ui:buttons/death/button_quit_highlighted",
+    "disabled": "sirius_ui:buttons/death/button_quit_disabled"
+  },
+  "children": [
+    {
+      "type": "text",
+      "text_key": "${button_label}",
+      "color": "${text_color}",
+      "position": {
+        "x": "parent.width / 2 - this.width / 2",
+        "y": "parent.height / 2 - this.height / 2"
+      },
+      "shadow": true
+    }
+  ]
+}

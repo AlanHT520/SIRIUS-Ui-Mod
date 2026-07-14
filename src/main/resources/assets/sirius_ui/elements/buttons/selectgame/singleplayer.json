@@ -1,0 +1,29 @@
+{
+  "type": "button",
+  "variables": {
+    "button_label": "menu.singleplayer",
+    "text_color": "0xFFFFFFFF"
+  },
+  "texture": {
+    "normal": "sirius_ui:buttons/select/singleplayer_button",
+    "highlighted": "sirius_ui:buttons/select/singleplayer_button_highlighted",
+    "disabled": "sirius_ui:buttons/select/singleplayer_button_disabled"
+  },
+  "children": [
+    {
+      "type": "text",
+      "text_key": "${button_label}",
+      "color": "${text_color}",
+      "position": {
+        "x": "parent.width / 2 - this.width / 2",
+        "y": "parent.height / 2 - this.height / 2 + 37"
+      },
+      "scale": 1.0,
+      "state_v": {
+        "highlighted": {
+          "scale": "1.0"
+        }
+      }
+    }
+  ]
+}

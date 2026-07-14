@@ -1,0 +1,21 @@
+{
+  "type": "cycle_button",
+  "option_key": "showSubtitles",
+  "values": [
+    {"key": "true", "text_key": "options.on"},
+    {"key": "false", "text_key": "options.off"}
+  ],
+  "text": {
+    "color": "0xCCFFFFFF", "text_key.option": "options.showSubtitles"
+  },
+  "track_texture": {
+    "normal": "sirius_ui:buttons/options/sliders/slider",
+    "highlighted": "sirius_ui:buttons/options/sliders/slider_highlighted",
+    "disabled": "sirius_ui:buttons/options/sliders/slider"
+  },
+  "handle_texture": {
+    "normal": "sirius_ui:buttons/options/sliders/slider_handle",
+    "highlighted": "sirius_ui:buttons/options/sliders/slider_handle_highlighted",
+    "disabled": "sirius_ui:buttons/options/sliders/slider_handle"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "type": "cycle_button",
+  "option_key": "rawMouseInput",
+  "values": [
+    {"key": "true", "text_key": "options.on"},
+    {"key": "false", "text_key": "options.off"}
+  ],
+  "text": {
+    "text_key": "options.rawMouseInput",
+    "text_key.option": "options.rawMouseInput"
+  },
+  "position": { "x": "0", "y": "0" },
+  "size": { "width": 150, "height": 20 },
+  "texture": {
+    "normal": "sirius_ui:buttons/default_button",
+    "highlighted": "sirius_ui:buttons/default_button_highlighted",
+    "disabled": "sirius_ui:buttons/default_button_disabled"
+  }
+}

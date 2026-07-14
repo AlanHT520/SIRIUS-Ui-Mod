@@ -1,0 +1,19 @@
+{
+  "type": "list",
+  "gap": 5,
+  "background_color": "0x50000000",
+  "member": {
+    "elem_w": "parent.width * 7 / 9",
+    "elem_x": "parent.width / 9"
+  },
+  "scrollbar": { "width": 4, "x": "parent.width - 4", "track": { "color": "0x00000000" }, "thumb": { "color": "0x44FFFFFF" } },
+  "rows": [
+    { "height": 5, "children": [] },
+    { "height": 20, "children": [
+      { "ref": "sirius_ui:elements/buttons/selector/controls/force_unicode_font.json", "position": { "x": "this.elem_x" }, "size": { "width": "this.elem_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "ref": "sirius_ui:elements/buttons/selector/controls/japanese_glyph_variants.json", "position": { "x": "this.elem_x" }, "size": { "width": "this.elem_w", "height": 20 } }
+    ]}
+  ]
+}

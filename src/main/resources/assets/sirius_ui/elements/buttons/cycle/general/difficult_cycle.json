@@ -1,0 +1,22 @@
+{
+  "type": "cycle_button",
+  "id": "difficulty",
+  "option_key": "difficulty",
+  "values": [
+    { "key": "peaceful", "text_key": "options.difficulty.peaceful" },
+    { "key": "easy",     "text_key": "options.difficulty.easy" },
+    { "key": "normal",   "text_key": "options.difficulty.normal" },
+    { "key": "hard",     "text_key": "options.difficulty.hard" }
+  ],
+  "texture": {
+    "normal": "sirius_ui:buttons/default_button",
+    "highlighted": "sirius_ui:buttons/default_button_highlighted",
+    "disabled": "sirius_ui:buttons/default_button_disabled"
+  },
+  "text": {
+    "text_key": "options.difficulty",
+    "text_key.option": "options.difficulty"
+  },
+  "position": { "x": "0", "y": "0" },
+  "size": { "width": 150, "height": 20 }
+}

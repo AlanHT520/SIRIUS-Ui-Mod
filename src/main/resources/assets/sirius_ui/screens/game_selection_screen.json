@@ -1,0 +1,51 @@
+{
+  "screen": {
+    "panorama": {
+      "type": "image",
+      "texture": "sirius_ui:textures/gui/images/backgrounds/background.png"
+    },
+    "graphicsDraw": [
+      { "comment": "半透明深色背景", "x": "0", "y": "0", "width": "screen.width", "height": "screen.height", "color": "0xFF1A1A1A" },
+      { "comment": "顶部半透明亮灰背景", "x": "0", "y": "0", "width": "screen.width", "height": "33", "color": "0xFF424242" },
+      { "comment": "顶部亮灰线装饰", "x": "0", "y": "33", "width": "screen.width", "height": "1", "color": "0xAAAAAAAA" },
+      { "comment": "顶部黑线边界", "x": "0", "y": "34", "width": "screen.width", "height": "1", "color": "0x88000000" },
+      { "comment": "底部黑线边界", "x": "0", "y": "screen.height - 35", "width": "screen.width", "height": "1", "color": "0x88000000" },
+      { "comment": "底部亮灰线装饰", "x": "0", "y": "screen.height - 34", "width": "screen.width", "height": "1", "color": "0xAAAAAAAA" },
+      { "comment": "底部半透明亮灰背景", "x": "0", "y": "screen.height - 33", "width": "screen.width", "height": "33", "color": "0xCC424242" }
+    ],
+    "elements": [
+      {
+        "type": "text",
+        "text_key": "sirius_ui.select",
+        "position": { "x": "screen.width/2 - this.width/2", "y": "16" },
+        "color": "0xFFFFFFFF",
+        "shadow": true
+      },
+      {
+        "ref": "sirius_ui:elements/buttons/selectgame/singleplayer.json",
+        "position": { "x": "(screen.width - 320) / 2", "y": "screen.height / 2 - 50" },
+        "size": { "width": 100, "height": 100 },
+        "action": { "type": "open_screen", "screenId": "world_select" }
+      },
+      {
+        "ref": "sirius_ui:elements/buttons/selectgame/multiplayer.json",
+        "position": { "x": "(screen.width - 320) / 2 + 110", "y": "screen.height / 2 - 50" },
+        "size": { "width": 100, "height": 100 },
+        "action": { "type": "open_screen", "screenId": "multiplayer" }
+      },
+      {
+        "ref": "sirius_ui:elements/buttons/selectgame/realms.json",
+        "position": { "x": "(screen.width - 320) / 2 + 220", "y": "screen.height / 2 - 50" },
+        "size": { "width": 100, "height": 100 },
+        "action": { "type": "open_screen", "screenId": "realms" }
+      },
+      {
+        "ref": "sirius_ui:elements/buttons/default.json",
+        "variables": { "button_label": "gui.back" },
+        "position": { "x": "(screen.width - 80) / 2", "y": "screen.height - 25" },
+        "size": { "width": 80, "height": 20 },
+        "action": { "type": "close_screen" }
+      }
+    ]
+  }
+}

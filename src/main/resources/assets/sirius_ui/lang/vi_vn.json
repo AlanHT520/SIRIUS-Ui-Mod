@@ -1,0 +1,16 @@
+{
+  "sirius_ui.menu.play": "Chơi",
+  "sirius_ui.menu.settings": "Cài đặt",
+  "sirius_ui.menu.quit": "Thoát",
+
+  "sirius_ui.play.back": "Quay lại",
+  "sirius_ui.setting.general": "Chung",
+  "sirius_ui.play.realms": "Realms",
+
+  "sirius_ui.select": "Chọn loại chơi",
+
+  "menu.other": "Khác",
+  "menu.return": "Quay lại",
+
+  "options.general": "Chung"
+}

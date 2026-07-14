@@ -1,0 +1,63 @@
+{
+  "type": "container",
+  "position": { "x": "0", "y": "0" },
+  "size": { "width": "parent.width", "height": "parent.height" },
+  "background_color": "0x50000000",
+  "children": [
+    {
+      "type": "pack_list",
+      "id": "options_pack_list",
+      "source": "resource_packs",
+      "mode": "all",
+      "entry_height": 36,
+      "entry_gap": 2,
+      "background_color": "0x00000000",
+      "active_row": {
+        "background_color": "0x2000CC00",
+        "text_color": "0xFFFFFFFF",
+        "hover_color": "0x4000CC00",
+        "toggle_color": "0xCC00AA00",
+        "toggle_hover_color": "0xCC55FF55"
+      },
+      "unactive_row": {
+        "background_color": "0x20000000",
+        "text_color": "0xCCAAAAAA",
+        "hover_color": "0x40000000",
+        "toggle_color": "0xCCAA0000",
+        "toggle_hover_color": "0xCCFF5555"
+      },
+      "position": { "x": "6", "y": "0" },
+      "size": { "width": "parent.width - 12", "height": "parent.height - 26" }
+    },
+    {
+      "type": "button",
+      "position": { "x": "6", "y": "parent.height - 22" },
+      "size": { "width": "80", "height": "20" },
+      "text": {
+        "text_key": "pack.openFolder",
+        "color": "0xFFCCCCCC",
+        "shadow": true
+      },
+      "action": { "type": "open_folder", "target": "resourcepacks" },
+      "texture": {
+        "normal": "sirius_ui:buttons/default_button",
+        "highlighted": "sirius_ui:buttons/default_button_highlighted"
+      }
+    },
+    {
+      "type": "button",
+      "position": { "x": "parent.width - 56", "y": "parent.height - 22" },
+      "size": { "width": "50", "height": "20" },
+      "text": {
+        "text_key": "gui.done",
+        "color": "0xFFAAFFAA",
+        "shadow": true
+      },
+      "action": { "type": "commit_packs" },
+      "texture": {
+        "normal": "sirius_ui:buttons/default_button",
+        "highlighted": "sirius_ui:buttons/default_button_highlighted"
+      }
+    }
+  ]
+}

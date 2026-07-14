@@ -1,0 +1,9 @@
+{
+  "title_screen": "sirius_ui:screens/title_screen.json",
+  "selectGame": "sirius_ui:screens/game_selection_screen.json",
+  "pause_other": "sirius_ui:screens/pause_other_screen.json",
+  "settings": "sirius_ui:screens/options_screen.json",
+  "mouse_settings": "sirius_ui:screens/mouse_settings_screen.json",
+  "font_options": "sirius_ui:screens/font_options_screen.json",
+  "resource_packs": "sirius_ui:screens/resource_packs_screen.json"
+}

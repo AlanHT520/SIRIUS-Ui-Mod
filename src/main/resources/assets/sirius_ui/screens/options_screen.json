@@ -1,0 +1,241 @@
+﻿{
+  "screen": {
+    "parent": "sirius_ui:screens/screen.json",
+    "graphicsDraw": [
+      { "x": "0", "y": "0", "width": "screen.width", "height": "28", "color": "0xDD111111" },
+      { "x": "0", "y": "27", "width": "screen.width", "height": "1", "color": "0x30FFFFFF" },
+      { "x": "0", "y": "28", "width": "screen.width", "height": "screen.height - 28", "color": "0xBB2A2A2A" }
+    ],
+    "elements": [
+      {
+        "type": "button",
+        "position": { "x": "8", "y": "2" },
+        "size": { "width": "20", "height": "20" },
+        "text": { "text": " ", "color": "0xFFEEEEEE", "shadow": true },
+        "action": { "type": "close_screen" },
+        "texture": {
+          "normal": "sirius_ui:buttons/options/back",
+          "highlighted": "sirius_ui:buttons/options/back_highlighted"
+        }
+      },
+      {
+        "type": "content",
+        "id": "tab_bar",
+        "direction": "horizontal",
+        "position": { "x": "34", "y": "3" },
+        "size": { "width": "screen.width - 34", "height": "24" },
+        "gap": 0,
+        "scrollbar": {
+          "width": 3,
+          "track": { "color": "0x00000000" },
+          "thumb": { "color": "0x30FFFFFF" }
+        },
+        "buttons": [
+          {
+            "type": "button_content",
+            "id": "general",
+            "box_id": "options_tv",
+            "size": { "width": "text_width + 10", "height": "20" },
+            "texture": {
+              "normal": "sirius_ui:buttons/select/game_button",
+              "highlighted": "sirius_ui:buttons/select/game_button_highlighted",
+              "selected": "sirius_ui:buttons/select/game_button_selected"
+            },
+            "text": {
+              "text_key": "options.general",
+              "color": "0xFFAAAAAA",
+              "shadow": true
+            },
+            "state_variables": {
+              "selected": { "text_color": "0xFFFFFFFF" },
+              "highlighted": { "text_color": "0xFFFFFFFF" }
+            }
+          },
+          {
+            "type": "button_content",
+            "id": "video",
+            "box_id": "options_tv",
+            "size": { "width": "text_width + 10", "height": "20" },
+            "texture": {
+              "normal": "sirius_ui:buttons/select/game_button",
+              "highlighted": "sirius_ui:buttons/select/game_button_highlighted",
+              "selected": "sirius_ui:buttons/select/game_button_selected"
+            },
+            "text": {
+              "text_key": "options.video",
+              "color": "0xFFAAAAAA",
+              "shadow": true
+            },
+            "state_variables": {
+              "selected": { "text_color": "0xFFFFFFFF" },
+              "highlighted": { "text_color": "0xFFFFFFFF" }
+            }
+          },
+          {
+            "type": "button_content",
+            "id": "sounds",
+            "box_id": "options_tv",
+            "size": { "width": "text_width + 10", "height": "20" },
+            "texture": {
+              "normal": "sirius_ui:buttons/select/game_button",
+              "highlighted": "sirius_ui:buttons/select/game_button_highlighted",
+              "selected": "sirius_ui:buttons/select/game_button_selected"
+            },
+            "text": {
+              "text_key": "options.sounds",
+              "color": "0xFFAAAAAA",
+              "shadow": true
+            },
+            "state_variables": {
+              "selected": { "text_color": "0xFFFFFFFF" },
+              "highlighted": { "text_color": "0xFFFFFFFF" }
+            }
+          },
+          {
+            "type": "button_content",
+            "id": "controls",
+            "box_id": "options_tv",
+            "size": { "width": "text_width + 10", "height": "20" },
+            "texture": {
+              "normal": "sirius_ui:buttons/select/game_button",
+              "highlighted": "sirius_ui:buttons/select/game_button_highlighted",
+              "selected": "sirius_ui:buttons/select/game_button_selected"
+            },
+            "text": {
+              "text_key": "options.controls",
+              "color": "0xFFAAAAAA",
+              "shadow": true
+            },
+            "state_variables": {
+              "selected": { "text_color": "0xFFFFFFFF" },
+              "highlighted": { "text_color": "0xFFFFFFFF" }
+            }
+          },
+          {
+            "type": "button_content",
+            "id": "chat",
+            "box_id": "options_tv",
+            "size": { "width": "text_width + 10", "height": "20" },
+            "texture": {
+              "normal": "sirius_ui:buttons/select/game_button",
+              "highlighted": "sirius_ui:buttons/select/game_button_highlighted",
+              "selected": "sirius_ui:buttons/select/game_button_selected"
+            },
+            "text": {
+              "text_key": "options.chat",
+              "color": "0xFFAAAAAA",
+              "shadow": true
+            },
+            "state_variables": {
+              "selected": { "text_color": "0xFFFFFFFF" },
+              "highlighted": { "text_color": "0xFFFFFFFF" }
+            }
+          },
+          {
+            "type": "button_content",
+            "id": "accessibility",
+            "box_id": "options_tv",
+            "size": { "width": "text_width + 10", "height": "20" },
+            "texture": {
+              "normal": "sirius_ui:buttons/select/game_button",
+              "highlighted": "sirius_ui:buttons/select/game_button_highlighted",
+              "selected": "sirius_ui:buttons/select/game_button_selected"
+            },
+            "text": {
+              "text_key": "options.accessibility",
+              "color": "0xFFAAAAAA",
+              "shadow": true
+            },
+            "state_variables": {
+              "selected": { "text_color": "0xFFFFFFFF" },
+              "highlighted": { "text_color": "0xFFFFFFFF" }
+            }
+          },
+          {
+            "type": "button_content",
+            "id": "skin",
+            "box_id": "options_tv",
+            "size": { "width": "text_width + 10", "height": "20" },
+            "texture": {
+              "normal": "sirius_ui:buttons/select/game_button",
+              "highlighted": "sirius_ui:buttons/select/game_button_highlighted",
+              "selected": "sirius_ui:buttons/select/game_button_selected"
+            },
+            "text": {
+              "text_key": "options.skinCustomisation",
+              "color": "0xFFAAAAAA",
+              "shadow": true
+            },
+            "state_variables": {
+              "selected": { "text_color": "0xFFFFFFFF" },
+              "highlighted": { "text_color": "0xFFFFFFFF" }
+            }
+          },
+          {
+            "type": "button_content",
+            "id": "resource_packs",
+            "box_id": "options_tv",
+            "size": { "width": "text_width + 10", "height": "20" },
+            "texture": {
+              "normal": "sirius_ui:buttons/select/game_button",
+              "highlighted": "sirius_ui:buttons/select/game_button_highlighted",
+              "selected": "sirius_ui:buttons/select/game_button_selected"
+            },
+            "text": {
+              "text_key": "options.resourcepack",
+              "color": "0xFFAAAAAA",
+              "shadow": true
+            },
+            "state_variables": {
+              "selected": { "text_color": "0xFFFFFFFF" },
+              "highlighted": { "text_color": "0xFFFFFFFF" }
+            }
+          }
+        ]
+      },
+      {
+        "type": "box",
+        "id": "options_tv",
+        "position": { "x": "0", "y": "28" },
+        "size": { "width": "screen.width", "height": "screen.height - 28" },
+        "background_color": "0x00000000",
+        "screen_padding": { "top": 8, "bottom": 8, "left": 12, "right": 12 },
+        "default_id": "general",
+        "elements": [
+          {
+            "id": "general",
+            "ref": "sirius_ui:elements/list/general_options.json"
+          },
+          {
+            "id": "video",
+            "ref": "sirius_ui:elements/list/video_options.json"
+          },
+          {
+            "id": "sounds",
+            "ref": "sirius_ui:elements/list/sounds_options.json"
+          },
+          {
+            "id": "chat",
+            "ref": "sirius_ui:elements/list/chat_options.json"
+          },
+          {
+            "id": "accessibility",
+            "ref": "sirius_ui:elements/list/accessibility_options.json"
+          },
+          {
+            "id": "skin",
+            "ref": "sirius_ui:elements/list/skin_options.json"
+          },
+          {
+            "id": "controls",
+            "ref": "sirius_ui:elements/list/controls_options.json"
+          },
+          {
+            "id": "resource_packs",
+            "ref": "sirius_ui:elements/list/resource_packs_options.json"
+          }
+        ]
+      }
+    ]
+  }
+}

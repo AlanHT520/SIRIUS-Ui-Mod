@@ -1,0 +1,16 @@
+{
+  "sirius_ui.menu.play": "JOUER",
+  "sirius_ui.menu.settings": "PARAMÈTRES",
+  "sirius_ui.menu.quit": "QUITTER",
+
+  "sirius_ui.play.back": "Retour au menu",
+  "sirius_ui.setting.general": "GÉNÉRAL",
+  "sirius_ui.play.realms": "Realms",
+
+  "sirius_ui.select": "Sélectionner le type de jeu",
+
+  "menu.other": "Autres",
+  "menu.return": "Retour",
+
+  "options.general": "Général"
+}

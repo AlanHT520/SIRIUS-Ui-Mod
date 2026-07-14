@@ -1,0 +1,19 @@
+{
+  "type": "cycle_button",
+  "option_key": "mainHand",
+  "values": [
+    {"key": "0", "text_key": "options.mainHand.left"},
+    {"key": "1", "text_key": "options.mainHand.right"}
+  ],
+  "text": {
+    "text_key": "options.mainHand",
+    "text_key.option": "options.mainHand"
+  },
+  "position": { "x": "0", "y": "0" },
+  "size": { "width": 150, "height": 20 },
+  "texture": {
+    "normal": "sirius_ui:buttons/default_button",
+    "highlighted": "sirius_ui:buttons/default_button_highlighted",
+    "disabled": "sirius_ui:buttons/default_button_disabled"
+  }
+}

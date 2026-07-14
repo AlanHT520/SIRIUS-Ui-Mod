@@ -1,0 +1,16 @@
+{
+  "sirius_ui.menu.play": "Jugar",
+  "sirius_ui.menu.settings": "Opciones...",
+  "sirius_ui.menu.quit": "Salir del juego",
+
+  "sirius_ui.play.back": "Volver al menú",
+  "sirius_ui.setting.general": "Configuración general",
+  "sirius_ui.play.realms": "Reinos",
+
+  "sirius_ui.select": "Seleccionar tipo de juego",
+
+  "menu.other": "Otros",
+  "menu.return": "Volver",
+
+  "options.general": "General"
+}

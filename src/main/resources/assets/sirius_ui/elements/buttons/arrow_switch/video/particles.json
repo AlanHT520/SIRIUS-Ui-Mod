@@ -1,0 +1,29 @@
+{
+  "type": "arrow_switch",
+  "option_key": "particles",
+  "values": [
+    {"key": "0", "text_key": "options.particles.all"},
+    {"key": "1", "text_key": "options.particles.decreased"},
+    {"key": "2", "text_key": "options.particles.minimal"}
+  ],
+  "text": {
+    "color": "0xCCFFFFFF", "text_key.option": "options.particles"
+  },
+  "left_button_texture": {
+    "normal": "sirius_ui:buttons/default_button",
+    "highlighted": "sirius_ui:buttons/default_button_highlighted",
+    "disabled": "sirius_ui:buttons/default_button_disabled"
+  },
+  "right_button_texture": {
+    "normal": "sirius_ui:buttons/default_button",
+    "highlighted": "sirius_ui:buttons/default_button_highlighted",
+    "disabled": "sirius_ui:buttons/default_button_disabled"
+  },
+  "center_texture": {
+    "normal": "sirius_ui:buttons/default_button",
+    "highlighted": "sirius_ui:buttons/default_button_highlighted",
+    "disabled": "sirius_ui:buttons/default_button_disabled"
+  },
+  "position": { "x": "0", "y": "0" },
+  "size": { "width": 200, "height": 20 }
+}

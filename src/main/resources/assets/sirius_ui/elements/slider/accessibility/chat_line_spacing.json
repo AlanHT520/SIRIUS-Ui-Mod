@@ -1,0 +1,22 @@
+{
+  "type": "slider",
+  "option_key": "chatLineSpacing",
+  "slider_min": 0.0,
+  "slider_max": 1.0,
+  "slider_step": 0.01,
+  "text": {
+    "color": "0xCCFFFFFF", "text_key.option": "options.chat.line_spacing"
+  },
+  "track_texture": {
+    "normal": "sirius_ui:buttons/options/sliders/slider",
+    "highlighted": "sirius_ui:buttons/options/sliders/slider_highlighted",
+    "disabled": "sirius_ui:buttons/options/sliders/slider"
+  },
+  "handle_texture": {
+    "normal": "sirius_ui:buttons/options/sliders/slider_handle",
+    "highlighted": "sirius_ui:buttons/options/sliders/slider_handle_highlighted",
+    "disabled": "sirius_ui:buttons/options/sliders/slider_handle"
+  },
+  "position": { "x": "0", "y": "0" },
+  "size": { "width": 150, "height": 20 }
+}

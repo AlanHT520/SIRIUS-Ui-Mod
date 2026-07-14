@@ -1,0 +1,16 @@
+{
+  "sirius_ui.menu.play": "게임 시작",
+  "sirius_ui.menu.settings": "설정",
+  "sirius_ui.menu.quit": "종료",
+
+  "sirius_ui.play.back": "메뉴로 돌아가기",
+  "sirius_ui.setting.general": "일반",
+  "sirius_ui.play.realms": "Realms",
+
+  "sirius_ui.select": "플레이 방식 선택",
+
+  "menu.other": "기타",
+  "menu.return": "돌아가기",
+
+  "options.general": "일반"
+}

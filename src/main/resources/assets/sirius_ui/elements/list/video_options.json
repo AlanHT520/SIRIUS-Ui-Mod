@@ -1,0 +1,111 @@
+{
+  "type": "list",
+  "gap": 5,
+  "background_color": "0x50000000",
+  "member": {
+    "label_w": "parent.width * 7 / 18",
+    "label_x": "parent.width / 9",
+    "control_w": "parent.width * 7 / 18",
+    "control_x": "parent.width / 2"
+  },
+  "scrollbar": { "width": 4, "x": "parent.width - 4", "track": { "color": "0x00000000" }, "thumb": { "color": "0x44FFFFFF" } },
+  "rows": [
+    { "height": 5, "children": [] },
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.graphics" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/buttons/arrow_switch/video/graphic_mode.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.renderClouds" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/buttons/arrow_switch/video/cloud_status.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.renderDistance" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/video/render_distance.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.simulationDistance" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/video/simulation_distance.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.prioritizeChunkUpdates" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/buttons/arrow_switch/video/prioritize_chunk_updates.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.ao" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/buttons/selector/video/ambient_occlusion.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.framerateLimit" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/video/framerate_limit.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.vsync" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/buttons/selector/video/enable_vsync.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.viewBobbing" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/buttons/selector/video/bob_view.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.guiScale" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/buttons/arrow_switch/video/gui_scale.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.attackIndicator" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/buttons/arrow_switch/video/attack_indicator.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.gamma" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/video/gamma.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.fullscreen" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/buttons/selector/video/fullscreen.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.particles" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/buttons/arrow_switch/video/particles.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.mipmapLevels" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/video/mipmap_levels.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.entityShadows" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/buttons/selector/video/entity_shadows.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.screenEffectScale" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/video/screen_effect_scale.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.entityDistanceScaling" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/video/entity_distance_scaling.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.fovEffectScale" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/video/fov_effect_scale.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.autosaveIndicator" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/buttons/selector/video/show_autosave_indicator.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.glintSpeed" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/video/glint_speed.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.glintStrength" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/video/glint_strength.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.biomeBlendRadius" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/buttons/arrow_switch/video/biome_blend_radius.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.accessibility.menu_background_blurriness" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/video/menu_background_blurriness.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]}
+  ]
+}

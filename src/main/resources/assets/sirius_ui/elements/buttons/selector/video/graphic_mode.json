@@ -1,0 +1,50 @@
+{
+  "type": "selector",
+  "option_key": "graphicsMode",
+  "values": [
+    {
+      "key": "0",
+      "text_key": "options.graphics.fast",
+      "texture": {
+        "normal": "sirius_ui:buttons/default_button",
+        "highlighted": "sirius_ui:buttons/default_button_highlighted",
+        "disabled": "sirius_ui:buttons/default_button_disabled",
+        "selected": "sirius_ui:buttons/default_button_selected"
+      },
+      "width": 50
+    },
+    {
+      "key": "1",
+      "text_key": "options.graphics.fancy",
+      "texture": {
+        "normal": "sirius_ui:buttons/default_button",
+        "highlighted": "sirius_ui:buttons/default_button_highlighted",
+        "disabled": "sirius_ui:buttons/default_button_disabled",
+        "selected": "sirius_ui:buttons/default_button_selected"
+      },
+      "width": 50
+    },
+    {
+      "key": "2",
+      "text_key": "options.graphics.fabulous",
+      "texture": {
+        "normal": "sirius_ui:buttons/default_button",
+        "highlighted": "sirius_ui:buttons/default_button_highlighted",
+        "disabled": "sirius_ui:buttons/default_button_disabled",
+        "selected": "sirius_ui:buttons/default_button_selected"
+      },
+      "width": 50
+    }
+  ],
+  "text": {
+    "position": { "x": "0", "y": "this.height / 2" }
+  },
+  "position": { "x": "0", "y": "0" },
+  "size": { "width": 200, "height": 20 },
+  "texture": {
+    "normal": "sirius_ui:buttons/default_button",
+    "highlighted": "sirius_ui:buttons/default_button_highlighted",
+    "disabled": "sirius_ui:buttons/default_button_disabled",
+    "selected": "sirius_ui:buttons/default_button_selected"
+  }
+}

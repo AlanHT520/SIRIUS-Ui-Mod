@@ -1,0 +1,16 @@
+{
+  "sirius_ui.menu.play": "Тоглох",
+  "sirius_ui.menu.settings": "Тохиргоо",
+  "sirius_ui.menu.quit": "Гарах",
+
+  "sirius_ui.play.back": "Цэс рүү буцах",
+  "sirius_ui.setting.general": "Ерөнхий",
+  "sirius_ui.play.realms": "Realms",
+
+  "sirius_ui.select": "Тоглох төрөл сонгох",
+
+  "menu.other": "Бусад",
+  "menu.return": "Буцах",
+
+  "options.general": "Ерөнхий"
+}

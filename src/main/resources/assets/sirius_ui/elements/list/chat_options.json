@@ -1,0 +1,83 @@
+{
+  "type": "list",
+  "gap": 5,
+  "background_color": "0x50000000",
+  "member": {
+    "label_w": "parent.width * 7 / 18",
+    "label_x": "parent.width / 9",
+    "control_w": "parent.width * 7 / 18",
+    "control_x": "parent.width / 2"
+  },
+  "scrollbar": { "width": 4, "x": "parent.width - 4", "track": { "color": "0x00000000" }, "thumb": { "color": "0x44FFFFFF" } },
+  "rows": [
+    { "height": 5, "children": [] },
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.chat.visibility" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/buttons/arrow_switch/chat/chat_visibility.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.chat.color" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/buttons/selector/chat/chat_colors.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.chat.links" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/buttons/selector/chat/chat_links.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.chat.links.prompt" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/buttons/selector/chat/chat_links_prompt.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.chat.opacity" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/accessibility/chat_opacity.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.accessibility.text_background_opacity" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/accessibility/text_background_opacity.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.chat.scale" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/chat/chat_scale.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.chat.line_spacing" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/accessibility/chat_line_spacing.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.chat.delay_instant" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/accessibility/chat_delay.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.chat.width" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/chat/chat_width.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.chat.height.focused" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/chat/chat_height_focused.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.chat.height.unfocused" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/slider/chat/chat_height_unfocused.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.narrator" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/buttons/arrow_switch/accessibility/narrator.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.autoSuggestCommands" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/buttons/selector/chat/auto_suggestions.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.hideMatchedNames" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/buttons/selector/chat/hide_matched_names.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.reducedDebugInfo" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/buttons/selector/chat/reduced_debug_info.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]},
+    { "height": 20, "children": [
+      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.onlyShowSecureChat" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "ref": "sirius_ui:elements/buttons/selector/chat/only_show_secure_chat.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
+    ]}
+  ]
+}

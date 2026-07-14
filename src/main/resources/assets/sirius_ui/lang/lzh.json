@@ -1,0 +1,16 @@
+{
+  "sirius_ui.menu.play": "啟...",
+  "sirius_ui.menu.settings": "設...",
+  "sirius_ui.menu.quit": "退...",
+
+  "sirius_ui.play.back": "返...",
+  "sirius_ui.setting.general": "常設",
+  "sirius_ui.play.realms": "Realms",
+
+  "sirius_ui.select": "擇戲類",
+
+  "menu.other": "其他",
+  "menu.return": "返回",
+
+  "options.general": "常規"
+}

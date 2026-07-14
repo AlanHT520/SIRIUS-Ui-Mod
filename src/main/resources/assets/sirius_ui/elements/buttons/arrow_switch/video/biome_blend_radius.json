@@ -1,0 +1,34 @@
+{
+  "type": "arrow_switch",
+  "option_key": "biomeBlendRadius",
+  "values": [
+    {"key": "0", "text_key": "options.biomeBlendRadius.1"},
+    {"key": "1", "text_key": "options.biomeBlendRadius.3"},
+    {"key": "2", "text_key": "options.biomeBlendRadius.5"},
+    {"key": "3", "text_key": "options.biomeBlendRadius.7"},
+    {"key": "4", "text_key": "options.biomeBlendRadius.9"},
+    {"key": "5", "text_key": "options.biomeBlendRadius.11"},
+    {"key": "6", "text_key": "options.biomeBlendRadius.13"},
+    {"key": "7", "text_key": "options.biomeBlendRadius.15"}
+  ],
+  "text": {
+    "color": "0xCCFFFFFF", "text_key.option": "options.biomeBlendRadius"
+  },
+  "left_button_texture": {
+    "normal": "sirius_ui:buttons/default_button",
+    "highlighted": "sirius_ui:buttons/default_button_highlighted",
+    "disabled": "sirius_ui:buttons/default_button_disabled"
+  },
+  "right_button_texture": {
+    "normal": "sirius_ui:buttons/default_button",
+    "highlighted": "sirius_ui:buttons/default_button_highlighted",
+    "disabled": "sirius_ui:buttons/default_button_disabled"
+  },
+  "center_texture": {
+    "normal": "sirius_ui:buttons/default_button",
+    "highlighted": "sirius_ui:buttons/default_button_highlighted",
+    "disabled": "sirius_ui:buttons/default_button_disabled"
+  },
+  "position": { "x": "0", "y": "0" },
+  "size": { "width": 200, "height": 20 }
+}

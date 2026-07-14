@@ -1,0 +1,34 @@
+{
+  "type": "button_content",
+  "box_id": "main_box",
+  "variables": {
+    "button_label": "",
+    "text_color": "0xCCFFFFFF"
+  },
+  "texture": {
+    "normal": "sirius_ui:buttons/options/button_content",
+    "highlighted": "sirius_ui:buttons/options/button_content_highlighted",
+    "disabled": "sirius_ui:buttons/options/button_content_disabled",
+    "selected": "sirius_ui:buttons/options/button_content_selected"
+  },
+  "children": [
+    {
+      "type": "text",
+      "text_key": "${button_label}",
+      "color": "${text_color}",
+      "position": {
+        "x": "parent.width / 2 - this.width / 2",
+        "y": "parent.height / 2 - this.height / 2"
+      },
+      "shadow": true,
+      "state_v": {
+        "highlighted": {
+          "color": "0xFFFFFF00"
+        },
+        "selected": {
+          "color": "0xFFFFFFFF"
+        }
+      }
+    }
+  ]
+}
