@@ -26,4 +26,4 @@ This software is provided "as is". I don't guarantee it won't break your stuff, 
 
 ---
 
-**HTA License 1.0**
+**HaoTianA License 1.0**
