@@ -1,4 +1,4 @@
-# HTA License 1.0
+# HaoTianA License 1.0
 
 版权所有 (c) 2026 AlanHT520
 
@@ -26,4 +26,4 @@
 
 
 
-**HTA License 1.0**
+**HaoTianA License 1.0**
