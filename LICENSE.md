@@ -4,17 +4,14 @@ Copyright (c) 2026 AlanHT520
 
 ## What You Can Do
 
-- Use it however you want — personal use, server use, all fine.
+- Use it however you want — personal use, server use, commercial use, all fine.
 - Include it in your modpack or software bundle and distribute that, no problem.
 - Redistribute the original unmodified package, as long as you keep my name and this license.
-- Modify it for your own private use, to fit your own environment — do whatever you like, I don't care.
+- You may modify the software and redistribute the modified version, either in source code or compiled form.
 
 ## What You Cannot Do
 
-- **Do not distribute your modified version** in any form, unless you get explicit permission from me.
-- **Do not sell this software**, or use it in anything that involves paywalls, paid memberships, or bundling it with paid products.
 - **Do not remove my name or copyright info** — that's just basic decency.
-- **Do not use this to build a competing product** that goes against mine — that's not cool.
 
 ## What You Make Is Yours
 
