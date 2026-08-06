@@ -3,9 +3,9 @@ package net.alan.gui.client.mixin;
 import net.alan.gui.Config;
 import net.alan.gui.Main;
 import net.alan.gui.context.ScreenVariableRegistry;
-import net.alan.gui.data.config.ScreenLayout;
+import net.alan.gui.data.screen.ScreenLayout;
 import net.alan.gui.registry.JsonScreenRegistry;
-import net.alan.gui.render.JsonScreenRenderer;
+import net.alan.gui.render.screen.JsonScreenRenderer;
 import net.alan.gui.util.JsonLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -20,9 +20,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.lang.reflect.Field;
-import java.util.List;
-
 @Mixin(TitleScreen.class)
 public abstract class TitleScreenMixin extends Screen {
     @Unique
@@ -34,7 +31,6 @@ public abstract class TitleScreenMixin extends Screen {
 
     @Inject(method = "init", at = @At("TAIL"))
     private void sirius$onInit(CallbackInfo ci) {
-        if (!Config.ENABLE_CUSTOM_UI.get()) return;
         Minecraft client = Minecraft.getInstance();
         ResourceManager rm = client.getResourceManager();
 
@@ -45,24 +41,17 @@ public abstract class TitleScreenMixin extends Screen {
         if (layout != null) {
             String screenId = ScreenVariableRegistry.extractScreenId(layoutId);
             this.sirius$uiRenderer = new JsonScreenRenderer(client, (TitleScreen) (Object) this, layout, screenId);
-            clearOriginalWidgets();
         }
     }
 
     @Unique
-    private void clearOriginalWidgets() {
-        try {
-            this.children().clear();
-            Field renderablesField = Screen.class.getDeclaredField("renderables");
-            renderablesField.setAccessible(true);
-            List<?> renderables = (List<?>) renderablesField.get(this);
-            renderables.clear();
-        } catch (Exception ignored) {}
+    private boolean sirius$isActive() {
+        return sirius$uiRenderer != null && Config.ENABLE_CUSTOM_UI.get();
     }
 
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private void sirius$onRender(GuiGraphics graphics, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        if (sirius$uiRenderer != null) {
+        if (sirius$isActive()) {
             sirius$uiRenderer.render(graphics, mouseX, mouseY, delta);
             ci.cancel();
         }
@@ -70,7 +59,7 @@ public abstract class TitleScreenMixin extends Screen {
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void sirius$onMouseClicked(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
-        if (sirius$uiRenderer != null) {
+        if (sirius$isActive()) {
             boolean handled = sirius$uiRenderer.mouseClicked(mouseX, mouseY, button);
             cir.setReturnValue(handled);
             cir.cancel();
@@ -79,7 +68,7 @@ public abstract class TitleScreenMixin extends Screen {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (sirius$uiRenderer != null) {
+        if (sirius$isActive()) {
             return sirius$uiRenderer.mouseReleased(mouseX, mouseY, button);
         }
         return super.mouseReleased(mouseX, mouseY, button);
@@ -87,7 +76,7 @@ public abstract class TitleScreenMixin extends Screen {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (sirius$uiRenderer != null) {
+        if (sirius$isActive()) {
             return sirius$uiRenderer.mouseDragged(mouseX, mouseY, button, dragX, dragY);
         }
         return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
@@ -95,7 +84,7 @@ public abstract class TitleScreenMixin extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        if (sirius$uiRenderer != null) {
+        if (sirius$isActive()) {
             return sirius$uiRenderer.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
         }
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
@@ -103,7 +92,7 @@ public abstract class TitleScreenMixin extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (sirius$uiRenderer != null) {
+        if (sirius$isActive()) {
             return sirius$uiRenderer.keyPressed(keyCode, scanCode, modifiers);
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
@@ -111,7 +100,7 @@ public abstract class TitleScreenMixin extends Screen {
 
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
-        if (sirius$uiRenderer != null) {
+        if (sirius$isActive()) {
             return sirius$uiRenderer.charTyped(codePoint, modifiers);
         }
         return super.charTyped(codePoint, modifiers);

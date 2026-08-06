@@ -1,0 +1,102 @@
+{
+  "screen": {
+    "parent": "sirius_ui:screens/screen.json",
+    "graphicsDraw": [
+      {
+        "x": "0",
+        "y": "0",
+        "width": "screen.width",
+        "height": "screen.height",
+        "color": "0xDD0E1014"
+      },
+      {
+        "x": "0",
+        "y": "0",
+        "width": "screen.width",
+        "height": "28",
+        "color": "0xEE111318"
+      },
+      {
+        "x": "0",
+        "y": "28",
+        "width": "screen.width",
+        "height": "1",
+        "color": "0x18222830"
+      },
+      {
+        "x": "0",
+        "y": "screen.height - 32",
+        "width": "screen.width",
+        "height": "1",
+        "color": "0x18222830"
+      },
+      {
+        "x": "0",
+        "y": "screen.height - 31",
+        "width": "screen.width",
+        "height": "31",
+        "color": "0xEE111318"
+      }
+    ],
+    "elements": [
+      {
+        "type": "button",
+        "position": {
+          "x": "4",
+          "y": "4"
+        },
+        "size": {
+          "width": "20",
+          "height": "20"
+        },
+        "texture": {
+          "normal": "sirius_ui:buttons/options/back",
+          "highlighted": "sirius_ui:buttons/options/back_highlighted"
+        },
+        "action": {
+          "type": "close_screen"
+        }
+      },
+      {
+        "type": "text",
+        "position": {
+          "x": "screen.width / 2 - this.width / 2",
+          "y": "6"
+        },
+        "text_key": "selectWorld.gameRules",
+        "color": "0xFFE0E4EA",
+        "shadow": true,
+        "scale": "1.0"
+      },
+      {
+        "type": "dynamic_list",
+        "data_source": "game_rules",
+        "row_height": 28,
+        "gap": 1,
+        "position": {
+          "x": "14",
+          "y": "36"
+        },
+        "size": {
+          "width": "screen.width - 28",
+          "height": "screen.height - 74"
+        },
+        "background_color": "0x00000000",
+        "scrollbar": {
+          "width": 3,
+          "x": "parent.width - 3",
+          "y": "0",
+          "track_color": "0x00000000",
+          "thumb_color": "0x18222830"
+        },
+        "row_template": {
+          "name": { "x": 8, "y": 6, "color": "0xFFE0E4EA" },
+          "description": { "x": 200, "y": 6, "color": "0xFF8A9BB5" },
+          "join_button": {
+            "ref": "sirius_ui:elements/buttons/world/join.json"
+          }
+        }
+      }
+    ]
+  }
+}

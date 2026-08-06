@@ -51,6 +51,19 @@ public class PackDataSource {
         return source;
     }
 
+    public static PackDataSource register(String sourceId, PackRepository repository, Consumer<PackRepository> output) {
+        PackDataSource source = new PackDataSource(sourceId, repository, output);
+        INSTANCES.put(sourceId, source);
+        return source;
+    }
+
+    public static void unregister(String sourceId) {
+        PackDataSource source = INSTANCES.remove(sourceId);
+        if (source != null) {
+            source.closeWatcher();
+        }
+    }
+
     public static void commitAll() {
         for (PackDataSource source : INSTANCES.values()) {
             try {

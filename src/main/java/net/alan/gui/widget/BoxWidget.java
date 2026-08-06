@@ -1,8 +1,8 @@
 package net.alan.gui.widget;
 
 import net.alan.gui.context.RenderContext;
-import net.alan.gui.data.props.LayoutProps;
-import net.alan.gui.data.style.TextureSet;
+import net.alan.gui.data.widget.LayoutProps;
+import net.alan.gui.data.widget.TextureSet;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
@@ -13,11 +13,11 @@ import java.util.*;
 /**
  * BoxWidget - 视图切换容器
  * 
- * 功能：
+ * 功能??
  * - 作为视图切换器，根据 currentId 显示不同的子元素
- * - 支持多个 id 对应不同的 Widget（List、Button 等）
- * - 提供 switchTo() 方法供外部（如 Content 内的 button）切换视图
- * - Content 内的 button 可以执行原 button 的任何功能
+ * - 支持多个 id 对应不同??Widget（List、Button 等）
+ * - 提供 switchTo() 方法供外部（??Content 内的 button）切换视??
+ * - Content 内的 button 可以执行??button 的任何功??
  */
 public class BoxWidget extends BaseWidget {
     private static final Logger LOGGER = LoggerFactory.getLogger(BoxWidget.class);
@@ -54,8 +54,8 @@ public class BoxWidget extends BaseWidget {
     }
 
     /**
-     * 切换到指定 id 的视图
-     * @param id 目标视图的 id
+     * 切换到指??id 的视??
+     * @param id 目标视图??id
      * @return 是否切换成功
      */
     public boolean switchTo(String id) {
@@ -68,7 +68,7 @@ public class BoxWidget extends BaseWidget {
     }
 
     /**
-     * 获取当前视图的 id
+     * 获取当前视图??id
      */
     public String getCurrentId() {
         return currentId;
@@ -109,7 +109,7 @@ public class BoxWidget extends BaseWidget {
         int contentW = dim.w - paddingLeft - paddingRight;
         int contentH = dim.h - paddingTop - paddingBottom;
 
-        // 渲染背景色
+        // 渲染背景??
         if (backgroundColor != null && !backgroundColor.isEmpty()) {
             graphics.fill(boxX, boxY, boxX + dim.w, boxY + dim.h, parseColor(backgroundColor));
         }
@@ -123,10 +123,10 @@ public class BoxWidget extends BaseWidget {
             }
         }
 
-        // 渲染当前元素，铺满内容区域
+        // 渲染当前元素，铺满内容区??
         Widget current = getCurrentElement();
         if (current != null) {
-            // 注入 _box_current_id，供 button_content 判断 selected 状态
+            // 注入 _box_current_id，供 button_content 判断 selected 状??
             RenderContext boxCtx = mergedCtx.withVar("_box_current_id", currentId);
             graphics.enableScissor(contentX, contentY, contentX + contentW, contentY + contentH);
             current.render(graphics, contentX, contentY, contentW, contentH,

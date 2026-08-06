@@ -5,6 +5,7 @@ import net.alan.gui.MainNeo;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
@@ -17,7 +18,8 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
 @EventBusSubscriber(modid = Main.MOD_ID, value = Dist.CLIENT)
 public class MainNeoClient {
-    public MainNeoClient(ModContainer container) {
+    public MainNeoClient(IEventBus modEventBus, ModContainer container) {
+        ModSoundEvents.register(modEventBus);
         // Allows NeoForge to create a config screen for this mod's configs.
         // The config screen is accessed by going to the Mods screen > clicking on your mod > clicking on config.
         // Do not forget to add translations for your config options to the en_us.json file.

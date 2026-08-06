@@ -1,8 +1,9 @@
 package net.alan.gui.widget;
 
 import net.alan.gui.context.RenderContext;
-import net.alan.gui.data.props.EditBoxProps;
-import net.alan.gui.data.props.LayoutProps;
+import net.alan.gui.data.widget.EditBoxProps;
+import net.alan.gui.data.widget.LayoutProps;
+import net.alan.gui.render.screen.BackgroundRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
@@ -13,23 +14,24 @@ import java.util.Map;
 public class StringEditBoxWidget extends BaseWidget {
     private final EditBoxProps props;
     private final EditBox editBox;
+    private final String stateKey;
     private boolean isFocused;
 
     public StringEditBoxWidget(String id, LayoutProps layout, Map<String, String> variables, Map<String, String> member, EditBoxProps props) {
+        this(id, layout, variables, member, props, null);
+    }
+
+    public StringEditBoxWidget(String id, LayoutProps layout, Map<String, String> variables, Map<String, String> member, EditBoxProps props, String stateKey) {
         super(id, layout, variables, member);
         this.props = props;
+        this.stateKey = stateKey;
 
         Minecraft minecraft = Minecraft.getInstance();
         Component hint = props.hint() != null
                 ? Component.translatable(props.hint())
                 : Component.empty();
 
-        int color;
-        try {
-            color = Integer.decode(props.textColor());
-        } catch (NumberFormatException e) {
-            color = 0xE0E0E0;
-        }
+        int color = BackgroundRenderer.parseColor(props.textColor());
 
         this.editBox = new EditBox(minecraft.font, 0, 0, 100, 20, Component.empty());
         this.editBox.setMaxLength(props.maxLength());
@@ -57,6 +59,10 @@ public class StringEditBoxWidget extends BaseWidget {
 
         editBox.setRectangle(dim.w, dim.h, screenX, screenY);
         editBox.render(graphics, mouseX, mouseY, delta);
+
+        if (stateKey != null && mergedCtx.sharedState() != null) {
+            mergedCtx.sharedState().put(stateKey, editBox.getValue());
+        }
     }
 
     @Override
@@ -93,6 +99,9 @@ public class StringEditBoxWidget extends BaseWidget {
     public void setFocused(boolean focused) {
         this.isFocused = focused;
         this.editBox.setFocused(focused);
+        if (focused) {
+            playFocusSound();
+        }
     }
 
     @Override

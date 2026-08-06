@@ -1,15 +1,12 @@
 package net.alan.gui.widget;
 
 import net.alan.gui.context.RenderContext;
-import net.alan.gui.data.props.LayoutProps;
-import net.alan.gui.data.props.StyleProps;
-import net.alan.gui.data.props.TextProps;
+import net.alan.gui.data.widget.LayoutProps;
+import net.alan.gui.data.widget.StyleProps;
+import net.alan.gui.data.widget.TextProps;
 import net.alan.gui.render.ActionExecutor;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -153,9 +150,7 @@ public class ButtonContentWidget extends BaseWidget {
 
         if (mouseX >= screenX && mouseX <= screenX + dim.w &&
                 mouseY >= screenY && mouseY <= screenY + dim.h) {
-            Minecraft.getInstance().getSoundManager().play(
-                    SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F)
-            );
+            playClickSound();
             String resolvedBoxId = evalStringExpr(vars, boxId);
             String resolvedTargetId = evalStringExpr(vars, targetId);
             if (actionExecutor != null && resolvedBoxId != null) {
@@ -199,6 +194,13 @@ public class ButtonContentWidget extends BaseWidget {
         if (!checkCondition(vars)) return;
         int screenX = x + dim.x;
         int screenY = y + dim.y;
+
+        boolean wasHovered = this.isHovered;
+        isHovered = mouseX >= screenX && mouseX <= screenX + dim.w
+                && mouseY >= screenY && mouseY <= screenY + dim.h;
+        if (!wasHovered && this.isHovered) {
+            playHoverSound();
+        }
 
         for (Widget child : children) {
             child.mouseMoved(mouseX, mouseY, mergedCtx, screenX, screenY, dim.w, dim.h);

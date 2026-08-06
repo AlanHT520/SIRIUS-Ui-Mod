@@ -1,13 +1,13 @@
 package net.alan.gui.util;
 
 import com.google.gson.*;
-import net.alan.gui.data.background.BackgroundLayer;
-import net.alan.gui.data.background.PanoramaConfig;
-import net.alan.gui.data.background.Slide;
-import net.alan.gui.data.background.SlideGroup;
+import net.alan.gui.data.screen.BackgroundLayer;
+import net.alan.gui.data.screen.PanoramaConfig;
+import net.alan.gui.data.screen.Slide;
+import net.alan.gui.data.screen.SlideGroup;
 import net.alan.gui.context.ScreenVariableRegistry;
-import net.alan.gui.data.config.ScreenConfig;
-import net.alan.gui.data.config.ScreenLayout;
+import net.alan.gui.data.screen.ScreenConfig;
+import net.alan.gui.data.screen.ScreenLayout;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -121,6 +121,14 @@ public class JsonLoader {
             }
         }
 
+        Map<String, String> sharedState = new LinkedHashMap<>();
+        if (screenObj.has("sharedState") && screenObj.get("sharedState").isJsonObject()) {
+            JsonObject sharedObj = screenObj.getAsJsonObject("sharedState");
+            for (var entry : sharedObj.entrySet()) {
+                sharedState.put(entry.getKey(), entry.getValue().getAsString());
+            }
+        }
+
         ScreenConfig config = new ScreenConfig();
         if (screenObj.has("parent") && screenObj.get("parent").isJsonPrimitive()) {
             config.setParent(screenObj.get("parent").getAsString());
@@ -130,6 +138,7 @@ public class JsonLoader {
         config.setElements(elements);
         config.setVariables(variables);
         config.setMember(member);
+        config.setSharedState(sharedState);
         return config;
     }
 
@@ -157,6 +166,11 @@ public class JsonLoader {
         if (parent.getMember() != null) mergedMember.putAll(parent.getMember());
         if (child.getMember() != null) mergedMember.putAll(child.getMember());
         merged.setMember(mergedMember);
+
+        Map<String, String> mergedSharedState = new LinkedHashMap<>();
+        if (parent.getSharedState() != null) mergedSharedState.putAll(parent.getSharedState());
+        if (child.getSharedState() != null) mergedSharedState.putAll(child.getSharedState());
+        merged.setSharedState(mergedSharedState);
 
         if (child.getParent() != null) merged.setParent(child.getParent());
 

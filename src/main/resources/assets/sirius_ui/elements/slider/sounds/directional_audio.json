@@ -18,4 +18,10 @@
     "highlighted": "sirius_ui:buttons/options/sliders/slider_handle_highlighted",
     "disabled": "sirius_ui:buttons/options/sliders/slider_handle"
   }
+  "sound": {
+    "value_change": {
+      "id": "slider_value_change",
+      "throttle_ticks": 2
+    }
+  }
 }

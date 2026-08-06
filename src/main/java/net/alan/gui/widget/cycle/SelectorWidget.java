@@ -2,19 +2,18 @@ package net.alan.gui.widget.cycle;
 
 import net.alan.gui.context.RenderContext;
 import net.alan.gui.data.CycleValue;
-import net.alan.gui.data.props.LayoutProps;
-import net.alan.gui.data.props.TextProps;
-import net.alan.gui.data.style.TextureSet;
-import net.alan.gui.render.OptionBinder;
+import net.alan.gui.data.widget.LayoutProps;
+import net.alan.gui.data.widget.TextProps;
+import net.alan.gui.data.widget.TextureSet;
+import net.alan.gui.render.screen.BackgroundRenderer;
+import net.alan.gui.render.screen.OptionBinder;
 import net.alan.gui.widget.BaseWidget;
 import net.alan.gui.widget.TextWidget;
 import net.alan.gui.widget.Widget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 
 import java.util.ArrayList;
@@ -27,6 +26,10 @@ public class SelectorWidget extends BaseWidget {
     private final TextureSet containerTexture;
     private final TextProps textProps;
     private final List<Widget> children;
+    private final String stateKey;
+    private final int backgroundColor;
+    private final int selectedColor;
+    private final int highlightedColor;
     private int currentIndex = 0;
     private int hoveredIndex = -1;
     private final Minecraft minecraft;
@@ -45,6 +48,21 @@ public class SelectorWidget extends BaseWidget {
     public SelectorWidget(String id, LayoutProps layout, Map<String, String> variables, Map<String, String> member,
                           String optionKey, List<SegmentDef> segments, TextureSet containerTexture,
                           TextProps textProps, List<Widget> children) {
+        this(id, layout, variables, member, optionKey, segments, containerTexture, textProps, children,
+                null, 0xFF3A3A3C, 0xFF4A6FA5, 0xFF505052);
+    }
+
+    public SelectorWidget(String id, LayoutProps layout, Map<String, String> variables, Map<String, String> member,
+                          String optionKey, List<SegmentDef> segments, TextureSet containerTexture,
+                          TextProps textProps, List<Widget> children, String stateKey) {
+        this(id, layout, variables, member, optionKey, segments, containerTexture, textProps, children,
+                stateKey, 0xFF3A3A3C, 0xFF4A6FA5, 0xFF505052);
+    }
+
+    public SelectorWidget(String id, LayoutProps layout, Map<String, String> variables, Map<String, String> member,
+                          String optionKey, List<SegmentDef> segments, TextureSet containerTexture,
+                          TextProps textProps, List<Widget> children, String stateKey,
+                          int backgroundColor, int selectedColor, int highlightedColor) {
         super(id, layout, variables, member);
         this.optionKey = optionKey;
         this.segments = segments != null ? new ArrayList<>(segments) : new ArrayList<>();
@@ -52,21 +70,48 @@ public class SelectorWidget extends BaseWidget {
         this.textProps = textProps;
         this.children = children != null ? new ArrayList<>(children) : new ArrayList<>();
         this.minecraft = Minecraft.getInstance();
+        this.stateKey = stateKey;
+        this.backgroundColor = backgroundColor;
+        this.selectedColor = selectedColor;
+        this.highlightedColor = highlightedColor;
 
-        if (optionKey != null && !this.segments.isEmpty()) {
-            List<CycleValue> values = this.segments.stream().map(SegmentDef::toCycleValue).toList();
-            int idx = OptionBinder.getCycleOptionIndex(optionKey, values, minecraft.options);
-            this.currentIndex = Mth.clamp(idx, 0, this.segments.size() - 1);
+        if (!this.segments.isEmpty()) {
+            if (optionKey != null) {
+                List<CycleValue> values = this.segments.stream().map(SegmentDef::toCycleValue).toList();
+                int idx = OptionBinder.getCycleOptionIndex(optionKey, values, minecraft.options);
+                this.currentIndex = Mth.clamp(idx, 0, this.segments.size() - 1);
+            } else if (this.member.containsKey("current_index")) {
+                try {
+                    int idx = Integer.parseInt(this.member.get("current_index"));
+                    this.currentIndex = Mth.clamp(idx, 0, this.segments.size() - 1);
+                } catch (NumberFormatException ignored) {
+                    this.currentIndex = 0;
+                }
+            } else {
+                this.currentIndex = 0;
+            }
             this.member.put("current_index", String.valueOf(currentIndex));
+            this.member.put("current_value", this.segments.get(currentIndex).textKey());
+            this.member.put("current_key", this.segments.get(currentIndex).key());
         }
 
-        if (textProps != null) {
-            String xPos = textProps.offsetX() != null ? textProps.offsetX() : "4";
-            String yPos = textProps.offsetY() != null ? textProps.offsetY() : "parent.height / 2 - this.height / 2";
+        if (textProps != null && hasTextContent(textProps)) {
+            String xPos = textProps.offsetX() != null && !textProps.offsetX().equals("0")
+                    ? textProps.offsetX() : "4";
+            String yPos = textProps.offsetY() != null && !textProps.offsetY().equals("0")
+                    ? textProps.offsetY() : "parent.height / 2 - this.height / 2";
             this.children.add(0, new TextWidget(id + "_label",
                     new LayoutProps(xPos, yPos, "auto", "auto", true, true),
                     null, null, textProps));
         }
+    }
+
+    private static boolean hasTextContent(TextProps tp) {
+        if (tp.text() != null && !tp.text().isEmpty() && !tp.text().trim().isEmpty()) return true;
+        if (tp.textKey() != null && !tp.textKey().isEmpty()) return true;
+        if (tp.textKeyDynamic() != null && !tp.textKeyDynamic().isEmpty()) return true;
+        if (tp.textKeyOption() != null && !tp.textKeyOption().isEmpty()) return true;
+        return false;
     }
 
     private int calcLabelWidth() {
@@ -75,12 +120,19 @@ public class SelectorWidget extends BaseWidget {
         return minecraft.font.width(labelComp) + 8;
     }
 
-    private void selectIndex(int index) {
+    private void selectIndex(int index, RenderContext ctx) {
         if (index < 0 || index >= segments.size()) return;
         if (index == currentIndex) return;
         currentIndex = index;
+        String key = segments.get(currentIndex).key();
         this.member.put("current_index", String.valueOf(currentIndex));
+        this.member.put("current_value", segments.get(currentIndex).textKey());
+        this.member.put("current_key", key);
+        if (stateKey != null && ctx != null && ctx.sharedState() != null) {
+            ctx.sharedState().put(stateKey, key);
+        }
         syncToOptions();
+        playValueChangeSound();
     }
 
     private void syncToOptions() {
@@ -139,7 +191,8 @@ public class SelectorWidget extends BaseWidget {
             int textW = minecraft.font.width(text);
             int textX = curX + (segW - textW) / 2;
             int textY = screenY + (dim.h - 8) / 2;
-            graphics.drawString(minecraft.font, text, textX, textY, 0xFFFFFFFF);
+            int textColor = textProps != null ? BackgroundRenderer.parseColor(textProps.color()) : 0xFFFFFFFF;
+            graphics.drawString(minecraft.font, text, textX, textY, textColor);
 
             curX += segW;
         }
@@ -183,11 +236,11 @@ public class SelectorWidget extends BaseWidget {
                                SegmentDef seg, boolean selected, boolean hovered) {
         int bgColor;
         if (selected) {
-            bgColor = 0xFF4A6FA5;
+            bgColor = selectedColor;
         } else if (hovered) {
-            bgColor = 0xFF505052;
+            bgColor = highlightedColor;
         } else {
-            bgColor = 0xFF3A3A3C;
+            bgColor = backgroundColor;
         }
 
         TextureSet tex = seg.texture();
@@ -239,8 +292,8 @@ public class SelectorWidget extends BaseWidget {
 
         int clickedIdx = segmentIndexAt(mouseX, mouseY, segAreaX, segAreaW, screenY, dim.h);
         if (clickedIdx >= 0 && clickedIdx != currentIndex) {
-            minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-            selectIndex(clickedIdx);
+            playClickSound();
+            selectIndex(clickedIdx, mergedCtx);
             return true;
         }
 
@@ -284,7 +337,11 @@ public class SelectorWidget extends BaseWidget {
         int segAreaX = screenX + labelWidth;
         int segAreaW = dim.w - labelWidth;
 
+        int oldHoveredIndex = hoveredIndex;
         hoveredIndex = segmentIndexAt(mouseX, mouseY, segAreaX, segAreaW, screenY, dim.h);
+        if (oldHoveredIndex == -1 && hoveredIndex != -1) {
+            playHoverSound();
+        }
     }
 
     @Override

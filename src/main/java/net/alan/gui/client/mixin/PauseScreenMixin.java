@@ -3,8 +3,9 @@ package net.alan.gui.client.mixin;
 import net.alan.gui.Config;
 import net.alan.gui.Main;
 import net.alan.gui.context.ScreenVariableRegistry;
-import net.alan.gui.data.config.ScreenLayout;
-import net.alan.gui.render.JsonScreenRenderer;
+import net.alan.gui.data.screen.ScreenLayout;
+import net.alan.gui.registry.JsonScreenRegistry;
+import net.alan.gui.render.screen.JsonScreenRenderer;
 import net.alan.gui.util.JsonLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -18,9 +19,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.lang.reflect.Field;
-import java.util.List;
-
 @Mixin(PauseScreen.class)
 public abstract class PauseScreenMixin extends Screen {
 
@@ -33,7 +31,6 @@ public abstract class PauseScreenMixin extends Screen {
 
     @Inject(method = "init", at = @At("TAIL"))
     private void alan$onInit(CallbackInfo ci) {
-        if (!Config.ENABLE_CUSTOM_UI.get()) return;
         PauseScreen screen = (PauseScreen) (Object) this;
         if (!screen.showsPauseMenu()) {
             return;
@@ -42,31 +39,24 @@ public abstract class PauseScreenMixin extends Screen {
         Minecraft client = Minecraft.getInstance();
         ResourceManager resourceManager = client.getResourceManager();
 
-        ScreenLayout layout = JsonLoader.loadScreenLayout(resourceManager,
-                ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "screens/pause_screen.json"));
+        ResourceLocation layoutId = JsonScreenRegistry.getLayoutId("pauseScreen")
+                .orElse(ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "screens/pause_screen.json"));
+        ScreenLayout layout = JsonLoader.loadScreenLayout(resourceManager, layoutId);
 
         if (layout != null) {
-            this.alan$uiRenderer = new JsonScreenRenderer(client, this, layout, "pause_screen");
-            clearOriginalWidgets();
+            String screenId = ScreenVariableRegistry.extractScreenId(layoutId);
+            this.alan$uiRenderer = new JsonScreenRenderer(client, this, layout, screenId);
         }
     }
 
     @Unique
-    private void clearOriginalWidgets() {
-        try {
-            this.children().clear();
-            Field renderablesField = Screen.class.getDeclaredField("renderables");
-            renderablesField.setAccessible(true);
-            List<?> renderables = (List<?>) renderablesField.get(this);
-            renderables.clear();
-        } catch (Exception e) {
-            // ignore
-        }
+    private boolean alan$isActive() {
+        return alan$uiRenderer != null && Config.ENABLE_CUSTOM_UI.get();
     }
 
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private void onRender(GuiGraphics graphics, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        if (alan$uiRenderer != null) {
+        if (alan$isActive()) {
             alan$uiRenderer.render(graphics, mouseX, mouseY, delta);
             ci.cancel();
         }
@@ -74,14 +64,14 @@ public abstract class PauseScreenMixin extends Screen {
 
     @Inject(method = "renderBackground", at = @At("HEAD"), cancellable = true)
     private void onBackground(GuiGraphics graphics, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        if (alan$uiRenderer != null) {
+        if (alan$isActive()) {
             ci.cancel();
         }
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (alan$uiRenderer != null) {
+        if (alan$isActive()) {
             return alan$uiRenderer.mouseClicked(mouseX, mouseY, button);
         }
         return super.mouseClicked(mouseX, mouseY, button);
@@ -89,7 +79,7 @@ public abstract class PauseScreenMixin extends Screen {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (alan$uiRenderer != null) {
+        if (alan$isActive()) {
             return alan$uiRenderer.mouseReleased(mouseX, mouseY, button);
         }
         return super.mouseReleased(mouseX, mouseY, button);
@@ -97,7 +87,7 @@ public abstract class PauseScreenMixin extends Screen {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (alan$uiRenderer != null) {
+        if (alan$isActive()) {
             return alan$uiRenderer.mouseDragged(mouseX, mouseY, button, dragX, dragY);
         }
         return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
@@ -105,7 +95,7 @@ public abstract class PauseScreenMixin extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        if (alan$uiRenderer != null) {
+        if (alan$isActive()) {
             return alan$uiRenderer.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
         }
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
@@ -113,7 +103,7 @@ public abstract class PauseScreenMixin extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (alan$uiRenderer != null) {
+        if (alan$isActive()) {
             return alan$uiRenderer.keyPressed(keyCode, scanCode, modifiers);
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
@@ -121,7 +111,7 @@ public abstract class PauseScreenMixin extends Screen {
 
     @Override
     public boolean charTyped(char codePoint, int modifiers) {
-        if (alan$uiRenderer != null) {
+        if (alan$isActive()) {
             return alan$uiRenderer.charTyped(codePoint, modifiers);
         }
         return super.charTyped(codePoint, modifiers);

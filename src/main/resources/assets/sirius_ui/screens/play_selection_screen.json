@@ -1,4 +1,4 @@
-﻿{
+{
   "screen": {
     "panorama": {
       "type": "image",
@@ -163,7 +163,8 @@
                     "description": { "x": 56, "y": 28, "color": "0xFFAAAAAA" },
                     "edit_button": { "ref": "sirius_ui:elements/buttons/world/edit.json" },
                     "join_button": { "ref": "sirius_ui:elements/buttons/world/join.json" },
-                    "delete_button": { "ref": "sirius_ui:elements/buttons/world/delete.json" }
+                    "delete_button": { "ref": "sirius_ui:elements/buttons/world/delete.json" },
+                    "recreate_button": { "ref": "sirius_ui:elements/buttons/world/recreate.json" }
                   }
                 }
               ]
@@ -188,7 +189,7 @@
                         "button_label": "selectServer.add",
                         "text_color": "0xFFCCCCCC"
                       },
-                      "action": { "type": "open_screen", "screenId": "add_server" }
+                      "action": { "type": "add_server" }
                     },
                     {
                       "ref": "sirius_ui:elements/buttons/default.json",
@@ -199,7 +200,18 @@
                         "button_label": "selectServer.direct",
                         "text_color": "0xFFAAAAAA"
                       },
-                      "action": { "type": "open_screen", "screenId": "direct_connect" }
+                      "action": { "type": "direct_connect" }
+                    },
+                    {
+                      "ref": "sirius_ui:elements/buttons/default.json",
+                      "id": "btn_refresh_servers",
+                      "position": { "x": "parent.width * 0.64 + 24", "y": "0" },
+                      "size": { "width": "parent.width * 0.32", "height": "20" },
+                      "variables": {
+                        "button_label": "selectServer.refresh",
+                        "text_color": "0xFFAAAAAA"
+                      },
+                      "action": { "type": "refresh_servers" }
                     }
                   ]
                 },
@@ -213,6 +225,17 @@
                     "background_color": "0x18FFFFFF",
                     "background_color_alt": "0x0CFFFFFF",
                     "hover_background_color": "0x28FFFFFF"
+                  },
+                  "search": {
+                    "x": 4,
+                    "y": 0,
+                    "width": 200,
+                    "height": 16,
+                    "hint": "selectServer.search",
+                    "max_length": 32,
+                    "bordered": true,
+                    "text_color": "0xE0E0E0",
+                    "hint_color": "0x808080"
                   },
                   "scrollbar": {
                     "track_color": "0x00000000",

@@ -2,19 +2,18 @@ package net.alan.gui.widget.cycle;
 
 import net.alan.gui.context.RenderContext;
 import net.alan.gui.data.CycleValue;
-import net.alan.gui.data.props.LayoutProps;
-import net.alan.gui.data.props.TextProps;
-import net.alan.gui.data.style.TextureSet;
-import net.alan.gui.render.OptionBinder;
+import net.alan.gui.data.widget.LayoutProps;
+import net.alan.gui.data.widget.TextProps;
+import net.alan.gui.data.widget.TextureSet;
+import net.alan.gui.render.screen.BackgroundRenderer;
+import net.alan.gui.render.screen.OptionBinder;
 import net.alan.gui.widget.BaseWidget;
 import net.alan.gui.widget.TextWidget;
 import net.alan.gui.widget.Widget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 
 import java.util.ArrayList;
@@ -29,14 +28,35 @@ public class ArrowSwitchWidget extends BaseWidget {
     private final TextureSet centerTexture;
     private final TextProps textProps;
     private final List<Widget> children;
+    private final String stateKey;
+    private final int backgroundColor;
+    private final int highlightedBackgroundColor;
+    private final int arrowColor;
     private int currentIndex = 0;
-    private int hoveredPart = -1; // -1: none, 0: left, 1: center, 2: right
+    private int hoveredPart = -1;
     private final Minecraft minecraft;
 
     public ArrowSwitchWidget(String id, LayoutProps layout, Map<String, String> variables, Map<String, String> member,
                             String optionKey, List<CycleValue> values,
                             TextureSet leftButtonTexture, TextureSet rightButtonTexture, TextureSet centerTexture,
                             TextProps textProps, List<Widget> children) {
+        this(id, layout, variables, member, optionKey, values, leftButtonTexture, rightButtonTexture, centerTexture,
+                textProps, children, null, 0xFF3A3A3C, 0xFF505052, 0xFFFFFFFF);
+    }
+
+    public ArrowSwitchWidget(String id, LayoutProps layout, Map<String, String> variables, Map<String, String> member,
+                            String optionKey, List<CycleValue> values,
+                            TextureSet leftButtonTexture, TextureSet rightButtonTexture, TextureSet centerTexture,
+                            TextProps textProps, List<Widget> children, String stateKey) {
+        this(id, layout, variables, member, optionKey, values, leftButtonTexture, rightButtonTexture, centerTexture,
+                textProps, children, stateKey, 0xFF3A3A3C, 0xFF505052, 0xFFFFFFFF);
+    }
+
+    public ArrowSwitchWidget(String id, LayoutProps layout, Map<String, String> variables, Map<String, String> member,
+                            String optionKey, List<CycleValue> values,
+                            TextureSet leftButtonTexture, TextureSet rightButtonTexture, TextureSet centerTexture,
+                            TextProps textProps, List<Widget> children, String stateKey,
+                            int backgroundColor, int highlightedBackgroundColor, int arrowColor) {
         super(id, layout, variables, member);
         this.optionKey = optionKey;
         this.values = values != null ? new ArrayList<>(values) : new ArrayList<>();
@@ -46,48 +66,56 @@ public class ArrowSwitchWidget extends BaseWidget {
         this.textProps = textProps;
         this.children = children != null ? new ArrayList<>(children) : new ArrayList<>();
         this.minecraft = Minecraft.getInstance();
+        this.stateKey = stateKey;
+        this.backgroundColor = backgroundColor;
+        this.highlightedBackgroundColor = highlightedBackgroundColor;
+        this.arrowColor = arrowColor;
 
-        if (optionKey != null && !this.values.isEmpty()) {
-            int idx = OptionBinder.getCycleOptionIndex(optionKey, values, minecraft.options);
-            this.currentIndex = Mth.clamp(idx, 0, this.values.size() - 1);
+        if (!this.values.isEmpty()) {
+            if (optionKey != null) {
+                int idx = OptionBinder.getCycleOptionIndex(optionKey, this.values, minecraft.options);
+                this.currentIndex = Mth.clamp(idx, 0, this.values.size() - 1);
+            } else if (this.member.containsKey("current_index")) {
+                try {
+                    int idx = Integer.parseInt(this.member.get("current_index"));
+                    this.currentIndex = Mth.clamp(idx, 0, this.values.size() - 1);
+                } catch (NumberFormatException ignored) {
+                    this.currentIndex = 0;
+                }
+            } else {
+                this.currentIndex = 0;
+            }
             this.member.put("current_value", getCurrentDisplayText());
             this.member.put("current_index", String.valueOf(currentIndex));
+            this.member.put("current_key", this.values.get(currentIndex).key());
         }
-        // 不在构造器里添加 TextWidget，直接在 render 中绘制，避免重复
     }
 
     private String getCurrentDisplayText() {
-        if (values == null || values.isEmpty()) return "?";
+        if (values.isEmpty()) return "?";
         CycleValue cv = values.get(currentIndex);
         return cv.textKey();
     }
 
-    private void cycleValue(int delta) {
-        if (values == null || values.isEmpty()) return;
+    private void cycleValue(int delta, RenderContext ctx) {
+        if (values.isEmpty()) return;
         int size = values.size();
-        currentIndex = Mth.positiveModulo(currentIndex + delta, size);
+        currentIndex = (currentIndex + delta + size) % size;
+        String key = values.get(currentIndex).key();
         this.member.put("current_value", getCurrentDisplayText());
         this.member.put("current_index", String.valueOf(currentIndex));
+        this.member.put("current_key", key);
+        if (stateKey != null && ctx != null && ctx.sharedState() != null) {
+            ctx.sharedState().put(stateKey, key);
+        }
         syncToOptions();
+        playValueChangeSound();
     }
 
     private void syncToOptions() {
         if (optionKey != null && !values.isEmpty()) {
-            CycleValue cv = values.get(currentIndex);
-            if ("default".equalsIgnoreCase(cv.key())) {
-                OptionBinder.resetOptionToDefault(optionKey, minecraft.options);
-            } else {
-                OptionBinder.setCycleOptionValue(optionKey, cv.key(), minecraft.options);
-            }
-            OptionBinder.saveOptions(minecraft.options);
+            OptionBinder.setCycleOptionValue(optionKey, values.get(currentIndex).key(), minecraft.options);
         }
-    }
-
-    @Override
-    public List<Widget> getChildren() { return children; }
-
-    private int getButtonWidth(int totalWidth) {
-        return Math.min(20, totalWidth / 4);
     }
 
     @Override
@@ -109,40 +137,35 @@ public class ArrowSwitchWidget extends BaseWidget {
         int buttonW = getButtonWidth(buttonAreaW);
         int centerW = buttonAreaW - buttonW * 2;
 
-        // 如果有标签文本，在左侧显示
         if (textProps != null && textProps.textKey() != null) {
             Component label = Component.translatable(textProps.textKey());
             int textW = minecraft.font.width(label);
             int textX = screenX;
             int textY = screenY + (dim.h - 8) / 2;
-            graphics.drawString(minecraft.font, label, textX, textY, 0xFFFFFFFF);
+            int labelColor = textProps != null ? BackgroundRenderer.parseColor(textProps.color()) : arrowColor;
+            graphics.drawString(minecraft.font, label, textX, textY, labelColor);
         }
 
         int controlAreaX = screenX + labelWidth;
 
-        // 渲染左键
         renderButton(graphics, controlAreaX, screenY, buttonW, dim.h, leftButtonTexture, 0);
-        // 渲染中间显示区
         renderButton(graphics, controlAreaX + buttonW, screenY, centerW, dim.h, centerTexture, 1);
-        // 渲染右键
         renderButton(graphics, controlAreaX + buttonW + centerW, screenY, buttonW, dim.h, rightButtonTexture, 2);
 
-        // 绘制当前值文本
         if (!values.isEmpty()) {
             CycleValue cv = values.get(currentIndex);
             Component text = Component.translatable(cv.textKey());
             int textW = minecraft.font.width(text);
             int textX = controlAreaX + buttonW + (centerW - textW) / 2;
             int textY = screenY + (dim.h - 8) / 2;
-            graphics.drawString(minecraft.font, text, textX, textY, 0xFFFFFFFF);
+            int textColor = textProps != null ? BackgroundRenderer.parseColor(textProps.color()) : 0xFFFFFFFF;
+            graphics.drawString(minecraft.font, text, textX, textY, textColor);
         }
 
-        // 渲染子元素
         RenderContext childCtx = mergedCtx;
-        if (optionKey != null) {
-            childCtx = mergedCtx.withVar("current_value", getCurrentDisplayText());
-            childCtx = childCtx.withVar("current_index", String.valueOf(currentIndex));
-        }
+        childCtx = childCtx.withVar("current_value", getCurrentDisplayText());
+        childCtx = childCtx.withVar("current_index", String.valueOf(currentIndex));
+        childCtx = childCtx.withVar("current_key", values.isEmpty() ? "" : values.get(currentIndex).key());
         for (Widget child : children) {
             child.render(graphics, screenX, screenY, dim.w, dim.h, childCtx, mouseX, mouseY, delta);
         }
@@ -164,23 +187,20 @@ public class ArrowSwitchWidget extends BaseWidget {
             }
         } else {
             int bgColor;
-            if (partIndex == 1) {
-                bgColor = 0xFF3A3A3C;
-            } else if (partIndex == hoveredPart) {
-                bgColor = 0xFF505052;
+            if (partIndex == hoveredPart) {
+                bgColor = highlightedBackgroundColor;
             } else {
-                bgColor = 0xFF3A3A3C;
+                bgColor = backgroundColor;
             }
             graphics.fill(x, y, x + w, y + h, bgColor);
         }
 
-        // 绘制箭头指示符
         if (w > 10 && h > 10 && (partIndex == 0 || partIndex == 2)) {
             String arrow = partIndex == 0 ? "<" : ">";
             int textWidth = this.minecraft.font.width(arrow);
             int textX = x + (w - textWidth) / 2;
             int textY = y + (h - 8) / 2;
-            graphics.drawString(this.minecraft.font, arrow, textX, textY, 0xFFFFFFFF);
+            graphics.drawString(this.minecraft.font, arrow, textX, textY, arrowColor);
         }
     }
 
@@ -197,14 +217,12 @@ public class ArrowSwitchWidget extends BaseWidget {
         return tex.getNormal();
     }
 
-    private int getPartAt(double mouseX, double mouseY, int screenX, int screenY, int width, int height) {
-        if (mouseX < screenX || mouseX >= screenX + width || mouseY < screenY || mouseY >= screenY + height) {
-            return -1;
-        }
-        int buttonW = getButtonWidth(width);
-        if (mouseX < screenX + buttonW) return 0;
-        if (mouseX >= screenX + width - buttonW) return 2;
-        return 1;
+    private int getButtonWidth(int totalAreaW) {
+        if (totalAreaW <= 0) return 0;
+        int buttonW = totalAreaW / 6;
+        if (buttonW < 10) buttonW = 10;
+        if (buttonW > 40) buttonW = 40;
+        return buttonW;
     }
 
     @Override
@@ -222,91 +240,53 @@ public class ArrowSwitchWidget extends BaseWidget {
         int labelWidth = calcLabelWidth();
         int buttonAreaW = dim.w - labelWidth;
         if (buttonAreaW <= 0) buttonAreaW = dim.w;
+        int buttonW = getButtonWidth(buttonAreaW);
+        int centerW = buttonAreaW - buttonW * 2;
         int controlAreaX = screenX + labelWidth;
 
-        // 先让子元素响应
-        for (int i = children.size() - 1; i >= 0; i--) {
-            Widget child = children.get(i);
-            if (child.mouseClicked(mouseX, mouseY, button, mergedCtx, screenX, screenY, dim.w, dim.h)) {
+        if (mouseY >= screenY && mouseY <= screenY + dim.h) {
+            if (mouseX >= controlAreaX && mouseX <= controlAreaX + buttonW) {
+                playClickSound();
+                cycleValue(-1, context);
                 return true;
             }
-        }
-
-        int part = getPartAt(mouseX, mouseY, controlAreaX, screenY, buttonAreaW, dim.h);
-        if (part >= 0) {
-            minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-            if (part == 0) {
-                cycleValue(-1);
-            } else if (part == 2) {
-                cycleValue(1);
+            if (mouseX >= controlAreaX + buttonW + centerW && mouseX <= controlAreaX + buttonW + centerW + buttonW) {
+                playClickSound();
+                cycleValue(1, context);
+                return true;
             }
-            return true;
         }
         return false;
     }
 
     @Override
-    public void mouseMoved(double mouseX, double mouseY,
-                           RenderContext context, int x, int y, int width, int height) {
-        if (!layout.visible() || !layout.enabled()) return;
-
-        RenderContext mergedCtx = mergeContext(context);
-        WidgetDimension dim = computeLayout(mergedCtx, width, height);
-        Map<String, Integer> vars = buildNumericVars(mergedCtx, width, height, dim.w, dim.h);
-        if (!checkCondition(vars)) return;
+    public void mouseMoved(double mouseX, double mouseY, RenderContext context,
+                             int x, int y, int width, int height) {
+        WidgetDimension dim = computeLayout(mergeContext(context), width, height);
         int screenX = x + dim.x;
         int screenY = y + dim.y;
 
         int labelWidth = calcLabelWidth();
         int buttonAreaW = dim.w - labelWidth;
         if (buttonAreaW <= 0) buttonAreaW = dim.w;
+        int buttonW = getButtonWidth(buttonAreaW);
+        int centerW = buttonAreaW - buttonW * 2;
         int controlAreaX = screenX + labelWidth;
 
-        hoveredPart = getPartAt(mouseX, mouseY, controlAreaX, screenY, buttonAreaW, dim.h);
-
-        for (Widget child : children) {
-            child.mouseMoved(mouseX, mouseY, mergedCtx, screenX, screenY, dim.w, dim.h);
-        }
-    }
-
-    @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button,
-                                 RenderContext context, int x, int y, int width, int height) {
-        if (!layout.visible() || !layout.enabled()) return false;
-
-        RenderContext mergedCtx = mergeContext(context);
-        WidgetDimension dim = computeLayout(mergedCtx, width, height);
-        Map<String, Integer> vars = buildNumericVars(mergedCtx, width, height, dim.w, dim.h);
-        if (!checkCondition(vars)) return false;
-        int screenX = x + dim.x;
-        int screenY = y + dim.y;
-
-        boolean consumed = false;
-        for (Widget child : children) {
-            if (child.mouseReleased(mouseX, mouseY, button, mergedCtx, screenX, screenY, dim.w, dim.h)) {
-                consumed = true;
+        int oldHoveredPart = hoveredPart;
+        if (mouseY >= screenY && mouseY <= screenY + dim.h) {
+            if (mouseX >= controlAreaX && mouseX <= controlAreaX + buttonW) {
+                hoveredPart = 0;
+            } else if (mouseX >= controlAreaX + buttonW + centerW && mouseX <= controlAreaX + buttonW + centerW + buttonW) {
+                hoveredPart = 2;
+            } else {
+                hoveredPart = -1;
             }
+        } else {
+            hoveredPart = -1;
         }
-        return consumed;
-    }
-
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers,
-                              RenderContext context, int x, int y, int width, int height) {
-        if (!layout.visible() || !layout.enabled()) return false;
-
-        RenderContext mergedCtx = mergeContext(context);
-        WidgetDimension dim = computeLayout(mergedCtx, width, height);
-        Map<String, Integer> vars = buildNumericVars(mergedCtx, width, height, dim.w, dim.h);
-        if (!checkCondition(vars)) return false;
-        int screenX = x + dim.x;
-        int screenY = y + dim.y;
-
-        for (Widget child : children) {
-            if (child.keyPressed(keyCode, scanCode, modifiers, mergedCtx, screenX, screenY, dim.w, dim.h)) {
-                return true;
-            }
+        if (oldHoveredPart == -1 && hoveredPart != -1) {
+            playHoverSound();
         }
-        return false;
     }
 }

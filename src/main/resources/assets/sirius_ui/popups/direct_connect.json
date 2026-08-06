@@ -1,0 +1,73 @@
+{
+  "popup": {
+    "type": "dialog",
+    "modal": true,
+    "width": 320,
+    "min_height": 120,
+    "padding": 16,
+    "overlay": "0xCC0A0A0A",
+    "background": "0xE6202020",
+    "border": "0xFF505050",
+    "has_inputs": true,
+    "variables": {
+      "title": "",
+      "confirm_text": "gui.proceed",
+      "cancel_text": "gui.cancel",
+      "confirm_action": ""
+    },
+    "inputs": [
+      {
+        "id": "address",
+        "label": "selectServer.enterIp",
+        "default": "",
+        "hint": "IP:Port",
+        "max_length": 128
+      }
+    ],
+    "elements": [
+      {
+        "type": "text",
+        "id": "popup_title",
+        "position": { "x": "0", "y": "4" },
+        "size": { "width": "screen.width", "height": "14" },
+        "text": {
+          "text": "{title}",
+          "color": "0xFFFFFFFF",
+          "shadow": true,
+          "scale": 1.2
+        },
+        "align": "center"
+      },
+      {
+        "type": "button",
+        "id": "btn_cancel",
+        "position": { "x": "screen.width / 2 - 124", "y": "screen.height - 28" },
+        "size": { "width": "120", "height": "22" },
+        "texture": {
+          "normal": "sirius_ui:buttons/default_button",
+          "highlighted": "sirius_ui:buttons/default_button_highlighted"
+        },
+        "text": {
+          "text": "{cancel_text}",
+          "color": "0xFFCCCCCC"
+        },
+        "action": { "type": "dismiss_popup" }
+      },
+      {
+        "type": "button",
+        "id": "btn_confirm",
+        "position": { "x": "screen.width / 2 + 4", "y": "screen.height - 28" },
+        "size": { "width": "120", "height": "22" },
+        "texture": {
+          "normal": "sirius_ui:buttons/default_button",
+          "highlighted": "sirius_ui:buttons/default_button_highlighted"
+        },
+        "text": {
+          "text": "{confirm_text}",
+          "color": "0xFFFFFFFF"
+        },
+        "action": { "type": "{confirm_action}" }
+      }
+    ]
+  }
+}

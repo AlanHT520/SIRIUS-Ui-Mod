@@ -1,0 +1,11 @@
+{
+  "slider_value_change": {
+    "subtitle": "sirius_ui.subtitle.slider_value_change",
+    "sounds": [
+      {
+        "name": "sirius_ui:slider_value_change",
+        "volume": 0.3
+      }
+    ]
+  }
+}

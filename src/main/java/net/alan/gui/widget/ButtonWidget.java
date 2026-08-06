@@ -1,16 +1,14 @@
 package net.alan.gui.widget;
 
 import net.alan.gui.context.RenderContext;
-import net.alan.gui.data.action.Action;
-import net.alan.gui.data.props.LayoutProps;
-import net.alan.gui.data.props.StyleProps;
-import net.alan.gui.data.props.TextProps;
+import net.alan.gui.data.Action;
+import net.alan.gui.data.widget.LayoutProps;
+import net.alan.gui.data.widget.StyleProps;
+import net.alan.gui.data.widget.TextProps;
 import net.alan.gui.render.ActionExecutor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,8 +43,8 @@ public class ButtonWidget extends BaseWidget {
         this.children = new ArrayList<>();
         this.ingDuration = ingDuration;
         this.stateVariables = stateVariables;
-        // 将 textProps 转为 TextWidget child（快捷方式，兼容旧写法）
-        // 默认居中，可通过 text 块内的 "position" 覆盖
+        // ??textProps 转为 TextWidget child（快捷方式，兼容旧写法）
+        // 默认居中，可通过 text 块内??"position" 覆盖
         if (textProps != null) {
             String xPos = textProps.offsetX() != null && !textProps.offsetX().equals("0")
                     ? textProps.offsetX() : "parent.width / 2 - this.width / 2";
@@ -119,13 +117,13 @@ public class ButtonWidget extends BaseWidget {
 
         RenderContext mergedCtx = mergeContext(context);
 
-        // 根据当前状态应用 state_variables 覆盖
+        // 根据当前状态应??state_variables 覆盖
         Map<String, String> stateOverrides = getStateOverrides();
         if (stateOverrides != null) {
             mergedCtx = mergedCtx.withVars(stateOverrides);
         }
 
-        // 注入 _button_state 供子元素的 state_v 使用
+        // 注入 _button_state 供子元素??state_v 使用
         mergedCtx = mergedCtx.withVar("_button_state", getCurrentState());
 
         WidgetDimension dim = computeLayout(mergedCtx, width, height);
@@ -152,7 +150,7 @@ public class ButtonWidget extends BaseWidget {
             }
         }
 
-        // ing 状态计时：持续时间结束后触发 action
+        // ing 状态计时：持续时间结束后触??action
         if (isIng) {
             ingTimer += Minecraft.getInstance().getTimer().getRealtimeDeltaTicks();
             if (ingTimer >= ingDuration) {
@@ -167,7 +165,7 @@ public class ButtonWidget extends BaseWidget {
             }
         }
 
-        // 渲染子元素（文本通过 text 快捷方式转为 TextWidget child）
+        // 渲染子元素（文本通过 text 快捷方式转为 TextWidget child??
         for (Widget child : children) {
             child.render(graphics, screenX, screenY, dim.w, dim.h, mergedCtx, mouseX, mouseY, delta);
         }
@@ -198,9 +196,7 @@ public class ButtonWidget extends BaseWidget {
         if (mouseX >= screenX && mouseX <= screenX + dim.w &&
                 mouseY >= screenY && mouseY <= screenY + dim.h) {
             LOGGER.info("Button {} clicked!", id);
-            Minecraft.getInstance().getSoundManager().play(
-                    SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F)
-            );
+            playClickSound();
             if (ingDuration > 0) {
                 if (currentIngButton != null && currentIngButton != this) {
                     currentIngButton.cancelIng();

@@ -38,7 +38,7 @@
       { "ref": "sirius_ui:elements/buttons/selector/controls/raw_mouse_input.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
     ]},
     { "height": 20, "children": [
-      { "type": "button", "text_key": "controls.keybinds", "position": { "x": "this.elem_x" }, "size": { "width": "this.elem_w", "height": 20 },
+      { "type": "button", "text_key": "controls.keybinds", "position": { "x": "elem_x" }, "size": { "width": "elem_w", "height": 20 },
         "texture": {
           "normal": "sirius_ui:buttons/default_button",
           "highlighted": "sirius_ui:buttons/default_button_highlighted",

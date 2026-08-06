@@ -8,6 +8,8 @@ import java.util.function.Function;
 public class ExpressionEvaluator {
     private static final Map<String, Expression> CACHE = new ConcurrentHashMap<>();
     private static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger(ExpressionEvaluator.class);
+    private static final ThreadLocal<Map<String, Integer>> VAR_POOL =
+            ThreadLocal.withInitial(HashMap::new);
 
     public static int eval(String expr, int screenWidth, int screenHeight,
                            int elementWidth, int elementHeight) {
@@ -27,7 +29,8 @@ public class ExpressionEvaluator {
             return screenHeight - elementHeight - offset;
         }
 
-        Map<String, Integer> vars = new HashMap<>();
+        Map<String, Integer> vars = VAR_POOL.get();
+        vars.clear();
         vars.put("screen.width", screenWidth);
         vars.put("screen.height", screenHeight);
         vars.put("this.width", elementWidth);

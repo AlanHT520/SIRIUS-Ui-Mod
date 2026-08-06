@@ -64,4 +64,8 @@ public interface Widget {
                                RenderContext context, int mouseX, int mouseY, float delta) {}
 
     default boolean hasOverlay() { return false; }
+
+    default RenderContext mergeRenderContext(RenderContext ctx) {
+        return ctx;
+    }
 }

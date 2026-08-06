@@ -1,10 +1,10 @@
 package net.alan.gui.widget;
 
 import net.alan.gui.context.RenderContext;
-import net.alan.gui.data.props.LayoutProps;
-import net.alan.gui.data.props.ListProps;
-import net.alan.gui.data.style.TextureSet;
-import net.alan.gui.render.BackgroundRenderer;
+import net.alan.gui.data.widget.LayoutProps;
+import net.alan.gui.data.widget.ListProps;
+import net.alan.gui.data.widget.TextureSet;
+import net.alan.gui.render.screen.BackgroundRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
@@ -42,12 +42,7 @@ public class ListWidget extends BaseWidget {
                     ? Component.translatable(sd.hint())
                     : Component.empty();
 
-            int color;
-            try {
-                color = Integer.decode(sd.textColor() != null ? sd.textColor() : "0xE0E0E0");
-            } catch (NumberFormatException e) {
-                color = 0xE0E0E0;
-            }
+            int color = BackgroundRenderer.parseColor(sd.textColor() != null ? sd.textColor() : "0xE0E0E0");
 
             this.searchBox = new EditBox(minecraft.font, 0, 0, 100, 20, Component.empty());
             this.searchBox.setMaxLength(sd.maxLength() > 0 ? sd.maxLength() : 32);
@@ -133,7 +128,7 @@ public class ListWidget extends BaseWidget {
 
         int currentY = listY - (int) scrollAmount;
         int rowIndex = 0;
-        // 记录有 overlay 的 widget 位置，在 scissor 外渲染
+        // 记录??overlay ??widget 位置，在 scissor 外渲??
         List<OverlayEntry> overlays = new ArrayList<>();
         for (RowDef row : visibleRows) {
             int rowTop = currentY;
@@ -157,7 +152,7 @@ public class ListWidget extends BaseWidget {
 
         graphics.disableScissor();
 
-        // 渲染叠加层（如 dropdown 展开菜单，需要出现在 scissor 之外）
+        // 渲染叠加层（??dropdown 展开菜单，需要出现在 scissor 之外??
         for (OverlayEntry entry : overlays) {
             entry.widget.renderOverlay(graphics, listX, entry.rowY, dim.w, 0,
                     mergedCtx, mouseX, mouseY, delta);
@@ -442,7 +437,7 @@ public class ListWidget extends BaseWidget {
 
         List<RowDef> visibleRows = getVisibleRows();
         double maxScroll = getMaxScroll(dim.h, visibleRows);
-        // 修正：滚轮向上 scrollY>0 时减少滚动量（内容向下移动）
+        // 修正：滚轮向??scrollY>0 时减少滚动量（内容向下移动）
         scrollAmount = Math.max(0, Math.min(scrollAmount - scrollY * 36, maxScroll));
         return true;
     }
@@ -456,6 +451,25 @@ public class ListWidget extends BaseWidget {
             return searchBox.keyPressed(keyCode, scanCode, modifiers);
         }
 
+        RenderContext mergedCtx = mergeContext(context);
+        WidgetDimension dim = computeLayout(mergedCtx, width, height);
+        Map<String, Integer> vars = buildNumericVars(mergedCtx, width, height, dim.w, dim.h);
+        if (!checkCondition(vars)) return false;
+        int listX = x + dim.x;
+        int listY = y + dim.y;
+
+        List<RowDef> visibleRows = getVisibleRows();
+        int currentY = listY - (int) scrollAmount;
+        for (RowDef row : visibleRows) {
+            if (row.children != null) {
+                for (Widget child : row.children) {
+                    if (child.keyPressed(keyCode, scanCode, modifiers, mergedCtx, listX, currentY, dim.w, row.height)) {
+                        return true;
+                    }
+                }
+            }
+            currentY += row.height + props.gap();
+        }
         return false;
     }
 
@@ -467,7 +481,41 @@ public class ListWidget extends BaseWidget {
         if (searchBox != null && searchBox.isFocused()) {
             return searchBox.charTyped(codePoint, modifiers);
         }
+
+        RenderContext mergedCtx = mergeContext(context);
+        WidgetDimension dim = computeLayout(mergedCtx, width, height);
+        Map<String, Integer> vars = buildNumericVars(mergedCtx, width, height, dim.w, dim.h);
+        if (!checkCondition(vars)) return false;
+        int listX = x + dim.x;
+        int listY = y + dim.y;
+
+        List<RowDef> visibleRows = getVisibleRows();
+        int currentY = listY - (int) scrollAmount;
+        for (RowDef row : visibleRows) {
+            if (row.children != null) {
+                for (Widget child : row.children) {
+                    if (child.charTyped(codePoint, modifiers, mergedCtx, listX, currentY, dim.w, row.height)) {
+                        return true;
+                    }
+                }
+            }
+            currentY += row.height + props.gap();
+        }
         return false;
+    }
+
+    @Override
+    public void setFocused(boolean focused) {
+        if (!focused) {
+            List<RowDef> visibleRows = getVisibleRows();
+            for (RowDef row : visibleRows) {
+                if (row.children != null) {
+                    for (Widget child : row.children) {
+                        child.setFocused(false);
+                    }
+                }
+            }
+        }
     }
 
     public record RowDef(

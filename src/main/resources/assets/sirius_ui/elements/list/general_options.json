@@ -24,7 +24,7 @@
       { "ref": "sirius_ui:elements/buttons/arrow_switch/general/difficult_cycle.json", "filter_key": "options.difficulty", "text": {}, "condition": "game.in_level", "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
     ]},
     { "height": 22, "children": [
-      { "type": "button", "text_key": "options.language", "position": { "x": "this.elem_x" }, "size": { "width": "(this.elem_w - 5) / 2", "height": 20 },
+      { "type": "button", "text_key": "options.language", "position": { "x": "elem_x" }, "size": { "width": "(elem_w - 5) / 2", "height": 20 },
         "texture": {
           "normal": "sirius_ui:buttons/default_button",
           "highlighted": "sirius_ui:buttons/default_button_highlighted",
@@ -32,7 +32,7 @@
         },
         "action": { "type": "open_screen", "screenId": "language" }
       },
-      { "type": "button", "text_key": "Mods", "position": { "x": "this.elem_x + (this.elem_w - 5) / 2 + 5" }, "size": { "width": "(this.elem_w - 5) / 2", "height": 20 },
+      { "type": "button", "text_key": "Mods", "position": { "x": "elem_x + (elem_w - 5) / 2 + 5" }, "size": { "width": "(elem_w - 5) / 2", "height": 20 },
         "texture": {
           "normal": "sirius_ui:buttons/default_button",
           "highlighted": "sirius_ui:buttons/default_button_highlighted",

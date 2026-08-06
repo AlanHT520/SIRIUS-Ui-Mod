@@ -6,21 +6,25 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.alan.gui.context.RenderContext;
 import net.alan.gui.context.WidgetDimensionRegistry;
 import net.alan.gui.data.DynamicListData;
-import net.alan.gui.data.action.Action;
-import net.alan.gui.data.props.DynamicListStyleConfig;
-import net.alan.gui.data.props.LayoutProps;
-import net.alan.gui.factory.WidgetFactory;
+import net.alan.gui.data.Action;
+import net.alan.gui.data.widget.DynamicListStyleConfig;
+import net.alan.gui.data.widget.LayoutProps;
+import net.alan.gui.widget.WidgetFactory;
 import net.alan.gui.render.ActionExecutor;
+import net.alan.gui.render.screen.BackgroundRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class DynamicListWidget extends BaseWidget {
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamicListWidget.class);
@@ -34,6 +38,7 @@ public class DynamicListWidget extends BaseWidget {
     private final JsonObject editBtnTemplate;
     private final JsonObject joinBtnTemplate;
     private final JsonObject deleteBtnTemplate;
+    private final JsonObject recreateBtnTemplate;
     private List<DynamicListData> rows;
     private double scrollAmount;
     private boolean scrolling;
@@ -44,6 +49,15 @@ public class DynamicListWidget extends BaseWidget {
     private final Map<Integer, ButtonWidget> joinButtons = new HashMap<>();
     private final Map<Integer, ButtonWidget> deleteButtons = new HashMap<>();
     private final Map<Integer, ButtonWidget> editButtons = new HashMap<>();
+    private final Map<Integer, ButtonWidget> recreateButtons = new HashMap<>();
+
+    private EditBox searchBox;
+    private String filterText = "";
+    private boolean searchEnabled = false;
+    private int searchBoxX;
+    private int searchBoxY;
+    private int searchBoxW;
+    private int searchBoxH;
 
     public DynamicListWidget(String id, LayoutProps layout, Map<String, String> variables,
                              Map<String, String> member, Supplier<List<DynamicListData>> dataSource,
@@ -51,7 +65,7 @@ public class DynamicListWidget extends BaseWidget {
                              String backgroundColor,
                              JsonObject rowTemplate, DynamicListStyleConfig styleConfig,
                              JsonObject editBtnTemplate, JsonObject joinBtnTemplate,
-                             JsonObject deleteBtnTemplate) {
+                             JsonObject deleteBtnTemplate, JsonObject recreateBtnTemplate) {
         super(id, layout, variables, member);
         this.dataSource = dataSource;
         this.executor = executor;
@@ -63,6 +77,7 @@ public class DynamicListWidget extends BaseWidget {
         this.editBtnTemplate = editBtnTemplate;
         this.joinBtnTemplate = joinBtnTemplate;
         this.deleteBtnTemplate = deleteBtnTemplate;
+        this.recreateBtnTemplate = recreateBtnTemplate;
         this.rows = new ArrayList<>();
         registerButtonTemplateDimensions();
         executor.addRefreshCallback(this::reload);
@@ -76,23 +91,60 @@ public class DynamicListWidget extends BaseWidget {
         rebuildButtons();
     }
 
+    public void enableSearch(int x, int y, int w, int h, String hint, String initialValue,
+                              int maxLength, boolean bordered, String textColor, String hintColor) {
+        this.searchEnabled = true;
+        this.searchBoxX = x;
+        this.searchBoxY = y;
+        this.searchBoxW = w;
+        this.searchBoxH = h;
+        Minecraft mc = Minecraft.getInstance();
+        Component hintComponent = hint != null && !hint.isEmpty()
+                ? Component.translatable(hint) : Component.empty();
+        int textCol = BackgroundRenderer.parseColor(textColor);
+        this.searchBox = new EditBox(mc.font, 0, 0, w, h, Component.empty());
+        this.searchBox.setMaxLength(maxLength);
+        this.searchBox.setBordered(bordered);
+        this.searchBox.setHint(hintComponent);
+        this.searchBox.setValue(initialValue != null ? initialValue : "");
+        this.searchBox.setTextColor(textCol);
+        this.searchBox.setResponder(text -> {
+            this.filterText = text != null ? text.toLowerCase() : "";
+            this.scrollAmount = 0;
+        });
+    }
+
+    private List<DynamicListData> getVisibleRows() {
+        if (filterText.isEmpty()) return rows;
+        return rows.stream()
+                .filter(r -> r.getName().toLowerCase().contains(filterText)
+                        || (r.getDescription() != null && r.getDescription().toLowerCase().contains(filterText))
+                        || (r.getMotd() != null && r.getMotd().toLowerCase().contains(filterText)))
+                .collect(Collectors.toList());
+    }
+
     private void rebuildButtons() {
         joinButtons.clear();
         deleteButtons.clear();
         editButtons.clear();
+        recreateButtons.clear();
         for (int i = 0; i < rows.size(); i++) {
             DynamicListData data = rows.get(i);
-            if (joinBtnTemplate != null) {
+            if (joinBtnTemplate != null && data.isJoinable() && !data.isLocked()) {
                 ButtonWidget btn = createButtonForRow(joinBtnTemplate, data, i, "join");
                 if (btn != null) joinButtons.put(i, btn);
             }
-            if (deleteBtnTemplate != null) {
+            if (deleteBtnTemplate != null && data.canDelete()) {
                 ButtonWidget btn = createButtonForRow(deleteBtnTemplate, data, i, "delete");
                 if (btn != null) deleteButtons.put(i, btn);
             }
-            if (editBtnTemplate != null && data.isJoinable()) {
+            if (editBtnTemplate != null && data.canEdit()) {
                 ButtonWidget btn = createButtonForRow(editBtnTemplate, data, i, "edit");
                 if (btn != null) editButtons.put(i, btn);
+            }
+            if (recreateBtnTemplate != null && data.canRecreate()) {
+                ButtonWidget btn = createButtonForRow(recreateBtnTemplate, data, i, "recreate");
+                if (btn != null) recreateButtons.put(i, btn);
             }
         }
     }
@@ -126,9 +178,10 @@ public class DynamicListWidget extends BaseWidget {
     }
 
     private void registerButtonTemplateDimensions() {
-        registerTemplateDim("join_button", joinBtnTemplate, 50, 18);
-        registerTemplateDim("delete_button", deleteBtnTemplate, 36, 20);
-        registerTemplateDim("edit_button", editBtnTemplate, 36, 20);
+        registerTemplateDim("join_button", joinBtnTemplate, 16, 16);
+        registerTemplateDim("delete_button", deleteBtnTemplate, 16, 16);
+        registerTemplateDim("edit_button", editBtnTemplate, 16, 16);
+        registerTemplateDim("recreate_button", recreateBtnTemplate, 16, 16);
     }
 
     private void registerTemplateDim(String name, JsonObject template, int defaultW, int defaultH) {
@@ -162,6 +215,9 @@ public class DynamicListWidget extends BaseWidget {
             case "edit":
                 action.setType("edit_" + data.getActionType().replace("join_", ""));
                 break;
+            case "recreate":
+                action.setType("recreate_" + data.getActionType().replace("join_", ""));
+                break;
             default:
                 action.setType(templateAction.getType());
                 break;
@@ -177,10 +233,11 @@ public class DynamicListWidget extends BaseWidget {
     }
 
     private int getTotalContentHeight() {
-        if (rows.isEmpty()) return 0;
+        List<DynamicListData> visible = getVisibleRows();
+        if (visible.isEmpty()) return 0;
         int dividerH = (styleConfig != null && styleConfig.divider() != null)
                 ? styleConfig.divider().height : 0;
-        return rows.size() * rowHeight + (rows.size() - 1) * (gap + dividerH);
+        return visible.size() * rowHeight + (visible.size() - 1) * (gap + dividerH);
     }
 
     @Override
@@ -202,14 +259,26 @@ public class DynamicListWidget extends BaseWidget {
             } catch (NumberFormatException ignored) {}
         }
 
+        int searchOffset = 0;
+        if (searchEnabled && searchBox != null) {
+            searchOffset = searchBoxH + 4;
+            searchBox.setRectangle(Math.max(1, searchBoxW), Math.max(1, searchBoxH),
+                    listX + searchBoxX, listY + searchBoxY);
+            searchBox.render(graphics, mouseX, mouseY, delta);
+        }
+
+        int listContentY = listY + searchOffset;
+        int listContentH = dim.h - searchOffset;
+
+        List<DynamicListData> visibleRows = getVisibleRows();
         int totalH = getTotalContentHeight();
-        double maxScroll = Math.max(0, totalH - dim.h);
+        double maxScroll = Math.max(0, totalH - listContentH);
         scrollAmount = Math.max(0, Math.min(scrollAmount, maxScroll));
 
-        graphics.enableScissor(listX, listY, listX + dim.w, listY + dim.h);
+        graphics.enableScissor(listX, listContentY, listX + dim.w, listContentY + listContentH);
 
         Minecraft mc = Minecraft.getInstance();
-        int currentY = listY - (int) scrollAmount;
+        int currentY = listContentY - (int) scrollAmount;
         hoveredRowIndex = -1;
 
         DynamicListStyleConfig.RowStyleConfig rowStyle = styleConfig != null
@@ -219,12 +288,12 @@ public class DynamicListWidget extends BaseWidget {
         int dividerH = dividerCfg != null ? dividerCfg.height : 0;
         int dividerColor = dividerCfg != null ? parseColor(dividerCfg.color) : 0;
 
-        for (int i = 0; i < rows.size(); i++) {
+        for (int i = 0; i < visibleRows.size(); i++) {
             int rowTop = currentY;
             int rowBottom = currentY + rowHeight;
 
-            if (rowBottom > listY && rowTop < listY + dim.h) {
-                DynamicListData data = rows.get(i);
+            if (rowBottom > listContentY && rowTop < listContentY + listContentH) {
+                DynamicListData data = visibleRows.get(i);
 
                 boolean mouseOnRow = mouseX >= listX && mouseX <= listX + dim.w
                         && mouseY >= rowTop && mouseY <= rowBottom;
@@ -251,7 +320,7 @@ public class DynamicListWidget extends BaseWidget {
                     }
                 }
 
-                if (dividerH > 0 && dividerColor != 0 && i < rows.size() - 1) {
+                if (dividerH > 0 && dividerColor != 0 && i < visibleRows.size() - 1) {
                     graphics.fill(listX, rowBottom, listX + dim.w, rowBottom + dividerH, dividerColor);
                 }
 
@@ -335,10 +404,10 @@ public class DynamicListWidget extends BaseWidget {
             int sbX = listX + dim.w - sbW;
             int sbTrackColor = sb != null ? parseColor(sb.track_color) : 0x33000000;
             int sbThumbColor = sb != null ? parseColor(sb.thumb_color) : 0xAAFFFFFF;
-            int barH = (int) (dim.h * dim.h / (dim.h + maxScroll));
-            barH = Math.max(16, Math.min(barH, dim.h - 8));
-            int barY = listY + (int) (scrollAmount * (dim.h - barH) / maxScroll);
-            graphics.fill(sbX, listY, sbX + sbW, listY + dim.h, sbTrackColor);
+            int barH = (int) (listContentH * listContentH / (double)(listContentH + maxScroll));
+            barH = Math.max(16, Math.min(barH, listContentH - 8));
+            int barY = listContentY + (int) (scrollAmount * (listContentH - barH) / maxScroll);
+            graphics.fill(sbX, listContentY, sbX + sbW, listContentY + listContentH, sbTrackColor);
             graphics.fill(sbX, barY, sbX + sbW, barY + barH, sbThumbColor);
         }
     }
@@ -385,20 +454,33 @@ public class DynamicListWidget extends BaseWidget {
         if (!checkCondition(vars)) return false;
         int screenX = x + dim.x;
         int screenY = y + dim.y;
+
+        if (searchEnabled && searchBox != null) {
+            if (mouseX >= screenX + searchBoxX && mouseX <= screenX + searchBoxX + searchBoxW
+                    && mouseY >= screenY + searchBoxY && mouseY <= screenY + searchBoxY + searchBoxH) {
+                searchBox.setFocused(true);
+                return true;
+            }
+        }
+
+        int searchOffset = searchEnabled ? searchBoxH + 4 : 0;
+        int listContentY = screenY + searchOffset;
+
         if (mouseX < screenX || mouseX > screenX + dim.w
-                || mouseY < screenY || mouseY > screenY + dim.h) {
+                || mouseY < listContentY || mouseY > screenY + dim.h) {
             return false;
         }
 
-        int currentY = screenY - (int) scrollAmount;
+        List<DynamicListData> visibleRows = getVisibleRows();
+        int currentY = listContentY - (int) scrollAmount;
         int dividerH = (styleConfig != null && styleConfig.divider() != null)
                 ? styleConfig.divider().height : 0;
 
-        for (int i = 0; i < rows.size(); i++) {
+        for (int i = 0; i < visibleRows.size(); i++) {
             int rowTop = currentY;
             int rowBottom = currentY + rowHeight;
 
-            if (rowBottom > screenY && rowTop < screenY + dim.h) {
+            if (rowBottom > listContentY && rowTop < screenY + dim.h) {
                 ButtonWidget joinBtn = joinButtons.get(i);
                 if (joinBtn != null && joinBtn.mouseClicked(mouseX, mouseY, button,
                         mergedCtx, screenX, rowTop, dim.w, rowHeight)) {
@@ -411,6 +493,11 @@ public class DynamicListWidget extends BaseWidget {
                 }
                 ButtonWidget editBtn = editButtons.get(i);
                 if (editBtn != null && editBtn.mouseClicked(mouseX, mouseY, button,
+                        mergedCtx, screenX, rowTop, dim.w, rowHeight)) {
+                    return true;
+                }
+                ButtonWidget recreateBtn = recreateButtons.get(i);
+                if (recreateBtn != null && recreateBtn.mouseClicked(mouseX, mouseY, button,
                         mergedCtx, screenX, rowTop, dim.w, rowHeight)) {
                     return true;
                 }
@@ -451,6 +538,33 @@ public class DynamicListWidget extends BaseWidget {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers,
+                              RenderContext context, int x, int y, int width, int height) {
+        if (!layout.visible() || !layout.enabled()) return false;
+        if (searchEnabled && searchBox != null && searchBox.isFocused()) {
+            return searchBox.keyPressed(keyCode, scanCode, modifiers);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean charTyped(char codePoint, int modifiers,
+                             RenderContext context, int x, int y, int width, int height) {
+        if (!layout.visible() || !layout.enabled()) return false;
+        if (searchEnabled && searchBox != null && searchBox.isFocused()) {
+            return searchBox.charTyped(codePoint, modifiers);
+        }
+        return false;
+    }
+
+    @Override
+    public void setFocused(boolean focused) {
+        if (!focused && searchBox != null) {
+            searchBox.setFocused(false);
+        }
     }
 
     private static int getJsonInt(JsonObject parent, String key, String subKey, int defaultValue) {

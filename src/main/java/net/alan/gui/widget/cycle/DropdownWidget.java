@@ -8,19 +8,17 @@ package net.alan.gui.widget.cycle;
 
 import net.alan.gui.context.RenderContext;
 import net.alan.gui.data.CycleValue;
-import net.alan.gui.data.props.LayoutProps;
-import net.alan.gui.data.props.TextProps;
-import net.alan.gui.data.style.TextureSet;
-import net.alan.gui.render.OptionBinder;
+import net.alan.gui.data.widget.LayoutProps;
+import net.alan.gui.data.widget.TextProps;
+import net.alan.gui.data.widget.TextureSet;
+import net.alan.gui.render.screen.OptionBinder;
 import net.alan.gui.widget.BaseWidget;
 import net.alan.gui.widget.TextWidget;
 import net.alan.gui.widget.Widget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 
 import java.util.ArrayList;
@@ -36,6 +34,7 @@ public class DropdownWidget extends BaseWidget {
     private final TextureSet itemHighlightedTexture;
     private final TextProps textProps;
     private final List<Widget> children;
+    private final String stateKey;
     private int currentIndex = 0;
     private int hoveredIndex = -1;
     private boolean expanded = false;
@@ -46,6 +45,14 @@ public class DropdownWidget extends BaseWidget {
                           TextureSet buttonTexture, TextureSet dropdownTexture,
                           TextureSet itemNormalTexture, TextureSet itemHighlightedTexture,
                           TextProps textProps, List<Widget> children) {
+        this(id, layout, variables, member, optionKey, values, buttonTexture, dropdownTexture, itemNormalTexture, itemHighlightedTexture, textProps, children, null);
+    }
+
+    public DropdownWidget(String id, LayoutProps layout, Map<String, String> variables, Map<String, String> member,
+                          String optionKey, List<CycleValue> values,
+                          TextureSet buttonTexture, TextureSet dropdownTexture,
+                          TextureSet itemNormalTexture, TextureSet itemHighlightedTexture,
+                          TextProps textProps, List<Widget> children, String stateKey) {
         super(id, layout, variables, member);
         this.optionKey = optionKey;
         this.values = values != null ? new ArrayList<>(values) : new ArrayList<>();
@@ -56,14 +63,27 @@ public class DropdownWidget extends BaseWidget {
         this.textProps = textProps;
         this.children = children != null ? new ArrayList<>(children) : new ArrayList<>();
         this.minecraft = Minecraft.getInstance();
+        this.stateKey = stateKey;
 
-        if (optionKey != null && !this.values.isEmpty()) {
-            int idx = OptionBinder.getCycleOptionIndex(optionKey, values, minecraft.options);
-            this.currentIndex = Mth.clamp(idx, 0, this.values.size() - 1);
+        if (!this.values.isEmpty()) {
+            if (optionKey != null) {
+                int idx = OptionBinder.getCycleOptionIndex(optionKey, values, minecraft.options);
+                this.currentIndex = Mth.clamp(idx, 0, this.values.size() - 1);
+            } else if (this.member.containsKey("current_index")) {
+                try {
+                    int idx = Integer.parseInt(this.member.get("current_index"));
+                    this.currentIndex = Mth.clamp(idx, 0, this.values.size() - 1);
+                } catch (NumberFormatException ignored) {
+                    this.currentIndex = 0;
+                }
+            } else {
+                this.currentIndex = 0;
+            }
             this.member.put("current_value", getCurrentDisplayText());
             this.member.put("current_index", String.valueOf(currentIndex));
+            this.member.put("current_key", this.values.get(currentIndex).key());
         }
-        // 不在构造器里添加 TextWidget，直接在 render 中绘制，避免重复
+        // 不在构造器里添??TextWidget，直接在 render 中绘制，避免重复
     }
 
     private String getCurrentDisplayText() {
@@ -74,20 +94,26 @@ public class DropdownWidget extends BaseWidget {
 
     private void toggleExpanded() {
         expanded = !expanded;
-        minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+        playClickSound();
     }
 
-    private void selectIndex(int index) {
+    private void selectIndex(int index, RenderContext ctx) {
         if (index < 0 || index >= values.size()) return;
         if (index == currentIndex && expanded) {
             expanded = false;
             return;
         }
         currentIndex = index;
+        String key = values.get(currentIndex).key();
         this.member.put("current_value", getCurrentDisplayText());
         this.member.put("current_index", String.valueOf(currentIndex));
+        this.member.put("current_key", key);
+        if (stateKey != null && ctx != null && ctx.sharedState() != null) {
+            ctx.sharedState().put(stateKey, key);
+        }
         expanded = false;
         syncToOptions();
+        playValueChangeSound();
     }
 
     private void syncToOptions() {
@@ -299,7 +325,7 @@ public class DropdownWidget extends BaseWidget {
         if (buttonAreaW <= 0) buttonAreaW = dim.w;
         int controlAreaX = screenX + labelWidth;
 
-        // 先让子元素响应
+        // 先让子元素响??
         for (int i = children.size() - 1; i >= 0; i--) {
             Widget child = children.get(i);
             if (child.mouseClicked(mouseX, mouseY, button, mergedCtx, screenX, screenY, dim.w, dim.h)) {
@@ -307,22 +333,23 @@ public class DropdownWidget extends BaseWidget {
             }
         }
 
-        // 点击主按钮
+        // 点击主按??
         if (mouseX >= controlAreaX && mouseX <= controlAreaX + buttonAreaW &&
             mouseY >= screenY && mouseY <= screenY + height) {
             toggleExpanded();
+            playClickSound();
             return true;
         }
 
-        // 点击下拉菜单项
+        // 点击下拉菜单??
         int idx = getDropdownIndexAt(mouseX, mouseY, controlAreaX, screenY, buttonAreaW, height);
         if (idx >= 0) {
-            minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-            selectIndex(idx);
+            playClickSound();
+            selectIndex(idx, mergedCtx);
             return true;
         }
 
-        // 如果点击了下拉菜单外面，关闭它
+        // 如果点击了下拉菜单外面，关闭??
         if (expanded) {
             expanded = false;
         }
@@ -347,7 +374,11 @@ public class DropdownWidget extends BaseWidget {
         if (buttonAreaW <= 0) buttonAreaW = dim.w;
         int controlAreaX = screenX + labelWidth;
 
+        int oldHoveredIndex = hoveredIndex;
         hoveredIndex = getDropdownIndexAt(mouseX, mouseY, controlAreaX, screenY, buttonAreaW, height);
+        if (oldHoveredIndex == -1 && hoveredIndex != -1) {
+            playHoverSound();
+        }
 
         for (Widget child : children) {
             child.mouseMoved(mouseX, mouseY, mergedCtx, screenX, screenY, dim.w, dim.h);

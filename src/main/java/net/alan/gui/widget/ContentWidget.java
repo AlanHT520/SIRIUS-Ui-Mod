@@ -1,10 +1,10 @@
 package net.alan.gui.widget;
 
 import net.alan.gui.context.RenderContext;
-import net.alan.gui.data.props.LayoutProps;
-import net.alan.gui.data.props.ListProps;
-import net.alan.gui.data.style.TextureSet;
-import net.alan.gui.render.BackgroundRenderer;
+import net.alan.gui.data.widget.LayoutProps;
+import net.alan.gui.data.widget.ListProps;
+import net.alan.gui.data.widget.TextureSet;
+import net.alan.gui.render.screen.BackgroundRenderer;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;

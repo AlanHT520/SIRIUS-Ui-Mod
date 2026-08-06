@@ -1,0 +1,745 @@
+{
+  "screen": {
+    "parent": "sirius_ui:screens/screen.json",
+    "graphicsDraw": [
+      {
+        "x": "0",
+        "y": "0",
+        "width": "screen.width",
+        "height": "screen.height",
+        "color": "0xDD0E1014"
+      },
+      {
+        "x": "0",
+        "y": "0",
+        "width": "screen.width",
+        "height": "28",
+        "color": "0xEE111318"
+      },
+      {
+        "x": "0",
+        "y": "28",
+        "width": "screen.width",
+        "height": "1",
+        "color": "0x18222830"
+      },
+      {
+        "x": "0",
+        "y": "screen.height - 32",
+        "width": "screen.width",
+        "height": "1",
+        "color": "0x18222830"
+      },
+      {
+        "x": "0",
+        "y": "screen.height - 31",
+        "width": "screen.width",
+        "height": "31",
+        "color": "0xEE111318"
+      }
+    ],
+    "sharedState": {
+      "game_mode": "survival",
+      "difficulty": "normal",
+      "allow_cheats": "false",
+      "world_name": "New World",
+      "world_type": "default",
+      "seed": "",
+      "generate_structures": "true",
+      "bonus_chest": "false",
+      "allow_experiments": "false"
+    },
+    "elements": [
+      {
+        "type": "button",
+        "position": {
+          "x": "4",
+          "y": "4"
+        },
+        "size": {
+          "width": "20",
+          "height": "20"
+        },
+        "texture": {
+          "normal": "sirius_ui:buttons/options/back",
+          "highlighted": "sirius_ui:buttons/options/back_highlighted"
+        },
+        "action": {
+          "type": "close_screen"
+        }
+      },
+      {
+        "type": "text",
+        "position": {
+          "x": "screen.width / 2 - this.width / 2",
+          "y": "6"
+        },
+        "text_key": "selectWorld.create",
+        "color": "0xFFE0E4EA",
+        "shadow": true,
+        "scale": "1.0"
+      },
+      {
+        "type": "content",
+        "id": "main_scroll",
+        "direction": "vertical",
+        "position": {
+          "x": "14",
+          "y": "36"
+        },
+        "size": {
+          "width": "screen.width - 28",
+          "height": "screen.height - 74"
+        },
+        "gap": 8,
+        "background_color": "0x00000000",
+        "scrollbar": {
+          "width": "3",
+          "x": "parent.width - 3",
+          "y": "0",
+          "track": {
+            "color": "0x00000000"
+          },
+          "thumb": {
+            "color": "0x18222830"
+          }
+        },
+        "buttons": [
+          {
+            "type": "content",
+            "direction": "vertical",
+            "size": {
+              "width": "parent.width",
+              "height": "52"
+            },
+            "gap": 0,
+            "background_color": "0x8815181E",
+            "border_color": "0x18222830",
+            "buttons": [
+              {
+                "type": "container",
+                "size": {
+                  "width": "parent.width",
+                  "height": "52"
+                },
+                "children": [
+                  {
+                    "type": "text",
+                    "position": {
+                      "x": "8",
+                      "y": "6"
+                    },
+                    "text_key": "selectWorld.enterName",
+                    "color": "0xFF6B7380",
+                    "shadow": false,
+                    "scale": "0.7"
+                  },
+                  {
+                    "type": "edit_box",
+                    "id": "world_name_input",
+                    "position": {
+                      "x": "8",
+                      "y": "24"
+                    },
+                    "size": {
+                      "width": "parent.width - 16",
+                      "height": "20"
+                    },
+                    "hint": "selectWorld.newWorld",
+                    "text_color": "0xFFE0E4EA",
+                    "max_length": 64,
+                    "initial_value": "New World",
+                    "state_key": "world_name"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "content",
+            "direction": "vertical",
+            "size": {
+              "width": "parent.width",
+              "height": "52"
+            },
+            "gap": 0,
+            "background_color": "0x8815181E",
+            "border_color": "0x18222830",
+            "buttons": [
+              {
+                "type": "container",
+                "size": {
+                  "width": "parent.width",
+                  "height": "52"
+                },
+                "children": [
+                  {
+                    "type": "text",
+                    "position": {
+                      "x": "8",
+                      "y": "6"
+                    },
+                    "text_key": "selectWorld.gameMode",
+                    "color": "0xFF6B7380",
+                    "shadow": false,
+                    "scale": "0.7"
+                  },
+                  {
+                    "type": "selector",
+                    "state_key": "game_mode",
+                    "position": {
+                      "x": "8",
+                      "y": "24"
+                    },
+                    "size": {
+                      "width": "parent.width * 0.47",
+                      "height": "20"
+                    },
+                    "text": {
+                      "color": "0xFFE0E4EA",
+                      "shadow": true
+                    },
+                    "texture": {
+                      "normal": "sirius_ui:buttons/default_button",
+                      "highlighted": "sirius_ui:buttons/default_button_highlighted"
+                    },
+                    "background_color": "0xFF1C1F26",
+                    "selected_color": "0xFF3A4558",
+                    "highlighted_color": "0xFF242830",
+                    "member": {
+                      "current_index": "0"
+                    },
+                    "values": [
+                      {
+                        "key": "survival",
+                        "text_key": "selectWorld.gameMode.survival",
+                        "width": 48
+                      },
+                      {
+                        "key": "hardcore",
+                        "text_key": "selectWorld.gameMode.hardcore",
+                        "width": 48
+                      },
+                      {
+                        "key": "creative",
+                        "text_key": "selectWorld.gameMode.creative",
+                        "width": 48
+                      },
+                      {
+                        "key": "adventure",
+                        "text_key": "selectWorld.gameMode.adventure",
+                        "width": 48
+                      }
+                    ]
+                  },
+                  {
+                    "type": "text",
+                    "position": {
+                      "x": "parent.width * 0.52",
+                      "y": "6"
+                    },
+                    "text_key": "options.difficulty",
+                    "color": "0xFF6B7380",
+                    "shadow": false,
+                    "scale": "0.7"
+                  },
+                  {
+                    "type": "arrow_switch",
+                    "state_key": "difficulty",
+                    "position": {
+                      "x": "parent.width * 0.52",
+                      "y": "24"
+                    },
+                    "size": {
+                      "width": "parent.width * 0.47",
+                      "height": "20"
+                    },
+                    "text": {
+                      "color": "0xFFE0E4EA",
+                      "shadow": true
+                    },
+                    "left_button_texture": {
+                      "normal": "sirius_ui:buttons/default_button",
+                      "highlighted": "sirius_ui:buttons/default_button_highlighted"
+                    },
+                    "right_button_texture": {
+                      "normal": "sirius_ui:buttons/default_button",
+                      "highlighted": "sirius_ui:buttons/default_button_highlighted"
+                    },
+                    "center_texture": {
+                      "normal": "sirius_ui:buttons/default_button",
+                      "highlighted": "sirius_ui:buttons/default_button_highlighted"
+                    },
+                    "background_color": "0xFF1C1F26",
+                    "highlighted_background_color": "0xFF242830",
+                    "arrow_color": "0xFF6B7380",
+                    "member": {
+                      "current_index": "2"
+                    },
+                    "values": [
+                      {
+                        "key": "peaceful",
+                        "text_key": "options.difficulty.peaceful"
+                      },
+                      {
+                        "key": "easy",
+                        "text_key": "options.difficulty.easy"
+                      },
+                      {
+                        "key": "normal",
+                        "text_key": "options.difficulty.normal"
+                      },
+                      {
+                        "key": "hard",
+                        "text_key": "options.difficulty.hard"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "content",
+            "direction": "vertical",
+            "size": {
+              "width": "parent.width",
+              "height": "52"
+            },
+            "gap": 0,
+            "background_color": "0x8815181E",
+            "border_color": "0x18222830",
+            "buttons": [
+              {
+                "type": "container",
+                "size": {
+                  "width": "parent.width",
+                  "height": "52"
+                },
+                "children": [
+                  {
+                    "type": "text",
+                    "position": {
+                      "x": "8",
+                      "y": "6"
+                    },
+                    "text_key": "selectWorld.enterSeed",
+                    "color": "0xFF6B7380",
+                    "shadow": false,
+                    "scale": "0.7"
+                  },
+                  {
+                    "type": "edit_box",
+                    "id": "seed_input",
+                    "position": {
+                      "x": "8",
+                      "y": "24"
+                    },
+                    "size": {
+                      "width": "parent.width - 16",
+                      "height": "20"
+                    },
+                    "hint": "selectWorld.seedInfo",
+                    "text_color": "0xFF505660",
+                    "max_length": 64,
+                    "initial_value": "",
+                    "state_key": "seed"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "content",
+            "direction": "vertical",
+            "size": {
+              "width": "parent.width",
+              "height": "52"
+            },
+            "gap": 0,
+            "background_color": "0x8815181E",
+            "border_color": "0x18222830",
+            "buttons": [
+              {
+                "type": "container",
+                "size": {
+                  "width": "parent.width",
+                  "height": "52"
+                },
+                "children": [
+                  {
+                    "type": "text",
+                    "position": {
+                      "x": "8",
+                      "y": "6"
+                    },
+                    "text_key": "selectWorld.mapType",
+                    "color": "0xFF6B7380",
+                    "shadow": false,
+                    "scale": "0.7"
+                  },
+                  {
+                    "type": "cycle_button",
+                    "state_key": "world_type",
+                    "position": {
+                      "x": "8",
+                      "y": "24"
+                    },
+                    "size": {
+                      "width": "parent.width - 16",
+                      "height": "20"
+                    },
+                    "text": {
+                      "color": "0xFFE0E4EA",
+                      "shadow": true
+                    },
+                    "texture": {
+                      "normal": "sirius_ui:buttons/default_button",
+                      "highlighted": "sirius_ui:buttons/default_button_highlighted"
+                    },
+                    "background_color": "0xFF1C1F26",
+                    "highlighted_background_color": "0xFF242830",
+                    "values": [
+                      {
+                        "key": "default",
+                        "text_key": "generator.default"
+                      },
+                      {
+                        "key": "flat",
+                        "text_key": "generator.flat"
+                      },
+                      {
+                        "key": "large_biomes",
+                        "text_key": "generator.large_biomes"
+                      },
+                      {
+                        "key": "amplified",
+                        "text_key": "generator.amplified"
+                      },
+                      {
+                        "key": "single_biome_surface",
+                        "text_key": "generator.single_biome_surface"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "content",
+            "direction": "vertical",
+            "size": {
+              "width": "parent.width",
+              "height": "86"
+            },
+            "gap": 2,
+            "background_color": "0x8815181E",
+            "border_color": "0x18222830",
+            "buttons": [
+              {
+                "type": "container",
+                "size": {
+                  "width": "parent.width",
+                  "height": "40"
+                },
+                "children": [
+                  {
+                    "type": "text",
+                    "position": {
+                      "x": "8",
+                      "y": "2"
+                    },
+                    "text_key": "selectWorld.allowCommands.new",
+                    "color": "0xFF6B7380",
+                    "shadow": false,
+                    "scale": "0.7"
+                  },
+                  {
+                    "type": "cycle_button",
+                    "state_key": "allow_cheats",
+                    "position": {
+                      "x": "8",
+                      "y": "18"
+                    },
+                    "size": {
+                      "width": "parent.width * 0.47",
+                      "height": "20"
+                    },
+                    "text": {
+                      "color": "0xFFE0E4EA",
+                      "shadow": true
+                    },
+                    "texture": {
+                      "normal": "sirius_ui:buttons/default_button",
+                      "highlighted": "sirius_ui:buttons/default_button_highlighted"
+                    },
+                    "background_color": "0xFF1C1F26",
+                    "highlighted_background_color": "0xFF242830",
+                    "values": [
+                      {
+                        "key": "false",
+                        "text_key": "options.off"
+                      },
+                      {
+                        "key": "true",
+                        "text_key": "options.on"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "text",
+                    "position": {
+                      "x": "parent.width * 0.52",
+                      "y": "2"
+                    },
+                    "text_key": "selectWorld.mapFeatures",
+                    "color": "0xFF6B7380",
+                    "shadow": false,
+                    "scale": "0.7"
+                  },
+                  {
+                    "type": "cycle_button",
+                    "state_key": "generate_structures",
+                    "position": {
+                      "x": "parent.width * 0.52",
+                      "y": "18"
+                    },
+                    "size": {
+                      "width": "parent.width * 0.47",
+                      "height": "20"
+                    },
+                    "text": {
+                      "color": "0xFFE0E4EA",
+                      "shadow": true
+                    },
+                    "texture": {
+                      "normal": "sirius_ui:buttons/default_button",
+                      "highlighted": "sirius_ui:buttons/default_button_highlighted"
+                    },
+                    "background_color": "0xFF1C1F26",
+                    "highlighted_background_color": "0xFF242830",
+                    "values": [
+                      {
+                        "key": "true",
+                        "text_key": "options.on"
+                      },
+                      {
+                        "key": "false",
+                        "text_key": "options.off"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "container",
+                "size": {
+                  "width": "parent.width",
+                  "height": "40"
+                },
+                "children": [
+                  {
+                    "type": "text",
+                    "position": {
+                      "x": "8",
+                      "y": "2"
+                    },
+                    "text_key": "selectWorld.bonusItems",
+                    "color": "0xFF6B7380",
+                    "shadow": false,
+                    "scale": "0.7"
+                  },
+                  {
+                    "type": "cycle_button",
+                    "state_key": "bonus_chest",
+                    "position": {
+                      "x": "8",
+                      "y": "18"
+                    },
+                    "size": {
+                      "width": "parent.width * 0.47",
+                      "height": "20"
+                    },
+                    "text": {
+                      "color": "0xFFE0E4EA",
+                      "shadow": true
+                    },
+                    "texture": {
+                      "normal": "sirius_ui:buttons/default_button",
+                      "highlighted": "sirius_ui:buttons/default_button_highlighted"
+                    },
+                    "background_color": "0xFF1C1F26",
+                    "highlighted_background_color": "0xFF242830",
+                    "values": [
+                      {
+                        "key": "false",
+                        "text_key": "options.off"
+                      },
+                      {
+                        "key": "true",
+                        "text_key": "options.on"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "text",
+                    "position": {
+                      "x": "parent.width * 0.52",
+                      "y": "2"
+                    },
+                    "text_key": "selectWorld.experiments",
+                    "color": "0xFF6B7380",
+                    "shadow": false,
+                    "scale": "0.7"
+                  },
+                  {
+                    "type": "cycle_button",
+                    "state_key": "allow_experiments",
+                    "position": {
+                      "x": "parent.width * 0.52",
+                      "y": "18"
+                    },
+                    "size": {
+                      "width": "parent.width * 0.47",
+                      "height": "20"
+                    },
+                    "text": {
+                      "color": "0xFFE0E4EA",
+                      "shadow": true
+                    },
+                    "texture": {
+                      "normal": "sirius_ui:buttons/default_button",
+                      "highlighted": "sirius_ui:buttons/default_button_highlighted"
+                    },
+                    "background_color": "0xFF1C1F26",
+                    "highlighted_background_color": "0xFF242830",
+                    "values": [
+                      {
+                        "key": "false",
+                        "text_key": "options.off"
+                      },
+                      {
+                        "key": "true",
+                        "text_key": "options.on"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "content",
+            "direction": "vertical",
+            "size": {
+              "width": "parent.width",
+              "height": "28"
+            },
+            "gap": 0,
+            "background_color": "0x8815181E",
+            "border_color": "0x18222830",
+            "buttons": [
+              {
+                "type": "container",
+                "size": {
+                  "width": "parent.width",
+                  "height": "28"
+                },
+                "children": [
+                  {
+                    "ref": "sirius_ui:elements/buttons/default.json",
+                    "position": {
+                      "x": "6",
+                      "y": "4"
+                    },
+                    "size": {
+                      "width": "parent.width * 0.31",
+                      "height": "20"
+                    },
+                    "variables": {
+                      "button_label": "selectWorld.gameRules",
+                      "text_color": "0xFF8A9BB5"
+                    },
+                    "action": {
+                      "type": "open_game_rules"
+                    }
+                  },
+                  {
+                    "ref": "sirius_ui:elements/buttons/default.json",
+                    "position": {
+                      "x": "parent.width * 0.33",
+                      "y": "4"
+                    },
+                    "size": {
+                      "width": "parent.width - parent.width * 0.33 - 6",
+                      "height": "20"
+                    },
+                    "variables": {
+                      "button_label": "selectWorld.dataPacks",
+                      "text_color": "0xFF8A9BB5"
+                    },
+                    "action": {
+                      "type": "open_data_packs"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "container",
+        "position": {
+          "x": "14",
+          "y": "screen.height - 27"
+        },
+        "size": {
+          "width": "screen.width - 28",
+          "height": "20"
+        },
+        "children": [
+          {
+            "ref": "sirius_ui:elements/buttons/default.json",
+            "id": "btn_cancel",
+            "position": {
+              "x": "parent.width / 2 - 104",
+              "y": "0"
+            },
+            "size": {
+              "width": "100",
+              "height": "20"
+            },
+            "variables": {
+              "button_label": "gui.cancel",
+              "text_color": "0xFF6B7380"
+            },
+            "action": {
+              "type": "close_screen"
+            }
+          },
+          {
+            "ref": "sirius_ui:elements/buttons/default.json",
+            "id": "btn_create",
+            "position": {
+              "x": "parent.width / 2 + 4",
+              "y": "0"
+            },
+            "size": {
+              "width": "100",
+              "height": "20"
+            },
+            "variables": {
+              "button_label": "selectWorld.create",
+              "text_color": "0xFFE0E4EA"
+            },
+            "action": {
+              "type": "create_world"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

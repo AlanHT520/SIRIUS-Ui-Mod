@@ -2,7 +2,7 @@ package net.alan.gui.registry;
 
 import com.mojang.realmsclient.RealmsMainScreen;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
-import net.alan.gui.elements.JsonScreen;
+import net.alan.gui.screen.JsonScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.*;
 import net.minecraft.client.gui.screens.achievement.StatsScreen;
@@ -28,6 +28,17 @@ public class ScreenRegistry {
     private static final Map<String, Function<Screen, Screen>> REGISTRY = new HashMap<>();
 
     static {
+        // Mixin-replaced screens ??layout paths are defined in register.json
+        register("titleScreen", parent -> new JsonScreen(parent,
+                JsonScreenRegistry.getLayoutId("titleScreen")
+                        .orElse(ResourceLocation.fromNamespaceAndPath("sirius_ui", "screens/title_screen.json"))));
+        register("pauseScreen", parent -> new JsonScreen(parent,
+                JsonScreenRegistry.getLayoutId("pauseScreen")
+                        .orElse(ResourceLocation.fromNamespaceAndPath("sirius_ui", "screens/pause_screen.json"))));
+        register("deathScreen", parent -> new JsonScreen(parent,
+                JsonScreenRegistry.getLayoutId("deathScreen")
+                        .orElse(ResourceLocation.fromNamespaceAndPath("sirius_ui", "screens/death_screen.json"))));
+
         register("world_select", parent -> new SelectWorldScreen(parent));
         register("multiplayer", parent -> new JoinMultiplayerScreen(parent));
         register("realms", parent -> new RealmsMainScreen(parent));

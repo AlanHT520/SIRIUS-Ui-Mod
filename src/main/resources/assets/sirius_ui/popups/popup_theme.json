@@ -1,0 +1,50 @@
+{
+  "popup": {
+    "dialog": {
+      "width": 340,
+      "min_height": 140,
+      "padding": 20,
+      "overlay_color": "0xCC0A0A0A",
+      "box_color": "0xF0202020",
+      "border_color": "0xFF505050",
+      "title_color": "0xFFFFFFFF",
+      "message_color": "0xFFCCCCCC",
+      "title_bar_color": "0xFF2A2A2A",
+      "separator_color": "0xFF3E3E3E",
+      "shadow_color": "0xAA000000",
+      "shadow_size": 6,
+      "button": {
+        "width": 130,
+        "height": 24,
+        "gap": 12,
+        "texture_normal": "",
+        "texture_highlighted": "",
+        "text_color": "0xFFE0E0E0"
+      },
+      "input": {
+        "height": 24,
+        "gap": 12,
+        "label_gap": 4,
+        "background_color": "0xFF1A1A1A",
+        "border_color": "0xFF555555",
+        "focus_border_color": "0xFFAAAAAA",
+        "text_color": "0xFFFFFFFF",
+        "hint_color": "0xFF555555",
+        "label_color": "0xFFAAAAAA"
+      }
+    },
+    "toast": {
+      "width": 280,
+      "height": 36,
+      "background_color": "0xDD1E1E1E",
+      "border_color": "0xFF555555",
+      "text_color": "0xFFFFFFFF"
+    },
+    "loading": {
+      "background_color": "0x99000000",
+      "box_color": "0xFF282828",
+      "border_color": "0xFF505050",
+      "text_color": "0xFFFFFFFF"
+    }
+  }
+}

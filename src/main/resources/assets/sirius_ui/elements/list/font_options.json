@@ -10,10 +10,10 @@
   "rows": [
     { "height": 5, "children": [] },
     { "height": 20, "children": [
-      { "ref": "sirius_ui:elements/buttons/selector/controls/force_unicode_font.json", "position": { "x": "this.elem_x" }, "size": { "width": "this.elem_w", "height": 20 } }
+      { "ref": "sirius_ui:elements/buttons/selector/controls/force_unicode_font.json", "position": { "x": "elem_x" }, "size": { "width": "elem_w", "height": 20 } }
     ]},
     { "height": 20, "children": [
-      { "ref": "sirius_ui:elements/buttons/selector/controls/japanese_glyph_variants.json", "position": { "x": "this.elem_x" }, "size": { "width": "this.elem_w", "height": 20 } }
+      { "ref": "sirius_ui:elements/buttons/selector/controls/japanese_glyph_variants.json", "position": { "x": "elem_x" }, "size": { "width": "elem_w", "height": 20 } }
     ]}
   ]
 }

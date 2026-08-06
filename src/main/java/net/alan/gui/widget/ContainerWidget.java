@@ -1,7 +1,7 @@
 package net.alan.gui.widget;
 
 import net.alan.gui.context.RenderContext;
-import net.alan.gui.data.props.LayoutProps;
+import net.alan.gui.data.widget.LayoutProps;
 import net.minecraft.client.gui.GuiGraphics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +52,7 @@ public class ContainerWidget extends BaseWidget {
         for (int i = children.size() - 1; i >= 0; i--) {
             Widget child = children.get(i);
             if (child.mouseClicked(mouseX, mouseY, button, mergedCtx, containerX, containerY, dim.w, dim.h)) {
-                // 获得焦点的子组件设为 focused，其他失焦
+                // 获得焦点的子组件设为 focused，其他失??
                 for (Widget w : children) {
                     w.setFocused(w == child);
                 }
@@ -73,8 +73,8 @@ public class ContainerWidget extends BaseWidget {
         int containerX = x + dim.x;
         int containerY = y + dim.y;
 
-        // 必须通知所有子组件，不能因为某个返回 true 就提前终止
-        // 否则子组件的 isDragging 等状态无法重置
+        // 必须通知所有子组件，不能因为某个返??true 就提前终??
+        // 否则子组件的 isDragging 等状态无法重??
         boolean consumed = false;
         for (int i = children.size() - 1; i >= 0; i--) {
             Widget child = children.get(i);

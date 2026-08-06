@@ -1,10 +1,10 @@
 package net.alan.gui.widget;
 
 import net.alan.gui.context.RenderContext;
-import net.alan.gui.data.props.AnimationStep;
-import net.alan.gui.data.props.LayoutProps;
-import net.alan.gui.data.props.TextProps;
-import net.alan.gui.render.BackgroundRenderer;
+import net.alan.gui.data.widget.AnimationStep;
+import net.alan.gui.data.widget.LayoutProps;
+import net.alan.gui.data.widget.TextProps;
+import net.alan.gui.render.screen.BackgroundRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -37,12 +37,12 @@ public class TextWidget extends BaseWidget {
         Map<String, Integer> vars = buildNumericVars(mergedCtx, width, height, dim.w, dim.h);
         if (!checkCondition(vars)) return;
 
-        // 获取最终文本
+        // 获取最终文??
         String finalText = null;
         Component finalComponent = null;
         String dynamic = textProps.dynamicType();
 
-        // 优先使用 text_key.d（动态翻译，Component 渲染）
+        // 优先使用 text_key.d（动态翻译，Component 渲染??
         String dynKey = evalStringExpr(vars, textProps.textKeyDynamic());
         if (dynKey != null && !dynKey.isEmpty()) {
             String replacedKey = replaceVars(dynKey, mergedCtx.variables());
@@ -55,26 +55,26 @@ public class TextWidget extends BaseWidget {
                     replacedArgs.add(resolved);
                 }
             } else {
-                // 未提供 translation_args，自动从上下文收集动态变量值
+                // 未提??translation_args，自动从上下文收集动态变量??
                 replacedArgs = collectTranslationArgs(mergedCtx);
             }
             finalComponent = Component.translatable(replacedKey, replacedArgs.toArray());
         } else if (textProps.textKey() != null && !textProps.textKey().isEmpty()
                 && textProps.textKeyOption() != null && !textProps.textKeyOption().isEmpty()) {
-            // text_key + text_key.option 同时存在 → "FOV: 70" 格式（对标原版 genericValueLabel）
+            // text_key + text_key.option 同时存在 ??"FOV: 70" 格式（对标原??genericValueLabel??
             String replacedKey = replaceVars(evalStringExpr(vars, textProps.textKey()), mergedCtx.variables());
             Component caption = Component.translatable(replacedKey);
             String currentValue = mergedCtx.variables().get("current_value");
             Component value = currentValue != null ? Component.translatable(currentValue) : Component.literal("?");
             finalComponent = Component.translatable("options.generic_value", caption, value);
         } else if (textProps.textKeyOption() != null && !textProps.textKeyOption().isEmpty()) {
-            // text_key.option 单独使用：渲染选项当前值（如 "70"）
+            // text_key.option 单独使用：渲染选项当前值（??"70"??
             String currentValue = mergedCtx.variables().get("current_value");
             if (currentValue != null) {
                 finalComponent = Component.translatable(currentValue);
             }
         } else if (dynamic != null && !dynamic.isEmpty()) {
-            // 无 text_key.d 时，dynamicType 直接输出值
+            // ??text_key.d 时，dynamicType 直接输出??
             finalText = resolveDynamicValue(dynamic);
         } else {
             String rawKey = evalStringExpr(vars, textProps.textKey());
@@ -103,7 +103,7 @@ public class TextWidget extends BaseWidget {
         if (finalText == null && finalComponent == null) return;
         if (finalText != null && finalText.isEmpty()) return;
 
-        // 计算文本实际尺寸（考虑缩放，state_v 可覆盖 scale）
+        // 计算文本实际尺寸（考虑缩放，state_v 可覆??scale??
         float scale = textProps.scale();
         String scaleOverride = getStateProp(mergedCtx, "scale");
         if (scaleOverride != null) {
@@ -125,14 +125,14 @@ public class TextWidget extends BaseWidget {
         numVars.put("parent.height", height);
         numVars.put("this.width", textWidth);
         numVars.put("this.height", textHeight);
-        // 合并上下文字符串变量中的数值
+        // 合并上下文字符串变量中的数??
         for (Map.Entry<String, String> entry : mergedCtx.variables().entrySet()) {
             try {
                 numVars.put(entry.getKey(), Integer.parseInt(entry.getValue()));
             } catch (NumberFormatException ignored) {}
         }
 
-        // 解析位置（使用 state_v 覆盖后的有效表达式）
+        // 解析位置（使??state_v 覆盖后的有效表达式）
         int posX = eval(getEffectiveXExpr(mergedCtx), numVars);
         int posY = eval(getEffectiveYExpr(mergedCtx), numVars);
         int screenX = x + posX;
@@ -143,7 +143,7 @@ public class TextWidget extends BaseWidget {
         if (colorStr != null) colorStr = replaceVars(colorStr, mergedCtx.variables());
         int color = BackgroundRenderer.parseColor(colorStr);
 
-        // 文本动画 — 优先使用 animations 序列，其次兼容单个 text_animation
+        // 文本动画 ??优先使用 animations 序列，其次兼容单??text_animation
         List<AnimationStep> steps = textProps.animations();
         String fullStr = finalComponent != null ? finalComponent.getString() : finalText;
 
@@ -295,7 +295,7 @@ public class TextWidget extends BaseWidget {
                 lastVisibleChars = -1;
             }
         } else if (textProps.textAnimation() != null && !textProps.textAnimation().isEmpty()) {
-            // 兼容旧的单动画模式
+            // 兼容旧的单动画模??
             if (animStartMillis < 0) animStartMillis = System.currentTimeMillis();
             if (fullStr != null) {
                 long elapsed = System.currentTimeMillis() - animStartMillis;
@@ -339,18 +339,18 @@ public class TextWidget extends BaseWidget {
     }
 
     /**
-     * 如果 arg 是格式占位符（%s, %d），尝试用 dynamicType 或上下文动态变量解析
+     * 如果 arg 是格式占位符??s, %d），尝试??dynamicType 或上下文动态变量解??
      */
     private String resolvePlaceholder(String arg, String dynamicType, RenderContext ctx) {
         if (!arg.matches("%[sd]")) return arg;
 
-        // 用 dynamicType 解析
+        // ??dynamicType 解析
         if (dynamicType != null && !dynamicType.isEmpty()) {
             String resolved = resolveDynamicValue(dynamicType);
             if (resolved != null) return resolved;
         }
 
-        // 从上下文变量中取第一个匹配的值
+        // 从上下文变量中取第一个匹配的??
         for (String val : ctx.variables().values()) {
             if (val != null && !val.isEmpty()) return val;
         }
@@ -359,7 +359,7 @@ public class TextWidget extends BaseWidget {
     }
 
     /**
-     * 根据 dynamicType 获取实际值
+     * 根据 dynamicType 获取实际??
      */
     private String resolveDynamicValue(String dynamicType) {
         return switch (dynamicType) {

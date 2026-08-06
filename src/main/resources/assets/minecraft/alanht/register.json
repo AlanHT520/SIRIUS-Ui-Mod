@@ -1,9 +1,14 @@
 {
-  "title_screen": "sirius_ui:screens/title_screen.json",
-  "selectGame": "sirius_ui:screens/game_selection_screen.json",
+  "titleScreen": "sirius_ui:screens/title_screen.json",
+  "pauseScreen": "sirius_ui:screens/pause_screen.json",
+  "deathScreen": "sirius_ui:screens/death_screen.json",
+  "selectGame": "sirius_ui:screens/play_selection_screen.json",
   "pause_other": "sirius_ui:screens/pause_other_screen.json",
   "settings": "sirius_ui:screens/options_screen.json",
   "mouse_settings": "sirius_ui:screens/mouse_settings_screen.json",
   "font_options": "sirius_ui:screens/font_options_screen.json",
-  "resource_packs": "sirius_ui:screens/resource_packs_screen.json"
+  "resource_packs": "sirius_ui:screens/resource_packs_screen.json",
+  "create_world": "sirius_ui:screens/create_world_screen.json",
+  "game_rules": "sirius_ui:screens/game_rules_screen.json",
+  "data_packs": "sirius_ui:screens/data_packs_screen.json"
 }

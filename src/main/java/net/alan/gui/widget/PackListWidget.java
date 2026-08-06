@@ -3,7 +3,7 @@ package net.alan.gui.widget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.alan.gui.context.RenderContext;
 import net.alan.gui.data.source.PackDataSource;
-import net.alan.gui.data.props.LayoutProps;
+import net.alan.gui.data.widget.LayoutProps;
 import net.alan.gui.render.ActionExecutor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -344,7 +344,7 @@ public class PackListWidget extends BaseWidget {
                 if (upHovered) hoveredMoveUpIndex = index;
                 int upColor = upHovered ? 0xCCFFFFFF : 0xCC888888;
                 graphics.fill(upX, upY, upX + 16, upY + 8, 0x33000000);
-                graphics.drawString(minecraft.font, "▲", upX + 2, upY, upColor);
+                graphics.drawString(minecraft.font, "\u2191", upX + 2, upY, upColor);
             }
 
             if (mode != Mode.UNACTIVE && entry.canMoveDown()) {
@@ -355,7 +355,7 @@ public class PackListWidget extends BaseWidget {
                 if (downHovered) hoveredMoveDownIndex = index;
                 int downColor = downHovered ? 0xCCFFFFFF : 0xCC888888;
                 graphics.fill(downX, downY, downX + 16, downY + 8, 0x33000000);
-                graphics.drawString(minecraft.font, "▼", downX + 2, downY, downColor);
+                graphics.drawString(minecraft.font, "\u2193", downX + 2, downY, downColor);
             }
         }
     }

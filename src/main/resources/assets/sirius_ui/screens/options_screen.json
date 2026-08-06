@@ -1,4 +1,4 @@
-﻿{
+{
   "screen": {
     "parent": "sirius_ui:screens/screen.json",
     "graphicsDraw": [

@@ -1,8 +1,8 @@
 package net.alan.gui.widget;
 
 import net.alan.gui.context.RenderContext;
-import net.alan.gui.data.props.LayoutProps;
-import net.alan.gui.data.props.StyleProps;
+import net.alan.gui.data.widget.LayoutProps;
+import net.alan.gui.data.widget.StyleProps;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 

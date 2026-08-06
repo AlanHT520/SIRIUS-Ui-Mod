@@ -1,11 +1,11 @@
 package net.alan.gui.widget;
 
 import net.alan.gui.context.RenderContext;
-import net.alan.gui.data.props.LayoutProps;
-import net.alan.gui.data.props.SliderProps;
-import net.alan.gui.data.props.TextProps;
-import net.alan.gui.data.style.TextureSet;
-import net.alan.gui.render.OptionBinder;
+import net.alan.gui.data.widget.LayoutProps;
+import net.alan.gui.data.widget.SliderProps;
+import net.alan.gui.data.widget.TextProps;
+import net.alan.gui.data.widget.TextureSet;
+import net.alan.gui.render.screen.OptionBinder;
 import net.minecraft.client.InputType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -42,7 +42,7 @@ public class SliderWidget extends BaseWidget {
         this.children = children != null ? new ArrayList<>(children) : new ArrayList<>();
         this.minecraft = Minecraft.getInstance();
 
-        // 初始化：从 Minecraft options 读取当前真实值（必须在创建 text child 之前）
+        // 初始化：??Minecraft options 读取当前真实值（必须在创??text child 之前??
         if (sliderProps.optionKey() != null) {
             double currentValue = OptionBinder.getOptionRawValue(sliderProps.optionKey(), minecraft.options);
             this.currentRatio = Mth.clamp(
@@ -57,8 +57,8 @@ public class SliderWidget extends BaseWidget {
             } catch (NumberFormatException ignored) {}
         }
 
-        // 将 textProps 转为 TextWidget child（快捷方式，兼容旧写法）
-        // 默认居中，可通过 text 块内的 "position" 覆盖
+        // ??textProps 转为 TextWidget child（快捷方式，兼容旧写法）
+        // 默认居中，可通过 text 块内??"position" 覆盖
         if (textProps != null) {
             String xPos = textProps.offsetX() != null && !textProps.offsetX().equals("0")
                     ? textProps.offsetX() : "parent.width / 2 - this.width / 2";
@@ -111,8 +111,8 @@ public class SliderWidget extends BaseWidget {
             graphics.fill(handleX, screenY, handleX + HANDLE_WIDTH, screenY + dim.h, 0xFFFFFFFF);
         }
 
-        // 渲染子元素（文本通过 text 快捷方式转为 TextWidget child）
-        // 确保 current_value / slider_value 等动态变量在上下文可用
+        // 渲染子元素（文本通过 text 快捷方式转为 TextWidget child??
+        // 确保 current_value / slider_value 等动态变量在上下文可??
         RenderContext childCtx = mergedCtx;
         if (sliderProps.optionKey() != null) {
             childCtx = mergedCtx.withVar("current_value",
@@ -136,7 +136,7 @@ public class SliderWidget extends BaseWidget {
         int screenX = x + dim.x;
         int screenY = y + dim.y;
 
-        // 先让子元素响应
+        // 先让子元素响??
         for (int i = children.size() - 1; i >= 0; i--) {
             Widget child = children.get(i);
             if (child.mouseClicked(mouseX, mouseY, button, mergedCtx, screenX, screenY, dim.w, dim.h)) {
@@ -151,6 +151,8 @@ public class SliderWidget extends BaseWidget {
                 mouseY >= screenY && mouseY <= screenY + dim.h) {
             isDragging = true;
             canChangeValue = true;
+            playDragStartSound();
+            playClickSound();
             updateRatio(mouseX, screenX, dim.w);
             syncToOptions();
             return true;
@@ -178,7 +180,13 @@ public class SliderWidget extends BaseWidget {
 
         if (isDragging) {
             isDragging = false;
+            snapToStep();
+            playDragEndSound();
+            stopValueChangeSound();
             syncToOptions();
+            if (OptionBinder.isAudioOption(sliderProps.optionKey())) {
+                OptionBinder.applyVolume(sliderProps.optionKey(), minecraft.options);
+            }
             OptionBinder.saveOptions(minecraft.options);
             return true;
         }
@@ -214,12 +222,11 @@ public class SliderWidget extends BaseWidget {
         int screenX = x + dim.x;
         int screenY = y + dim.y;
 
-        if (isDragging) {
-            updateRatio(mouseX, screenX, dim.w);
-            syncToOptions();
-        } else {
-            isHovered = mouseX >= screenX && mouseX <= screenX + dim.w
-                    && mouseY >= screenY && mouseY <= screenY + dim.h;
+        boolean wasHovered = this.isHovered;
+        isHovered = mouseX >= screenX && mouseX <= screenX + dim.w
+                && mouseY >= screenY && mouseY <= screenY + dim.h;
+        if (!wasHovered && this.isHovered) {
+            playHoverSound();
         }
 
         // 转发给子组件
@@ -247,7 +254,7 @@ public class SliderWidget extends BaseWidget {
             }
         }
 
-        // 空格/回车/Numpad回车 切换键盘调整模式（对标原版 CommonInputs.selected）
+        // 空格/回车/Numpad回车 切换键盘调整模式（对标原??CommonInputs.selected??
         if (CommonInputs.selected(keyCode)) {
             this.canChangeValue = !this.canChangeValue;
             return true;
@@ -280,17 +287,29 @@ public class SliderWidget extends BaseWidget {
     private void setValue(double ratio) {
         double oldRatio = this.currentRatio;
         this.currentRatio = Mth.clamp(ratio, 0.0, 1.0);
-        if (oldRatio != this.currentRatio && sliderProps.step() > 0) {
+        if (oldRatio != this.currentRatio && sliderProps.step() > 0 && !isDragging) {
             double value = sliderProps.min() + currentRatio * (sliderProps.max() - sliderProps.min());
             value = Math.round(value / sliderProps.step()) * sliderProps.step();
             currentRatio = (value - sliderProps.min()) / (sliderProps.max() - sliderProps.min());
             currentRatio = Mth.clamp(currentRatio, 0.0, 1.0);
+        }
+        if (oldRatio != this.currentRatio) {
+            playValueChangeSound();
         }
         if (this.member != null) {
             this.member.put("slider_value", String.valueOf(currentRatio));
             this.member.put("current_value", sliderProps.optionKey() != null
                     ? OptionBinder.formatValue(sliderProps.optionKey(), getCurrentRawValue())
                     : formatCurrentValue());
+        }
+    }
+
+    private void snapToStep() {
+        if (sliderProps.step() > 0) {
+            double value = sliderProps.min() + currentRatio * (sliderProps.max() - sliderProps.min());
+            value = Math.round(value / sliderProps.step()) * sliderProps.step();
+            currentRatio = (value - sliderProps.min()) / (sliderProps.max() - sliderProps.min());
+            currentRatio = Mth.clamp(currentRatio, 0.0, 1.0);
         }
     }
 
@@ -304,7 +323,7 @@ public class SliderWidget extends BaseWidget {
 
     private String formatCurrentValue() {
         double raw = getCurrentRawValue();
-        // 整数步长 → 整数显示（如 FOV: 70），否则保留小数
+        // 整数步长 ??整数显示（如 FOV: 70），否则保留小数
         if (sliderProps.step() >= 1.0 && Math.abs(sliderProps.step() - Math.round(sliderProps.step())) < 0.001) {
             return String.valueOf((int) Math.round(raw));
         }
@@ -325,7 +344,7 @@ public class SliderWidget extends BaseWidget {
     }
 
     /**
-     * 轨道纹理：获得焦点且未激活键盘模式时高亮（对标原版 isFocused && !canChangeValue）
+     * 轨道纹理：获得焦点且未激活键盘模式时高亮（对标原??isFocused && !canChangeValue??
      */
     private String getTrackSprite() {
         if (trackTexture == null) return null;
@@ -337,7 +356,7 @@ public class SliderWidget extends BaseWidget {
     }
 
     /**
-     * 手柄纹理：悬停或键盘模式时高亮（对标原版 !isHovered && !canChangeValue → normal）
+     * 手柄纹理：悬停或键盘模式时高亮（对标原版 !isHovered && !canChangeValue ??normal??
      */
     private String getHandleSprite() {
         if (handleTexture == null) return null;

@@ -14,22 +14,22 @@
   "rows": [
     { "height": 5, "children": [] },
     { "height": 20, "children": [
-      { "ref": "sirius_ui:elements/slider/controls/mouse_sensitivity.json", "position": { "x": "this.elem_x" }, "size": { "width": "this.elem_w", "height": 20 } }
+      { "ref": "sirius_ui:elements/slider/controls/mouse_sensitivity.json", "position": { "x": "elem_x" }, "size": { "width": "elem_w", "height": 20 } }
     ]},
     { "height": 20, "children": [
-      { "ref": "sirius_ui:elements/slider/controls/mouse_wheel_sensitivity.json", "position": { "x": "this.elem_x" }, "size": { "width": "this.elem_w", "height": 20 } }
+      { "ref": "sirius_ui:elements/slider/controls/mouse_wheel_sensitivity.json", "position": { "x": "elem_x" }, "size": { "width": "elem_w", "height": 20 } }
     ]},
     { "height": 20, "children": [
-      { "ref": "sirius_ui:elements/buttons/selector/controls/invert_y_mouse.json", "position": { "x": "this.elem_x" }, "size": { "width": "this.elem_w", "height": 20 } }
+      { "ref": "sirius_ui:elements/buttons/selector/controls/invert_y_mouse.json", "position": { "x": "elem_x" }, "size": { "width": "elem_w", "height": 20 } }
     ]},
     { "height": 20, "children": [
-      { "ref": "sirius_ui:elements/buttons/selector/controls/discrete_mouse_scroll.json", "position": { "x": "this.elem_x" }, "size": { "width": "this.elem_w", "height": 20 } }
+      { "ref": "sirius_ui:elements/buttons/selector/controls/discrete_mouse_scroll.json", "position": { "x": "elem_x" }, "size": { "width": "elem_w", "height": 20 } }
     ]},
     { "height": 20, "children": [
-      { "ref": "sirius_ui:elements/buttons/selector/controls/touchscreen.json", "position": { "x": "this.elem_x" }, "size": { "width": "this.elem_w", "height": 20 } }
+      { "ref": "sirius_ui:elements/buttons/selector/controls/touchscreen.json", "position": { "x": "elem_x" }, "size": { "width": "elem_w", "height": 20 } }
     ]},
     { "height": 20, "children": [
-      { "ref": "sirius_ui:elements/buttons/selector/controls/raw_mouse_input.json", "position": { "x": "this.elem_x" }, "size": { "width": "this.elem_w", "height": 20 } }
+      { "ref": "sirius_ui:elements/buttons/selector/controls/raw_mouse_input.json", "position": { "x": "elem_x" }, "size": { "width": "elem_w", "height": 20 } }
     ]}
   ]
 }

@@ -1,7 +1,7 @@
 package net.alan.gui.widget;
 
 import net.alan.gui.context.RenderContext;
-import net.alan.gui.data.props.LayoutProps;
+import net.alan.gui.data.widget.LayoutProps;
 import net.alan.gui.entity.FakeLevel;
 import net.alan.gui.entity.FakePlayer;
 import net.minecraft.client.Minecraft;

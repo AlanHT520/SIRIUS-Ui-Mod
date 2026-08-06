@@ -3,9 +3,15 @@ package net.alan.gui.widget;
 import net.alan.gui.context.RenderContext;
 import net.alan.gui.context.ScreenVariableRegistry;
 import net.alan.gui.context.WidgetDimensionRegistry;
-import net.alan.gui.data.props.LayoutProps;
+import net.alan.gui.data.widget.LayoutProps;
+import net.alan.gui.data.widget.SoundEventConfig;
+import net.alan.gui.data.widget.WidgetSoundConfig;
 import net.alan.gui.util.ExpressionEvaluator;
 import net.alan.gui.util.GameStateProvider;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.sounds.SoundEvents;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -20,6 +26,13 @@ public abstract class BaseWidget implements Widget {
     protected final Map<String, String> member;
     protected Map<String, Map<String, Map<String, String>>> stateV;
     protected Map<String, Map<String, String>> stateVProps;
+    // 音效配置
+    protected WidgetSoundConfig soundConfig;
+    // 音效节流：记录各类型音效上次播放??tick
+    private long lastValueChangeTick = -1;
+    private long lastClickTick = -1;
+    // 当前活跃的音效实例，用于停止
+    private SoundInstance activeValueChangeSound = null;
 
     protected BaseWidget(String id, LayoutProps layout, Map<String, String> variables, Map<String, String> member) {
         this.id = id;
@@ -45,7 +58,7 @@ public abstract class BaseWidget implements Widget {
         try {
             return Integer.parseInt(expr);
         } catch (NumberFormatException e) {
-            // 先尝试直接从变量表中查找（如 this.elem_w）
+            // 先尝试直接从变量表中查找（如 elem_w??
             Integer direct = numericVars.get(expr);
             if (direct != null) return direct;
             // 快速判断：如果不是表达式（不含数字、运算符、括号等），直接返回 0
@@ -65,7 +78,7 @@ public abstract class BaseWidget implements Widget {
         }
     }
 
-    /** 快速判断字符串是否可能是一个数值表达式（必须含运算符，纯变量名不算） */
+    /** 快速判断字符串是否可能是一个数值表达式（必须含运算符，纯变量名不算??*/
     private static boolean mightBeExpression(String s) {
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
@@ -83,14 +96,14 @@ public abstract class BaseWidget implements Widget {
         vars.put("this.width", thisW);
         vars.put("this.height", thisH);
 
-        // 扫描表达式中的 widget 尺寸引用（如 join_button.width、selectGame.btn_back.x）
+        // 扫描表达式中??widget 尺寸引用（如 join_button.width、selectGame.btn_back.x??
         scanWidgetDimensionRefs(vars, layout.widthExpr(), layout.heightExpr(),
                 layout.xExpr(), layout.yExpr(), layout.condition());
         if (this.member != null) {
             scanWidgetDimensionRefs(vars, this.member.values().toArray(new String[0]));
         }
 
-        // 处理当前 screen 的 member：this.xxx
+        // 处理当前 screen ??member：this.xxx
         Map<String, String> screenMembers = ctx.screenMembers();
         if (screenMembers != null && !screenMembers.isEmpty()) {
             for (Map.Entry<String, String> entry : screenMembers.entrySet()) {
@@ -104,8 +117,8 @@ public abstract class BaseWidget implements Widget {
             }
         }
 
-        // 处理全局所有 screen 和 element 的 member
-        // 格式：screenId.xxx 或 screenId.elementId.xxx
+        // 处理全局所??screen ??element ??member
+        // 格式：screenId.xxx ??screenId.elementId.xxx
         for (String screenId : ScreenVariableRegistry.getRegisteredScreenIds()) {
             Map<String, String> screenMember = ScreenVariableRegistry.getScreenMember(screenId);
             if (screenMember != null && !screenMember.isEmpty()) {
@@ -116,7 +129,7 @@ public abstract class BaseWidget implements Widget {
                     vars.put(fullKey, value);
                 }
             }
-            // 处理该 screen 下所有带 id 的 element member
+            // 处理??screen 下所有带 id ??element member
             // 格式：screenId.elementId.xxx
             Map<String, Map<String, String>> elements = null;
             // 延迟获取避免创建不必要的对象
@@ -133,7 +146,7 @@ public abstract class BaseWidget implements Widget {
             }
         }
 
-        // 处理 ctx 上下文动态变量（含父级 member 传递的表达式）
+        // 处理 ctx 上下文动态变量（含父??member 传递的表达式）
         for (Map.Entry<String, String> entry : ctx.variables().entrySet()) {
             String key = entry.getKey();
             if (vars.containsKey(key)) continue;
@@ -148,16 +161,16 @@ public abstract class BaseWidget implements Widget {
             }
         }
 
-        // 当前 widget 自身的 member
+        // 当前 widget 自身??member
         if (this.member != null && !this.member.isEmpty()) {
             for (Map.Entry<String, String> entry : this.member.entrySet()) {
                 String expr = entry.getValue();
                 int value = eval(expr, vars);
-                // 添加到 vars：this.id.xxx (当前 element 有 id)
+                // 添加??vars：this.id.xxx (当前 element ??id)
                 if (this.id != null) {
                     vars.put("this." + this.id + "." + entry.getKey(), value);
                 }
-                // 也放一份短名：this.xxx (当前 element 直接用)
+                // 也放一份短名：this.xxx (当前 element 直接??
                 vars.put("this." + entry.getKey(), value);
                 vars.put(entry.getKey(), value);
             }
@@ -166,7 +179,10 @@ public abstract class BaseWidget implements Widget {
         // 注入游戏状态变量：game.*
         injectGameStateVars(vars);
 
-        // 延迟计算 text_width（WidgetFactory 创建时 font 可能不可用）
+        // 注入共享状态变量：state.xxx
+        injectSharedStateVars(ctx, vars);
+
+        // 延迟计算 text_width（WidgetFactory 创建??font 可能不可用）
         injectTextWidthDeferred(vars);
 
         return vars;
@@ -185,6 +201,21 @@ public abstract class BaseWidget implements Widget {
         };
         for (String key : gameKeys) {
             vars.put(key, GameStateProvider.resolve(key));
+        }
+    }
+
+    private void injectSharedStateVars(RenderContext ctx, Map<String, Integer> vars) {
+        Map<String, String> sharedState = ctx.sharedState();
+        if (sharedState == null) return;
+        for (Map.Entry<String, String> entry : sharedState.entrySet()) {
+            String key = "state." + entry.getKey();
+            if (vars.containsKey(key)) continue;
+            try {
+                vars.put(key, Integer.parseInt(entry.getValue()));
+            } catch (NumberFormatException e) {
+                int value = eval(entry.getValue(), vars);
+                vars.put(key, value);
+            }
         }
     }
 
@@ -234,8 +265,8 @@ public abstract class BaseWidget implements Widget {
     }
 
     /**
-     * 检查 condition 表达式，返回 true 表示应该渲染，false 表示隐藏
-     * condition 为 null 或空则默认渲染
+     * 检??condition 表达式，返回 true 表示应该渲染，false 表示隐藏
+     * condition ??null 或空则默认渲??
      */
     protected boolean checkCondition(Map<String, Integer> numericVars) {
         String condition = layout.condition();
@@ -256,8 +287,8 @@ public abstract class BaseWidget implements Widget {
     }
 
     /**
-     * 对字符串字段执行三元表达式求值。
-     * 如果字符串包含 ? 则按 "条件 ? 真值 : 假值" 解析，否则原样返回。
+     * 对字符串字段执行三元表达式求值??
+     * 如果字符串包??? 则按 "条件 ? 真??: 假?? 解析，否则原样返回??
      */
     protected String evalStringExpr(Map<String, Integer> numericVars, String expr) {
         return ExpressionEvaluator.evalString(
@@ -272,10 +303,15 @@ public abstract class BaseWidget implements Widget {
 
     protected RenderContext mergeContext(RenderContext ctx) {
         if ((variables == null || variables.isEmpty()) && (member == null || member.isEmpty())) return ctx;
-        Map<String, String> merged = new LinkedHashMap<>();
-        if (member != null) merged.putAll(member);
-        if (variables != null) merged.putAll(variables);
-        return ctx.withVars(merged);
+        RenderContext result = ctx.copy();
+        if (member != null) result.putAllVars(member);
+        if (variables != null) result.putAllVars(variables);
+        return result;
+    }
+
+    @Override
+    public RenderContext mergeRenderContext(RenderContext ctx) {
+        return mergeContext(ctx);
     }
 
     public void setStateV(Map<String, Map<String, Map<String, String>>> stateV) {
@@ -321,7 +357,7 @@ public abstract class BaseWidget implements Widget {
 
     /**
      * 自动收集翻译参数：从上下文中收集所有动态变量值（排除内部系统变量），
-     * 用于 text_key.d 未提供 translation_args 时的自动填充。
+     * 用于 text_key.d 未提??translation_args 时的自动填充??
      */
     protected List<String> collectTranslationArgs(RenderContext ctx) {
         List<String> args = new ArrayList<>();
@@ -338,7 +374,7 @@ public abstract class BaseWidget implements Widget {
     }
 
     /**
-     * 计算布局：先计算尺寸，再计算位置，确保位置表达式中的 this.width/height 正确。
+     * 计算布局：先计算尺寸，再计算位置，确保位置表达式中的 this.width/height 正确??
      */
     public WidgetDimension computeLayout(RenderContext ctx, int parentW, int parentH) {
         Map<String, Integer> numVars = buildNumericVars(ctx, parentW, parentH, parentW, parentH);
@@ -360,6 +396,104 @@ public abstract class BaseWidget implements Widget {
             this.y = y;
             this.w = w;
             this.h = h;
+        }
+    }
+
+    public void setSoundConfig(WidgetSoundConfig soundConfig) {
+        this.soundConfig = soundConfig;
+    }
+
+    public WidgetSoundConfig getSoundConfig() {
+        return soundConfig;
+    }
+
+    protected SoundInstance playSound(SoundEventConfig sound) {
+        if (sound == null || !sound.isValid()) return null;
+        try {
+            SoundInstance instance = SimpleSoundInstance.forUI(
+                sound.getSoundEvent().value(), sound.getPitch(), sound.getVolume()
+            );
+            Minecraft.getInstance().getSoundManager().play(instance);
+            return instance;
+        } catch (Exception e) {
+            // 音效加载失败不影响其他功??
+            return null;
+        }
+    }
+
+    private long getCurrentTick() {
+        return System.currentTimeMillis() / 50;
+    }
+
+    private boolean isThrottled(long lastTick, int throttleTicks) {
+        if (throttleTicks <= 0) return false;
+        long currentTick = getCurrentTick();
+        if (lastTick > currentTick) return false;
+        return lastTick >= 0 && (currentTick - lastTick) < throttleTicks;
+    }
+
+    protected void playClickSound() {
+        if (soundConfig != null) {
+            if (soundConfig.hasClick()) {
+                playSound(soundConfig.getClick());
+            }
+        } else {
+            try {
+                Minecraft.getInstance().getSoundManager().play(
+                    SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F)
+                );
+            } catch (Exception e) {
+                // 忽略
+            }
+        }
+    }
+
+    protected void playHoverSound() {
+        if (soundConfig != null && soundConfig.hasHover()) {
+            playSound(soundConfig.getHover());
+        }
+    }
+
+    protected void playValueChangeSound() {
+        if (soundConfig == null || !soundConfig.hasValueChange()) return;
+        SoundEventConfig sound = soundConfig.getValueChange();
+        if (isThrottled(lastValueChangeTick, sound.getThrottleTicks())) return;
+        lastValueChangeTick = getCurrentTick();
+        activeValueChangeSound = playSound(sound);
+    }
+
+    protected void stopValueChangeSound() {
+        if (activeValueChangeSound != null) {
+            try {
+                Minecraft.getInstance().getSoundManager().stop(activeValueChangeSound);
+            } catch (Exception e) {
+                // 忽略
+            }
+            activeValueChangeSound = null;
+        }
+    }
+
+    protected void playDragStartSound() {
+        if (soundConfig != null && soundConfig.hasDragStart()) {
+            playSound(soundConfig.getDragStart());
+        }
+    }
+
+    protected void playDragEndSound() {
+        if (soundConfig != null && soundConfig.hasDragEnd()) {
+            playSound(soundConfig.getDragEnd());
+        }
+    }
+
+    protected void playFocusSound() {
+        if (soundConfig != null && soundConfig.hasFocus()) {
+            playSound(soundConfig.getFocus());
+        }
+    }
+
+    protected void playReleaseSound() {
+        if (soundConfig != null && soundConfig.hasRelease()) {
+            playSound(soundConfig.getRelease());
         }
     }
 }

@@ -7,6 +7,8 @@
     "DeathScreenMixin",
     "LivingEntityRendererMixin",
     "PauseScreenMixin",
+    "SoundManagerMixin",
+    "SoundManagerPreparationsAccessor",
     "TitleScreenMixin"
   ],
   "injectors": {
