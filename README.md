@@ -1,10 +1,9 @@
 <div align="center">
 
-# SIRIUS Ui
-
+![Logo](https://cdn.modrinth.com/data/cached_images/94757f2e1868a2d9acdaf5d4d76b9b828aeb9f4b.png)
 ### Minecraft UI Enhancement Mod
 
-A fresh UI experience for Minecraft Java Edition
+Json Ui Engine for Minecraft Java Edition
 
 [![Alpha](https://img.shields.io/badge/Status-Alpha-ff4444?style=flat-square)]()
 
@@ -22,14 +21,6 @@ A fresh UI experience for Minecraft Java Edition
 SIRIUS Ui is a UI enhancement mod powered by a **JSON-driven Widget component system**. Define game interfaces by writing JSON files — no Java code required.
 
 SIRIUS Ui is open source under the [HaoTianA License v1.0](https://github.com/AlanHT520/SIRIUS-Ui-Mod/blob/main/LICENSE.md).
-
-### Core Features
-
-- **Declarative UI** — Interfaces defined in JSON, with buttons, sliders, dropdowns and more out of the box
-- **Dynamic Expressions** — Positions and sizes support expressions like `screen.width / 2 - 100` for adaptive layouts
-- **Component Reuse** — Reference external component definitions via `ref` and pass parameters with `variables`
-- **Screen Inheritance** — Child screens inherit from a `parent`, defining only the differences
-- **Option Binding** — Widgets can directly bind to Minecraft game options (FOV, difficulty, etc.)
 
 ## Installation
 
