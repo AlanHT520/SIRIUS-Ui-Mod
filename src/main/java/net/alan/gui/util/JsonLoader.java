@@ -14,9 +14,11 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.IOException;
 import java.lang.reflect.Type;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -51,8 +53,10 @@ public class JsonLoader {
             LOGGER.error("Screen layout not found: {}", id);
             return null;
         }
-        try (Reader reader = new InputStreamReader(optional.get().open(), StandardCharsets.UTF_8)) {
-            JsonObject root = JsonParser.parseReader(reader).getAsJsonObject();
+        try {
+            byte[] bytes = readAllBytes(optional.get().open());
+            String content = decodeWithFallback(bytes);
+            JsonObject root = JsonParser.parseString(content).getAsJsonObject();
             if (!root.has("screen") || !root.get("screen").isJsonObject()) {
                 LOGGER.error("Missing 'screen' object in {}", id);
                 return null;
@@ -252,12 +256,37 @@ public class JsonLoader {
     private static JsonElement loadElement(ResourceManager manager, ResourceLocation id) {
         Optional<Resource> optional = manager.getResource(id);
         if (optional.isEmpty()) return null;
-        try (Reader reader = new InputStreamReader(optional.get().open(), StandardCharsets.UTF_8)) {
-            return JsonParser.parseReader(reader);
+        try {
+            byte[] bytes = readAllBytes(optional.get().open());
+            String content = decodeWithFallback(bytes);
+            return JsonParser.parseString(content);
         } catch (Exception e) {
             LOGGER.error("Failed to load element {}: {}", id, e.getMessage());
             return null;
         }
+    }
+
+    private static byte[] readAllBytes(InputStream input) throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        byte[] data = new byte[4096];
+        int n;
+        while ((n = input.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, n);
+        }
+        return buffer.toByteArray();
+    }
+
+    private static String decodeWithFallback(byte[] bytes) {
+        String utf8 = new String(bytes, StandardCharsets.UTF_8);
+        if (utf8.indexOf('\uFFFD') >= 0) {
+            Charset systemCharset = Charset.defaultCharset();
+            if (!systemCharset.equals(StandardCharsets.UTF_8)) {
+                LOGGER.warn("UTF-8 decoding produced replacement characters, retrying with system charset: {}",
+                    systemCharset.name());
+                return new String(bytes, systemCharset);
+            }
+        }
+        return utf8;
     }
 
     private static JsonObject deepCopy(JsonObject source) {

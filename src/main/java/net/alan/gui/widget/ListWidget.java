@@ -183,12 +183,12 @@ public class ListWidget extends BaseWidget {
 
     private void renderScrollbar(GuiGraphics graphics, int listX, int listY, int listW, int listH, double maxScroll, RenderContext ctx) {
         ListProps.ScrollbarDef sb = props.scrollbar();
-        int scrollbarW = sb.width() > 0 ? sb.width() : 6;
+        int scrollbarW = sb.width();
         int scrollbarX = computeScrollbarX(sb, listX, listW, scrollbarW, ctx);
         int scrollbarY = computeScrollbarY(sb, listY, listH, ctx);
 
         int barHeight = (int) ((double) listH * listH / (listH + maxScroll));
-        barHeight = Math.max(16, Math.min(barHeight, listH - 8));
+        barHeight = Math.max(sb.minHeight(), Math.min(barHeight, listH - sb.padding()));
         int barY = (int) (scrollAmount * (listH - barHeight) / maxScroll);
 
         // track
@@ -277,11 +277,11 @@ public class ListWidget extends BaseWidget {
         // 滚动条点击处理（含轨道跳转）
         if (props.scrollbar() != null && maxScroll > 0) {
             ListProps.ScrollbarDef sb = props.scrollbar();
-            int scrollbarW = sb.width() > 0 ? sb.width() : 6;
+            int scrollbarW = sb.width();
             int scrollbarX = computeScrollbarX(sb, listX, dim.w, scrollbarW, mergedCtx);
             int scrollbarY = computeScrollbarY(sb, listY, dim.h, mergedCtx);
             int barHeight = (int) ((double) dim.h * dim.h / (dim.h + maxScroll));
-            barHeight = Math.max(16, Math.min(barHeight, dim.h - 8));
+            barHeight = Math.max(sb.minHeight(), Math.min(barHeight, dim.h - sb.padding()));
             int barY = (int) (scrollAmount * (dim.h - barHeight) / maxScroll);
 
             // 点击滑块
@@ -372,9 +372,9 @@ public class ListWidget extends BaseWidget {
         if (scrolling) {
             List<RowDef> visibleRows = getVisibleRows();
             double maxScroll = getMaxScroll(dim.h, visibleRows);
-
+            ListProps.ScrollbarDef sb = props.scrollbar();
             int barHeight = (int) ((double) dim.h * dim.h / (dim.h + maxScroll));
-            barHeight = Math.max(16, Math.min(barHeight, dim.h - 8));
+            barHeight = Math.max(sb.minHeight(), Math.min(barHeight, dim.h - sb.padding()));
             double delta = (mouseY - lastMouseY) * maxScroll / (dim.h - barHeight);
             scrollAmount = Math.max(0, Math.min(scrollAmount + delta, maxScroll));
             lastMouseY = mouseY;
@@ -438,7 +438,7 @@ public class ListWidget extends BaseWidget {
         List<RowDef> visibleRows = getVisibleRows();
         double maxScroll = getMaxScroll(dim.h, visibleRows);
         // 修正：滚轮向??scrollY>0 时减少滚动量（内容向下移动）
-        scrollAmount = Math.max(0, Math.min(scrollAmount - scrollY * 36, maxScroll));
+        scrollAmount = Math.max(0, Math.min(scrollAmount - scrollY * props.scrollSpeed(), maxScroll));
         return true;
     }
 

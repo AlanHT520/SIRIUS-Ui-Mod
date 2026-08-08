@@ -98,6 +98,20 @@ public class SliderWidget extends BaseWidget {
             graphics.fill(screenX, trackY, screenX + dim.w, trackY + 4, 0xFFAAAAAA);
         }
 
+        // 已填充部分（滑块左侧）
+        String filledTex = getTrackFilledSprite();
+        if (filledTex != null && !filledTex.isEmpty()) {
+            int handleCenterX = screenX + (int) (currentRatio * (dim.w - HANDLE_WIDTH)) + HANDLE_WIDTH / 2;
+            int fillW = handleCenterX - screenX;
+            if (fillW > 0) {
+                var id = ResourceLocation.tryParse(filledTex);
+                if (id != null) {
+                    graphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+                    graphics.blitSprite(id, screenX, screenY, fillW, dim.h);
+                }
+            }
+        }
+
         // 手柄
         int handleX = screenX + (int) (currentRatio * (dim.w - HANDLE_WIDTH));
         String handleTex = getHandleSprite();
@@ -180,6 +194,7 @@ public class SliderWidget extends BaseWidget {
 
         if (isDragging) {
             isDragging = false;
+            canChangeValue = false;
             snapToStep();
             playDragEndSound();
             stopValueChangeSound();
@@ -223,7 +238,8 @@ public class SliderWidget extends BaseWidget {
         int screenY = y + dim.y;
 
         boolean wasHovered = this.isHovered;
-        isHovered = mouseX >= screenX && mouseX <= screenX + dim.w
+        int handleX = screenX + (int) (currentRatio * (dim.w - HANDLE_WIDTH));
+        isHovered = mouseX >= handleX && mouseX <= handleX + HANDLE_WIDTH
                 && mouseY >= screenY && mouseY <= screenY + dim.h;
         if (!wasHovered && this.isHovered) {
             playHoverSound();
@@ -344,7 +360,7 @@ public class SliderWidget extends BaseWidget {
     }
 
     /**
-     * 轨道纹理：获得焦点且未激活键盘模式时高亮（对标原??isFocused && !canChangeValue??
+     * 轨道纹理：获得焦点且未激活键盘模式时高亮（对标原版 isFocused && !canChangeValue）
      */
     private String getTrackSprite() {
         if (trackTexture == null) return null;
@@ -353,6 +369,14 @@ public class SliderWidget extends BaseWidget {
             return tex != null ? tex : trackTexture.getNormal();
         }
         return trackTexture.getNormal();
+    }
+
+    /**
+     * 已填充部分纹理（滑块左侧）
+     */
+    private String getTrackFilledSprite() {
+        if (trackTexture == null) return null;
+        return trackTexture.getFilled();
     }
 
     /**

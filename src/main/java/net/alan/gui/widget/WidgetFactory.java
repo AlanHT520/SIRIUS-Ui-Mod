@@ -322,7 +322,8 @@ public class WidgetFactory {
                 int arrColor = json.has("arrow_color")
                         ? (int) BackgroundRenderer.parseColor(json.get("arrow_color").getAsString())
                         : 0xFFFFFFFF;
-                yield new ArrowSwitchWidget(id, layout, variables, member, optionKey, values, leftTex, rightTex, centerTex, textProps, children, stateKey, bgColor, hBgColor, arrColor);
+                String buttonWidthExpr = json.has("button_width") ? json.get("button_width").getAsString() : null;
+                yield new ArrowSwitchWidget(id, layout, variables, member, optionKey, values, leftTex, rightTex, centerTex, textProps, children, stateKey, bgColor, hBgColor, arrColor, buttonWidthExpr);
             }
             case "dropdown" -> {
                 String optionKey = json.has("option_key") ? json.get("option_key").getAsString() : null;
@@ -793,7 +794,9 @@ public class WidgetFactory {
 
             String sbX = sb.has("x") ? sb.get("x").getAsString() : null;
             String sbY = sb.has("y") ? sb.get("y").getAsString() : null;
-            scrollbar = new ListProps.ScrollbarDef(sbWidth, sbX, sbY, track, thumb);
+            int sbMinH = sb.has("min_height") ? sb.get("min_height").getAsInt() : 0;
+            int sbPad = sb.has("padding") ? sb.get("padding").getAsInt() : 0;
+            scrollbar = new ListProps.ScrollbarDef(sbWidth, sbX, sbY, track, thumb, sbMinH, sbPad);
         }
 
         String backgroundColor = json.has("background_color")
@@ -802,7 +805,9 @@ public class WidgetFactory {
                 ? new com.google.gson.Gson().fromJson(json.get("background_texture"), TextureSet.class)
                 : null;
 
-        return new ListProps(gap, null, scrollbar, backgroundColor, backgroundTexture, rows);
+        int scrollSpeed = json.has("scroll_speed") ? json.get("scroll_speed").getAsInt() : 0;
+
+        return new ListProps(gap, null, scrollbar, backgroundColor, backgroundTexture, rows, scrollSpeed);
     }
 
     private static Widget parseBox(JsonObject json, LayoutProps layout, Map<String, String> variables, Map<String, String> member,
@@ -972,7 +977,9 @@ public class WidgetFactory {
 
             String sbX = sb.has("x") ? sb.get("x").getAsString() : null;
             String sbY = sb.has("y") ? sb.get("y").getAsString() : null;
-            scrollbar = new ListProps.ScrollbarDef(sbWidth, sbX, sbY, track, thumb);
+            int sbMinH = sb.has("min_height") ? sb.get("min_height").getAsInt() : 0;
+            int sbPad = sb.has("padding") ? sb.get("padding").getAsInt() : 0;
+            scrollbar = new ListProps.ScrollbarDef(sbWidth, sbX, sbY, track, thumb, sbMinH, sbPad);
         }
 
         List<Widget> buttons = new ArrayList<>();

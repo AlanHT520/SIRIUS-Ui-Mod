@@ -1,11 +1,11 @@
-{
+ï»¿{
   "type": "container",
   "position": { "x": "0", "y": "0" },
   "size": { "width": "parent.width", "height": "parent.height" },
   "background_color": "0x50000000",
   "children": [
     {
-      "comment": "×ó²àÃæ°å - ¿ÉÓÃ²ÄÖÊ°üÁÐ±í",
+      "comment": "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ - ï¿½ï¿½ï¿½Ã²ï¿½ï¿½Ê°ï¿½ï¿½Ð±ï¿½",
       "type": "pack_list",
       "id": "unactive_pack_list",
       "source": "resource_packs",
@@ -53,11 +53,11 @@
             "gap": 20,
             "up": {
               "size": { "width": 16, "height": 8 }, "show_when": ["hovered", "selected"],
-              "text": { "text": "¡ø", "color": "0xCC888888", "highlighted_color": "0xCCFFFFFF" }
+              "text": { "text": "ï¿½ï¿½", "color": "0xCC888888", "highlighted_color": "0xCCFFFFFF" }
             },
             "down": {
               "size": { "width": 16, "height": 8 }, "show_when": ["hovered", "selected"],
-              "text": { "text": "¨‹", "color": "0xCC888888", "highlighted_color": "0xCCFFFFFF" }
+              "text": { "text": "ï¿½ï¿½", "color": "0xCC888888", "highlighted_color": "0xCCFFFFFF" }
             }
           },
           "scrollbar": { "width": 4, "color": "0x44FFFFFF", "min_height": 16, "padding": 2 },
@@ -66,7 +66,7 @@
         }
       },
       {
-        "comment": "ÓÒ²àÃæ°å - ÒÑ¼ÓÔØ²ÄÖÊ°üÁÐ±í",
+        "comment": "ï¿½Ò²ï¿½ï¿½ï¿½ï¿½ - ï¿½Ñ¼ï¿½ï¿½Ø²ï¿½ï¿½Ê°ï¿½ï¿½Ð±ï¿½",
         "type": "pack_list",
         "id": "active_pack_list",
         "source": "resource_packs",
@@ -114,11 +114,11 @@
             "gap": 20,
             "up": {
               "size": { "width": 16, "height": 8 }, "show_when": ["hovered", "selected"],
-              "text": { "text": "¡ø", "color": "0xCC888888", "highlighted_color": "0xCCFFFFFF" }
+              "text": { "text": "ï¿½ï¿½", "color": "0xCC888888", "highlighted_color": "0xCCFFFFFF" }
             },
             "down": {
               "size": { "width": 16, "height": 8 }, "show_when": ["hovered", "selected"],
-              "text": { "text": "¨‹", "color": "0xCC888888", "highlighted_color": "0xCCFFFFFF" }
+              "text": { "text": "ï¿½ï¿½", "color": "0xCC888888", "highlighted_color": "0xCCFFFFFF" }
             }
           },
         "scrollbar": { "width": 4, "color": "0x44FFFFFF", "min_height": 16, "padding": 2 },
@@ -127,12 +127,12 @@
       }
     },
     {
-      "comment": "´ò¿ª²ÄÖÊ°üÎÄ¼þ¼Ð",
+      "comment": "ï¿½ò¿ª²ï¿½ï¿½Ê°ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½",
       "type": "button",
       "position": { "x": "6", "y": "parent.height - 22" },
       "size": { "width": "80", "height": "20" },
       "text": {
-        "text_key": "pack.openFolder",
+        "color": "0xBFFFFFFF", "text_key": "pack.openFolder",
         "color": "0xFFCCCCCC",
         "shadow": true
       },
@@ -143,12 +143,12 @@
       }
     },
     {
-      "comment": "Íê³É°´Å¥",
+      "comment": "ï¿½ï¿½É°ï¿½Å¥",
       "type": "button",
       "position": { "x": "parent.width - 56", "y": "parent.height - 22" },
       "size": { "width": "50", "height": "20" },
       "text": {
-        "text_key": "gui.done",
+        "color": "0xBFFFFFFF", "text_key": "gui.done",
         "color": "0xFFAAFFAA",
         "shadow": true
       },

@@ -264,7 +264,20 @@ public class CardInstance {
         if (bg == null) return;
         if (bg.hasTexture()) {
             ResourceLocation tex = ResourceLocation.parse(bg.getTexture());
-            graphics.blit(tex, x, y, 0, 0, w, h, w, h);
+            String mode = bg.getTextureMode();
+            if ("tile".equals(mode)) {
+                int tileW = w;
+                int tileH = h;
+                for (int tx = x; tx < x + w; tx += tileW) {
+                    int drawW = Math.min(tileW, x + w - tx);
+                    for (int ty = y; ty < y + h; ty += tileH) {
+                        int drawH = Math.min(tileH, y + h - ty);
+                        graphics.blit(tex, tx, ty, 0, 0, drawW, drawH, drawW, drawH);
+                    }
+                }
+            } else {
+                graphics.blit(tex, x, y, 0, 0, w, h, w, h);
+            }
         }
         if (bg.hasColor()) {
             graphics.fill(x, y, x + w, y + h, definition.parseColor(bg.getColor()));
@@ -278,11 +291,11 @@ public class CardInstance {
             graphics.fill(0, 0, sw, sh, def.parseColor(def.getOverlay()));
         }
 
-        renderShadow(graphics, cardX, cardY, cardW, cardH, 4, 0x50);
+        renderShadow(graphics, cardX, cardY, cardW, cardH, def.getShadowOffset(), def.getShadowAlpha());
         renderBackground(graphics, cardX, cardY, cardW, cardH, def.getBackground());
         renderHighlight(graphics, cardX, cardY, cardW, cardH);
         if (def.hasBorder()) {
-            graphics.renderOutline(cardX, cardY, cardW, cardH, def.parseColor(def.getBorder()));
+            renderBorder(graphics, cardX, cardY, cardW, cardH, def.parseColor(def.getBorder()), def.getBorderWidth());
         }
 
         int contentOffsetY = 0;
@@ -325,7 +338,7 @@ public class CardInstance {
         CardDefinition def = definition;
         float alpha = getRemainingAlpha();
 
-        renderShadow(graphics, cardX, cardY, cardW, cardH, 3, 0x50);
+        renderShadow(graphics, cardX, cardY, cardW, cardH, Math.max(1, def.getShadowOffset() - 1), def.getShadowAlpha());
 
         if (def.getBackground().hasTexture()) {
             ResourceLocation tex = ResourceLocation.parse(def.getBackground().getTexture());
@@ -337,7 +350,7 @@ public class CardInstance {
         }
         graphics.fill(cardX, cardY, cardX + cardW, cardY + 1, applyAlpha(0x40FFFFFF, alpha));
         if (def.hasBorder()) {
-            graphics.renderOutline(cardX, cardY, cardW, cardH, applyAlpha(def.parseColor(def.getBorder()), alpha));
+            renderBorder(graphics, cardX, cardY, cardW, cardH, applyAlpha(def.parseColor(def.getBorder()), alpha), def.getBorderWidth());
         }
 
         int padding = def.getPadding();
@@ -358,11 +371,11 @@ public class CardInstance {
             graphics.fill(0, 0, sw, sh, def.parseColor(def.getOverlay()));
         }
 
-        renderShadow(graphics, cardX, cardY, cardW, cardH, 3, 0x40);
+        renderShadow(graphics, cardX, cardY, cardW, cardH, Math.max(1, def.getShadowOffset() - 1), Math.min(def.getShadowAlpha(), 0x40));
         renderBackground(graphics, cardX, cardY, cardW, cardH, def.getBackground());
         graphics.fill(cardX, cardY, cardX + cardW, cardY + 1, 0x40FFFFFF);
         if (def.hasBorder()) {
-            graphics.renderOutline(cardX, cardY, cardW, cardH, def.parseColor(def.getBorder()));
+            renderBorder(graphics, cardX, cardY, cardW, cardH, def.parseColor(def.getBorder()), def.getBorderWidth());
         }
 
         int padding = def.getPadding();
@@ -395,7 +408,7 @@ public class CardInstance {
         renderBackground(graphics, tx, ty, cardW, cardH, def.getBackground());
         graphics.fill(tx, ty, tx + cardW, ty + 1, 0x40FFFFFF);
         if (def.hasBorder()) {
-            graphics.renderOutline(tx, ty, cardW, cardH, def.parseColor(def.getBorder()));
+            renderBorder(graphics, tx, ty, cardW, cardH, def.parseColor(def.getBorder()), def.getBorderWidth());
         }
 
         int padding = def.getPadding();
@@ -414,6 +427,16 @@ public class CardInstance {
             int alpha = (int)(((shadowSize - i + 1) / (float)(shadowSize + 1)) * baseAlpha);
             int c = (alpha << 24) | 0x000000;
             graphics.fill(x + i, y + i + 2, x + w + i, y + h + i + 2, c);
+        }
+    }
+
+    private void renderBorder(GuiGraphics graphics, int x, int y, int w, int h, int color, int borderWidth) {
+        if (borderWidth <= 1) {
+            graphics.renderOutline(x, y, w, h, color);
+            return;
+        }
+        for (int i = 0; i < borderWidth; i++) {
+            graphics.renderOutline(x + i, y + i, w - i * 2, h - i * 2, color);
         }
     }
 

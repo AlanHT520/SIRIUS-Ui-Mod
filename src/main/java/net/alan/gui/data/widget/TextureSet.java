@@ -6,6 +6,7 @@ public class TextureSet {
     private String disabled;
     private String ing;
     private String selected;
+    private String filled;
 
     public TextureSet() {}
     public TextureSet(String normal, String highlighted, String disabled) {
@@ -24,4 +25,6 @@ public class TextureSet {
     public void setIng(String ing) { this.ing = ing; }
     public String getSelected() { return selected; }
     public void setSelected(String selected) { this.selected = selected; }
+    public String getFilled() { return filled; }
+    public void setFilled(String filled) { this.filled = filled; }
 }

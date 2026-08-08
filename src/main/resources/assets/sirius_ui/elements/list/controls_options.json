@@ -1,4 +1,4 @@
-{
+﻿{
   "type": "list",
   "gap": 5,
   "background_color": "0x50000000",
@@ -14,31 +14,31 @@
   "rows": [
     { "height": 5, "children": [] },
     { "height": 20, "children": [
-      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.sensitivity" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "type": "text", "color": "0x00000000", "text": { "color": "0xBFFFFFFF", "text_key": "options.sensitivity" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
       { "ref": "sirius_ui:elements/slider/controls/mouse_sensitivity.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
     ]},
     { "height": 20, "children": [
-      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.mouseWheelSensitivity" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "type": "text", "color": "0x00000000", "text": { "color": "0xBFFFFFFF", "text_key": "options.mouseWheelSensitivity" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
       { "ref": "sirius_ui:elements/slider/controls/mouse_wheel_sensitivity.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
     ]},
     { "height": 20, "children": [
-      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.invertMouse" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "type": "text", "color": "0x00000000", "text": { "color": "0xBFFFFFFF", "text_key": "options.invertMouse" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
       { "ref": "sirius_ui:elements/buttons/selector/controls/invert_y_mouse.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
     ]},
     { "height": 20, "children": [
-      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.discrete_mouse_scroll" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "type": "text", "color": "0x00000000", "text": { "color": "0xBFFFFFFF", "text_key": "options.discrete_mouse_scroll" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
       { "ref": "sirius_ui:elements/buttons/selector/controls/discrete_mouse_scroll.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
     ]},
     { "height": 20, "children": [
-      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.touchscreen" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "type": "text", "color": "0x00000000", "text": { "color": "0xBFFFFFFF", "text_key": "options.touchscreen" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
       { "ref": "sirius_ui:elements/buttons/selector/controls/touchscreen.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
     ]},
     { "height": 20, "children": [
-      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.rawMouseInput" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "type": "text", "color": "0x00000000", "text": { "color": "0xBFFFFFFF", "text_key": "options.rawMouseInput" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
       { "ref": "sirius_ui:elements/buttons/selector/controls/raw_mouse_input.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
     ]},
     { "height": 20, "children": [
-      { "type": "button", "text_key": "controls.keybinds", "position": { "x": "elem_x" }, "size": { "width": "elem_w", "height": 20 },
+      { "type": "button", "color": "0xBFFFFFFF", "text_key": "controls.keybinds", "position": { "x": "elem_x" }, "size": { "width": "elem_w", "height": 20 },
         "texture": {
           "normal": "sirius_ui:buttons/default_button",
           "highlighted": "sirius_ui:buttons/default_button_highlighted",
@@ -48,19 +48,19 @@
       }
     ]},
     { "height": 20, "children": [
-      { "type": "text", "color": "0x00000000", "text": { "text_key": "key.sneak" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "type": "text", "color": "0x00000000", "text": { "color": "0xBFFFFFFF", "text_key": "key.sneak" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
       { "ref": "sirius_ui:elements/buttons/selector/controls/toggle_crouch.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
     ]},
     { "height": 20, "children": [
-      { "type": "text", "color": "0x00000000", "text": { "text_key": "key.sprint" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "type": "text", "color": "0x00000000", "text": { "color": "0xBFFFFFFF", "text_key": "key.sprint" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
       { "ref": "sirius_ui:elements/buttons/selector/controls/toggle_sprint.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
     ]},
     { "height": 20, "children": [
-      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.autoJump" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "type": "text", "color": "0x00000000", "text": { "color": "0xBFFFFFFF", "text_key": "options.autoJump" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
       { "ref": "sirius_ui:elements/buttons/selector/controls/auto_jump.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
     ]},
     { "height": 20, "children": [
-      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.operatorItemsTab" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "type": "text", "color": "0x00000000", "text": { "color": "0xBFFFFFFF", "text_key": "options.operatorItemsTab" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
       { "ref": "sirius_ui:elements/buttons/selector/controls/operator_items_tab.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
     ]}
   ]

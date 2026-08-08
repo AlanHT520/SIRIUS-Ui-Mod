@@ -7,5 +7,14 @@
         "volume": 0.3
       }
     ]
+  },
+  "arrow_switch_change": {
+    "subtitle": "sirius_ui.subtitle.arrow_switch_change",
+    "sounds": [
+      {
+        "name": "sirius_ui:switch",
+        "volume": 0.3
+      }
+    ]
   }
 }

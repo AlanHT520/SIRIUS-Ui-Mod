@@ -1,16 +1,18 @@
-{
+﻿{
   "type": "slider",
   "option_key": "damageTiltStrength",
   "slider_min": 0.0,
   "slider_max": 1.0,
   "slider_step": 0.01,
   "text": {
-    "color": "0xCCFFFFFF", "text_key.option": "options.damageTiltStrength"
+    "color": "0xCCFFFFFF", "text_key.option": "options.damageTiltStrength",
+    "position": { "x": "-4 - this.width", "y": "parent.height / 2 - this.height / 2" }
   },
   "track_texture": {
     "normal": "sirius_ui:buttons/options/sliders/slider",
     "highlighted": "sirius_ui:buttons/options/sliders/slider_highlighted",
-    "disabled": "sirius_ui:buttons/options/sliders/slider"
+    "disabled": "sirius_ui:buttons/options/sliders/slider",
+    "filled": "sirius_ui:buttons/options/sliders/slider_filled"
   },
   "handle_texture": {
     "normal": "sirius_ui:buttons/options/sliders/slider_handle",

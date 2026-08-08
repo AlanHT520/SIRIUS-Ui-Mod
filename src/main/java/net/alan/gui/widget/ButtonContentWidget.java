@@ -77,16 +77,16 @@ public class ButtonContentWidget extends BaseWidget {
 
     private String getCurrentState(RenderContext context, Map<String, Integer> vars) {
         if (!layout.enabled()) return "disabled";
-        if (isHovered) return "highlighted";
         if (isSelected(context, vars)) return "selected";
+        if (isHovered) return "highlighted";
         return "normal";
     }
 
     private Map<String, String> getStateOverrides(RenderContext context, Map<String, Integer> vars) {
         if (stateVariables == null) return null;
         if (!layout.enabled()) return stateVariables.get("disabled");
-        if (isHovered) return stateVariables.get("highlighted");
         if (isSelected(context, vars)) return stateVariables.get("selected");
+        if (isHovered) return stateVariables.get("highlighted");
         return stateVariables.get("normal");
     }
 
@@ -115,8 +115,8 @@ public class ButtonContentWidget extends BaseWidget {
         if (style.texture() != null) {
             String texPath = null;
             if (!layout.enabled()) texPath = evalStringExpr(vars, style.texture().getDisabled());
-            else if (isHovered) texPath = evalStringExpr(vars, style.texture().getHighlighted());
             else if (isSelected(mergedCtx, vars)) texPath = evalStringExpr(vars, style.texture().getSelected());
+            else if (isHovered) texPath = evalStringExpr(vars, style.texture().getHighlighted());
             else texPath = evalStringExpr(vars, style.texture().getNormal());
 
             if (texPath != null && !texPath.isEmpty()) {

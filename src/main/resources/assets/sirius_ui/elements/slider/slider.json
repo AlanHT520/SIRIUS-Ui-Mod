@@ -3,7 +3,8 @@
   "track_texture": {
     "normal": "sirius_ui:buttons/options/sliders/slider",
     "highlighted": "sirius_ui:buttons/options/sliders/slider_highlighted",
-    "disabled": "sirius_ui:buttons/options/sliders/slider"
+    "disabled": "sirius_ui:buttons/options/sliders/slider",
+    "filled": "sirius_ui:buttons/options/sliders/slider_filled"
   },
   "handle_texture": {
     "normal": "sirius_ui:buttons/options/sliders/slider_handle",

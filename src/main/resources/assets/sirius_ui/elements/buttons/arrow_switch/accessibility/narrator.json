@@ -1,6 +1,6 @@
-{
+﻿{
   "type": "arrow_switch",
-  "option_key": "narrator",
+  "option_key": "narrator",  "button_width": "parent.height",  "sound": { "click": { "name": "sirius_ui:switch", "volume": 0.3 } },
   "values": [
     {"key": "0", "text_key": "options.narrator.off"},
     {"key": "1", "text_key": "options.narrator.all"},

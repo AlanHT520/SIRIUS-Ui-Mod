@@ -1,6 +1,6 @@
-{
+﻿{
   "type": "arrow_switch",
-  "option_key": "attackIndicator",
+  "option_key": "attackIndicator",  "button_width": "parent.height",  "sound": { "click": { "name": "sirius_ui:switch", "volume": 0.3 } },
   "values": [
     {"key": "0", "text_key": "options.off"},
     {"key": "1", "text_key": "options.attack.crosshair"},

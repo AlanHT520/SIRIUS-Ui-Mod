@@ -274,7 +274,8 @@ public class DynamicListWidget extends BaseWidget {
 
         int searchOffset = 0;
         if (searchEnabled && searchBox != null) {
-            searchOffset = searchBoxH + 4;
+            int searchGap = styleConfig != null ? styleConfig.searchGap() : 4;
+            searchOffset = searchBoxH + searchGap;
             int effectiveW = searchBoxW > 0 ? searchBoxW : Math.max(1, dim.w - searchBoxX * 2);
             searchBox.setRectangle(effectiveW, Math.max(1, searchBoxH),
                     listX + searchBoxX, listY + searchBoxY);
@@ -421,8 +422,10 @@ public class DynamicListWidget extends BaseWidget {
             int sbX = listX + dim.w - sbW;
             int sbTrackColor = sb != null ? parseColor(sb.track_color) : 0x33000000;
             int sbThumbColor = sb != null ? parseColor(sb.thumb_color) : 0xAAFFFFFF;
+            int sbMinH = styleConfig != null ? styleConfig.scrollbarMinHeight() : 16;
+            int sbPad = styleConfig != null ? styleConfig.scrollbarPadding() : 8;
             int barH = (int) (listContentH * listContentH / (double)(listContentH + maxScroll));
-            barH = Math.max(16, Math.min(barH, listContentH - 8));
+            barH = Math.max(sbMinH, Math.min(barH, listContentH - sbPad));
             int barY = listContentY + (int) (scrollAmount * (listContentH - barH) / maxScroll);
             graphics.fill(sbX, listContentY, sbX + sbW, listContentY + listContentH, sbTrackColor);
             graphics.fill(sbX, barY, sbX + sbW, barY + barH, sbThumbColor);
@@ -548,7 +551,8 @@ public class DynamicListWidget extends BaseWidget {
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY,
                                  RenderContext context, int x, int y, int width, int height) {
         if (!layout.visible()) return false;
-        scrollAmount -= scrollY * 20;
+        int scrollSpeed = styleConfig != null ? styleConfig.scrollSpeed() : 36;
+        scrollAmount -= scrollY * scrollSpeed;
         return true;
     }
 

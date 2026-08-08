@@ -1,4 +1,4 @@
-{
+﻿{
   "type": "list",
   "gap": 5,
   "background_color": "0x50000000",
@@ -16,15 +16,15 @@
   "rows": [
     { "height": 5, "children": [] },
     { "height": 22, "children": [
-      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.fov" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "type": "text", "color": "0x00000000", "text": { "color": "0xBFFFFFFF", "text_key": "options.fov" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
       { "ref": "sirius_ui:elements/slider/slider_fov.json", "filter_key": "options.fov", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
     ]},
     { "height": 22, "children": [
-      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.difficulty" }, "condition": "game.in_level", "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "type": "text", "color": "0x00000000", "text": { "color": "0xBFFFFFFF", "text_key": "options.difficulty" }, "condition": "game.in_level", "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
       { "ref": "sirius_ui:elements/buttons/arrow_switch/general/difficult_cycle.json", "filter_key": "options.difficulty", "text": {}, "condition": "game.in_level", "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
     ]},
     { "height": 22, "children": [
-      { "type": "button", "text_key": "options.language", "position": { "x": "elem_x" }, "size": { "width": "(elem_w - 5) / 2", "height": 20 },
+      { "type": "button", "color": "0xBFFFFFFF", "text_key": "options.language", "position": { "x": "elem_x" }, "size": { "width": "(elem_w - 5) / 2", "height": 20 },
         "texture": {
           "normal": "sirius_ui:buttons/default_button",
           "highlighted": "sirius_ui:buttons/default_button_highlighted",
@@ -32,7 +32,7 @@
         },
         "action": { "type": "open_screen", "screenId": "language" }
       },
-      { "type": "button", "text_key": "Mods", "position": { "x": "elem_x + (elem_w - 5) / 2 + 5" }, "size": { "width": "(elem_w - 5) / 2", "height": 20 },
+      { "type": "button", "color": "0xBFFFFFFF", "text_key": "Mods", "position": { "x": "elem_x + (elem_w - 5) / 2 + 5" }, "size": { "width": "(elem_w - 5) / 2", "height": 20 },
         "texture": {
           "normal": "sirius_ui:buttons/default_button",
           "highlighted": "sirius_ui:buttons/default_button_highlighted",
@@ -43,15 +43,15 @@
     ]},
     { "height": 5, "children": [] },
     { "height": 22, "children": [
-      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.realmsNotifications" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "type": "text", "color": "0x00000000", "text": { "color": "0xBFFFFFFF", "text_key": "options.realmsNotifications" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
       { "ref": "sirius_ui:elements/buttons/arrow_switch/general/realms_notifications.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
     ]},
     { "height": 22, "children": [
-      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.allowServerListing" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "type": "text", "color": "0x00000000", "text": { "color": "0xBFFFFFFF", "text_key": "options.allowServerListing" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
       { "ref": "sirius_ui:elements/buttons/arrow_switch/general/allow_server_listing.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
     ]},
     { "height": 22, "children": [
-      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.telemetry.button" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "type": "text", "color": "0x00000000", "text": { "color": "0xBFFFFFFF", "text_key": "options.telemetry.button" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
       { "ref": "sirius_ui:elements/buttons/arrow_switch/general/telemetry.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
     ]}
   ]

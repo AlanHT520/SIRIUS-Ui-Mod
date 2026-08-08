@@ -69,11 +69,15 @@ public class CardRegistry {
         if (cardObj.has("modal")) def.setModal(cardObj.get("modal").getAsBoolean());
         if (cardObj.has("width")) def.setWidth(cardObj.get("width").getAsInt());
         if (cardObj.has("min_height")) def.setMinHeight(cardObj.get("min_height").getAsInt());
+        if (cardObj.has("max_height")) def.setMaxHeight(cardObj.get("max_height").getAsInt());
         if (cardObj.has("padding")) def.setPadding(cardObj.get("padding").getAsInt());
         if (cardObj.has("duration_ms")) def.setDurationMs(cardObj.get("duration_ms").getAsInt());
         if (cardObj.has("fade_ms")) def.setFadeMs(cardObj.get("fade_ms").getAsInt());
         if (cardObj.has("pos_x")) def.setPosX(cardObj.get("pos_x").getAsInt());
         if (cardObj.has("pos_y")) def.setPosY(cardObj.get("pos_y").getAsInt());
+        if (cardObj.has("shadow_offset")) def.setShadowOffset(cardObj.get("shadow_offset").getAsInt());
+        if (cardObj.has("shadow_alpha")) def.setShadowAlpha(cardObj.get("shadow_alpha").getAsInt());
+        if (cardObj.has("z_index")) def.setZIndex(cardObj.get("z_index").getAsInt());
         if (cardObj.has("data_source")) def.setDataSource(cardObj.get("data_source").getAsString());
 
         if (cardObj.has("overlay")) {
@@ -87,6 +91,7 @@ public class CardRegistry {
         if (cardObj.has("border")) {
             def.setBorder(parseColorString(cardObj.get("border")));
         }
+        if (cardObj.has("border_width")) def.setBorderWidth(cardObj.get("border_width").getAsInt());
 
         if (cardObj.has("title_bar") && !cardObj.get("title_bar").isJsonNull()) {
             def.setTitleBar(parseTitleBar(cardObj.getAsJsonObject("title_bar")));

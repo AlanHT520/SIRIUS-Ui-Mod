@@ -34,6 +34,7 @@ public class ArrowSwitchWidget extends BaseWidget {
     private final int arrowColor;
     private int currentIndex = 0;
     private int hoveredPart = -1;
+    private final String buttonWidthExpr;
     private final Minecraft minecraft;
 
     public ArrowSwitchWidget(String id, LayoutProps layout, Map<String, String> variables, Map<String, String> member,
@@ -41,7 +42,7 @@ public class ArrowSwitchWidget extends BaseWidget {
                             TextureSet leftButtonTexture, TextureSet rightButtonTexture, TextureSet centerTexture,
                             TextProps textProps, List<Widget> children) {
         this(id, layout, variables, member, optionKey, values, leftButtonTexture, rightButtonTexture, centerTexture,
-                textProps, children, null, 0xFF3A3A3C, 0xFF505052, 0xFFFFFFFF);
+                textProps, children, null, 0xFF3A3A3C, 0xFF505052, 0xFFFFFFFF, null);
     }
 
     public ArrowSwitchWidget(String id, LayoutProps layout, Map<String, String> variables, Map<String, String> member,
@@ -49,14 +50,15 @@ public class ArrowSwitchWidget extends BaseWidget {
                             TextureSet leftButtonTexture, TextureSet rightButtonTexture, TextureSet centerTexture,
                             TextProps textProps, List<Widget> children, String stateKey) {
         this(id, layout, variables, member, optionKey, values, leftButtonTexture, rightButtonTexture, centerTexture,
-                textProps, children, stateKey, 0xFF3A3A3C, 0xFF505052, 0xFFFFFFFF);
+                textProps, children, stateKey, 0xFF3A3A3C, 0xFF505052, 0xFFFFFFFF, null);
     }
 
     public ArrowSwitchWidget(String id, LayoutProps layout, Map<String, String> variables, Map<String, String> member,
                             String optionKey, List<CycleValue> values,
                             TextureSet leftButtonTexture, TextureSet rightButtonTexture, TextureSet centerTexture,
                             TextProps textProps, List<Widget> children, String stateKey,
-                            int backgroundColor, int highlightedBackgroundColor, int arrowColor) {
+                            int backgroundColor, int highlightedBackgroundColor, int arrowColor,
+                            String buttonWidthExpr) {
         super(id, layout, variables, member);
         this.optionKey = optionKey;
         this.values = values != null ? new ArrayList<>(values) : new ArrayList<>();
@@ -70,6 +72,7 @@ public class ArrowSwitchWidget extends BaseWidget {
         this.backgroundColor = backgroundColor;
         this.highlightedBackgroundColor = highlightedBackgroundColor;
         this.arrowColor = arrowColor;
+        this.buttonWidthExpr = buttonWidthExpr;
 
         if (!this.values.isEmpty()) {
             if (optionKey != null) {
@@ -134,7 +137,7 @@ public class ArrowSwitchWidget extends BaseWidget {
         int buttonAreaW = dim.w - labelWidth;
         if (buttonAreaW <= 0) buttonAreaW = dim.w;
 
-        int buttonW = getButtonWidth(buttonAreaW);
+        int buttonW = getButtonWidth(buttonAreaW, dim.h);
         int centerW = buttonAreaW - buttonW * 2;
 
         if (textProps != null && textProps.textKey() != null) {
@@ -217,8 +220,14 @@ public class ArrowSwitchWidget extends BaseWidget {
         return tex.getNormal();
     }
 
-    private int getButtonWidth(int totalAreaW) {
+    private int getButtonWidth(int totalAreaW, int height) {
         if (totalAreaW <= 0) return 0;
+        if (buttonWidthExpr != null && !buttonWidthExpr.isEmpty()) {
+            Map<String, Integer> vars = new java.util.HashMap<>();
+            vars.put("parent.width", totalAreaW);
+            vars.put("parent.height", height);
+            return eval(buttonWidthExpr, vars);
+        }
         int buttonW = totalAreaW / 6;
         if (buttonW < 10) buttonW = 10;
         if (buttonW > 40) buttonW = 40;
@@ -240,7 +249,7 @@ public class ArrowSwitchWidget extends BaseWidget {
         int labelWidth = calcLabelWidth();
         int buttonAreaW = dim.w - labelWidth;
         if (buttonAreaW <= 0) buttonAreaW = dim.w;
-        int buttonW = getButtonWidth(buttonAreaW);
+        int buttonW = getButtonWidth(buttonAreaW, dim.h);
         int centerW = buttonAreaW - buttonW * 2;
         int controlAreaX = screenX + labelWidth;
 
@@ -269,7 +278,7 @@ public class ArrowSwitchWidget extends BaseWidget {
         int labelWidth = calcLabelWidth();
         int buttonAreaW = dim.w - labelWidth;
         if (buttonAreaW <= 0) buttonAreaW = dim.w;
-        int buttonW = getButtonWidth(buttonAreaW);
+        int buttonW = getButtonWidth(buttonAreaW, dim.h);
         int centerW = buttonAreaW - buttonW * 2;
         int controlAreaX = screenX + labelWidth;
 

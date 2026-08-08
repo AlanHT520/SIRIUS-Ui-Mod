@@ -1,6 +1,6 @@
-{
+﻿{
   "type": "arrow_switch",
-  "option_key": "realmsNotifications",
+  "option_key": "realmsNotifications",  "button_width": "parent.height",  "sound": { "click": { "name": "sirius_ui:switch", "volume": 0.3 } },
   "values": [
     {"key": "false", "text_key": "options.off"},
     {"key": "true", "text_key": "options.on"}

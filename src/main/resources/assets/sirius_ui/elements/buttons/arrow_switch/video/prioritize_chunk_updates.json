@@ -1,6 +1,6 @@
-{
+﻿{
   "type": "arrow_switch",
-  "option_key": "prioritizeChunkUpdates",
+  "option_key": "prioritizeChunkUpdates",  "button_width": "parent.height",  "sound": { "click": { "name": "sirius_ui:switch", "volume": 0.3 } },
   "values": [
     {"key": "0", "text_key": "options.prioritizeChunkUpdates.none"},
     {"key": "1", "text_key": "options.prioritizeChunkUpdates.byPlayer"},

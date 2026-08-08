@@ -273,8 +273,7 @@ public class ExpressionEvaluator {
 
             private Function<Map<String, Integer>, Double> parseNumber() {
                 int start = pos;
-                boolean negative = false;
-                if (peek() == '-') { negative = true; consume(); }
+                if (peek() == '-') consume();
                 while (pos < input.length() && Character.isDigit(peek())) consume();
                 if (peek() == '.' && pos + 1 < input.length() && Character.isDigit(input.charAt(pos+1))) {
                     consume();
@@ -282,7 +281,6 @@ public class ExpressionEvaluator {
                 }
                 String numStr = input.substring(start, pos);
                 double value = Double.parseDouble(numStr);
-                if (negative) value = -value;
                 final double finalValue = value;
                 return vars -> finalValue;
             }

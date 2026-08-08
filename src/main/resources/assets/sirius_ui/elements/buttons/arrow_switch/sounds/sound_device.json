@@ -1,6 +1,6 @@
-{
+﻿{
   "type": "arrow_switch",
-  "option_key": "soundDevice",
+  "option_key": "soundDevice",  "button_width": "parent.height",  "sound": { "click": { "name": "sirius_ui:switch", "volume": 0.3 } },
   "values": [
     {"key": "", "text_key": "options.audioDevice.default"}
   ],

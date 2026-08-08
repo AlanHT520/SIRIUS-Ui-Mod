@@ -1,4 +1,4 @@
-{
+﻿{
   "type": "list",
   "gap": 5,
   "background_color": "0x50000000",
@@ -12,35 +12,35 @@
   "rows": [
     { "height": 5, "children": [] },
     { "height": 20, "children": [
-      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.modelPart.cape" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "type": "text", "color": "0x00000000", "text": { "color": "0xBFFFFFFF", "text_key": "options.modelPart.cape" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
       { "ref": "sirius_ui:elements/buttons/selector/skin/cape.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
     ]},
     { "height": 20, "children": [
-      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.modelPart.jacket" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "type": "text", "color": "0x00000000", "text": { "color": "0xBFFFFFFF", "text_key": "options.modelPart.jacket" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
       { "ref": "sirius_ui:elements/buttons/selector/skin/jacket.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
     ]},
     { "height": 20, "children": [
-      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.modelPart.left_sleeve" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "type": "text", "color": "0x00000000", "text": { "color": "0xBFFFFFFF", "text_key": "options.modelPart.left_sleeve" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
       { "ref": "sirius_ui:elements/buttons/selector/skin/left_sleeve.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
     ]},
     { "height": 20, "children": [
-      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.modelPart.right_sleeve" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "type": "text", "color": "0x00000000", "text": { "color": "0xBFFFFFFF", "text_key": "options.modelPart.right_sleeve" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
       { "ref": "sirius_ui:elements/buttons/selector/skin/right_sleeve.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
     ]},
     { "height": 20, "children": [
-      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.modelPart.left_pants_leg" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "type": "text", "color": "0x00000000", "text": { "color": "0xBFFFFFFF", "text_key": "options.modelPart.left_pants_leg" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
       { "ref": "sirius_ui:elements/buttons/selector/skin/left_pants_leg.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
     ]},
     { "height": 20, "children": [
-      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.modelPart.right_pants_leg" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "type": "text", "color": "0x00000000", "text": { "color": "0xBFFFFFFF", "text_key": "options.modelPart.right_pants_leg" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
       { "ref": "sirius_ui:elements/buttons/selector/skin/right_pants_leg.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
     ]},
     { "height": 20, "children": [
-      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.modelPart.hat" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "type": "text", "color": "0x00000000", "text": { "color": "0xBFFFFFFF", "text_key": "options.modelPart.hat" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
       { "ref": "sirius_ui:elements/buttons/selector/skin/hat.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
     ]},
     { "height": 20, "children": [
-      { "type": "text", "color": "0x00000000", "text": { "text_key": "options.mainHand" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
+      { "type": "text", "color": "0x00000000", "text": { "color": "0xBFFFFFFF", "text_key": "options.mainHand" }, "position": { "x": "parent.width / 9 + 2", "y": "parent.height / 2 - this.height / 2" }, "size": { "width": "this.label_w", "height": 20 } },
       { "ref": "sirius_ui:elements/buttons/arrow_switch/skin/main_hand.json", "text": {}, "position": { "x": "this.control_x" }, "size": { "width": "this.control_w", "height": 20 } }
     ]}
   ]

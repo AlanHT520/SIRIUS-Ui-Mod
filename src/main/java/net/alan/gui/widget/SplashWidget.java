@@ -134,18 +134,32 @@ public class SplashWidget extends BaseWidget {
             splashColor = BackgroundRenderer.parseColor(colorStr);
         }
 
-        graphics.pose().pushPose();
-        graphics.pose().translate(screenX, screenY, 0.0F);
-        graphics.pose().mulPose(Axis.ZP.rotationDegrees(config.rotation));
+        String[] lines = splashText.split("\\n");
+
+        int maxWidth = 0;
+        for (String line : lines) {
+            int w = minecraft.font.width(line);
+            if (w > maxWidth) maxWidth = w;
+        }
 
         float pulseScale = config.pulseBaseScale
             - Mth.abs(Mth.sin((float) (Util.getMillis() % 1000L) / 1000.0F
                 * (float) (Math.PI * 2) / config.pulseSpeed) * config.pulseAmplitude);
+        float normalizedScale = pulseScale * 100.0F / (float) (maxWidth + 32);
 
-        float finalScale = pulseScale * 100.0F / (float) (minecraft.font.width(splashText) + 32);
-        graphics.pose().scale(finalScale, finalScale, finalScale);
+        graphics.pose().pushPose();
+        graphics.pose().translate(screenX, screenY, 0.0F);
+        graphics.pose().mulPose(Axis.ZP.rotationDegrees(config.rotation));
+        graphics.pose().scale(normalizedScale, normalizedScale, 1.0F);
 
-        graphics.drawCenteredString(minecraft.font, splashText, 0, -8, splashColor);
+        int lineHeight = minecraft.font.lineHeight;
+        int totalHeight = (lines.length - 1) * lineHeight;
+        int baseY = -8 - totalHeight / 2;
+
+        for (int i = 0; i < lines.length; i++) {
+            graphics.drawCenteredString(minecraft.font, lines[i], 0, baseY + i * lineHeight, splashColor);
+        }
+
         graphics.pose().popPose();
     }
 

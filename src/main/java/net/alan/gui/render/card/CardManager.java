@@ -82,7 +82,14 @@ public class CardManager {
     }
 
     public void showToast(String id, String message, int durationMs) {
-        CardDefinition def = new CardDefinition();
+        CardDefinition def = registeredCards.get(id);
+        if (def != null) {
+            Map<String, String> params = new HashMap<>();
+            params.put("message", message);
+            showCardWithDef(def, id, params, null);
+            return;
+        }
+        def = new CardDefinition();
         def.setType("toast");
         def.setModal(false);
         def.setDurationMs(durationMs);
@@ -96,7 +103,14 @@ public class CardManager {
     }
 
     public void showLoading(String id, String message) {
-        CardDefinition def = new CardDefinition();
+        CardDefinition def = registeredCards.get(id);
+        if (def != null) {
+            Map<String, String> params = new HashMap<>();
+            params.put("message", message != null ? message : "Loading...");
+            showCardWithDef(def, id, params, null);
+            return;
+        }
+        def = new CardDefinition();
         def.setType("loading");
         def.setModal(true);
         def.setWidth(200);
@@ -110,7 +124,14 @@ public class CardManager {
     }
 
     public void showTooltip(String id, String message, int x, int y) {
-        CardDefinition def = new CardDefinition();
+        CardDefinition def = registeredCards.get(id);
+        if (def != null) {
+            Map<String, String> params = new HashMap<>();
+            params.put("message", message);
+            showCardWithDef(def, id, params, null);
+            return;
+        }
+        def = new CardDefinition();
         def.setType("tooltip");
         def.setModal(false);
         def.setWidth(minecraft.font.width(message) + 12);
@@ -161,8 +182,14 @@ public class CardManager {
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
         if (stack.isEmpty()) return;
 
+        int zIndex = 400;
+        CardInstance first = stack.peekFirst();
+        if (first != null) {
+            zIndex = first.getDefinition().getZIndex();
+        }
+
         graphics.pose().pushPose();
-        graphics.pose().translate(0, 0, 400);
+        graphics.pose().translate(0, 0, zIndex);
 
         Iterator<CardInstance> it = stack.iterator();
         while (it.hasNext()) {
