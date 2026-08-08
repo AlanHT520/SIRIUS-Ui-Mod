@@ -64,28 +64,6 @@ public class ButtonWidget extends BaseWidget {
 
     public Action getAction() { return action; }
 
-    private Action resolveAction(Action a, Map<String, Integer> vars) {
-        if (a == null) return null;
-        String resolvedType = evalStringExpr(vars, a.getType());
-        String resolvedScreenId = evalStringExpr(vars, a.getScreenId());
-        boolean typeSame = (resolvedType == null) ? (a.getType() == null) : resolvedType.equals(a.getType());
-        boolean screenIdSame = (resolvedScreenId == null) ? (a.getScreenId() == null) : resolvedScreenId.equals(a.getScreenId());
-        if (typeSame && screenIdSame) {
-            return a;
-        }
-        Action resolved = new Action();
-        resolved.setType(resolvedType);
-        resolved.setScreenId(resolvedScreenId);
-        resolved.setUrl(a.getUrl());
-        resolved.setTarget(a.getTarget());
-        resolved.setContent(a.getContent());
-        resolved.setVarName(a.getVarName());
-        resolved.setVarValue(a.getVarValue());
-        resolved.setBoxId(a.getBoxId());
-        resolved.setTargetId(a.getTargetId());
-        return resolved;
-    }
-
     public void cancelIng() {
         if (isIng) {
             isIng = false;
@@ -147,6 +125,27 @@ public class ButtonWidget extends BaseWidget {
                     graphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
                     graphics.blitSprite(texId, screenX, screenY, dim.w, dim.h);
                 }
+            }
+        } else {
+            String bgStr = style.backgroundColor();
+            int bgColor;
+            int borderColor;
+            if (bgStr != null && !bgStr.isEmpty()) {
+                bgColor = parseColor(bgStr);
+                borderColor = isHovered ? lightenColor(bgColor, 0.3f) : bgColor;
+            } else {
+                bgColor = layout.enabled() ? (isHovered ? 0xFF555555 : 0xFF3A3A3A) : 0xFF2A2A2A;
+                borderColor = isHovered ? 0xFF888888 : 0xFF505050;
+            }
+            int bgAlpha = (bgColor >> 24) & 0xFF;
+            if (bgAlpha > 0) {
+                graphics.fill(screenX, screenY, screenX + dim.w, screenY + dim.h, bgColor);
+                graphics.fill(screenX, screenY, screenX + dim.w, screenY + 1, 0x30FFFFFF);
+                graphics.fill(screenX, screenY + dim.h - 1, screenX + dim.w, screenY + dim.h, 0x40000000);
+                graphics.renderOutline(screenX, screenY, dim.w, dim.h, borderColor);
+            }
+            if (isHovered) {
+                graphics.fill(screenX, screenY, screenX + dim.w, screenY + dim.h, 0x18FFFFFF);
             }
         }
 
@@ -246,5 +245,22 @@ public class ButtonWidget extends BaseWidget {
         for (Widget child : children) {
             child.mouseMoved(mouseX, mouseY, mergedCtx, screenX, screenY, dim.w, dim.h);
         }
+    }
+
+    private static int parseColor(String hex) {
+        if (hex == null) return 0xFFFFFFFF;
+        hex = hex.replace("0x", "").replace("0X", "");
+        return (int) Long.parseLong(hex, 16);
+    }
+
+    private static int lightenColor(int color, float factor) {
+        int a = (color >> 24) & 0xFF;
+        int r = (int)(((color >> 16) & 0xFF) * (1 + factor));
+        int g = (int)(((color >> 8) & 0xFF) * (1 + factor));
+        int b = (int)((color & 0xFF) * (1 + factor));
+        r = Math.min(r, 255);
+        g = Math.min(g, 255);
+        b = Math.min(b, 255);
+        return (a << 24) | (r << 16) | (g << 8) | b;
     }
 }

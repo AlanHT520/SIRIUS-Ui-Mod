@@ -3,6 +3,7 @@ package net.alan.gui.widget;
 import net.alan.gui.context.RenderContext;
 import net.alan.gui.context.ScreenVariableRegistry;
 import net.alan.gui.context.WidgetDimensionRegistry;
+import net.alan.gui.data.Action;
 import net.alan.gui.data.widget.LayoutProps;
 import net.alan.gui.data.widget.SoundEventConfig;
 import net.alan.gui.data.widget.WidgetSoundConfig;
@@ -28,6 +29,8 @@ public abstract class BaseWidget implements Widget {
     protected Map<String, Map<String, String>> stateVProps;
     // 音效配置
     protected WidgetSoundConfig soundConfig;
+    // 当前渲染上下文，用于 checkCondition 访问 sharedState 等
+    private RenderContext currentRenderContext;
     // 音效节流：记录各类型音效上次播放??tick
     private long lastValueChangeTick = -1;
     private long lastClickTick = -1;
@@ -51,6 +54,24 @@ public abstract class BaseWidget implements Widget {
             result = result.replace("${" + entry.getKey() + "}", entry.getValue());
         }
         return result;
+    }
+
+    protected int evalX(String expr, Map<String, Integer> numericVars) {
+        if ("center".equals(expr)) {
+            int parentW = numericVars.getOrDefault("parent.width", 0);
+            int thisW = numericVars.getOrDefault("this.width", 0);
+            return (parentW - thisW) / 2;
+        }
+        return eval(expr, numericVars);
+    }
+
+    protected int evalY(String expr, Map<String, Integer> numericVars) {
+        if ("center".equals(expr)) {
+            int parentH = numericVars.getOrDefault("parent.height", 0);
+            int thisH = numericVars.getOrDefault("this.height", 0);
+            return (parentH - thisH) / 2;
+        }
+        return eval(expr, numericVars);
     }
 
     protected int eval(String expr, Map<String, Integer> numericVars) {
@@ -247,7 +268,7 @@ public abstract class BaseWidget implements Widget {
     }
 
     private static final Pattern WIDGET_REF_PATTERN =
-            Pattern.compile("\\b([a-zA-Z][a-zA-Z0-9]*(?:\\.[a-zA-Z][a-zA-Z0-9]*)+)\\b");
+            Pattern.compile("\\b([a-zA-Z][a-zA-Z0-9_]*(?:\\.[a-zA-Z][a-zA-Z0-9_]*)+)\\b");
 
     private void scanWidgetDimensionRefs(Map<String, Integer> vars, String... exprs) {
         for (String expr : exprs) {
@@ -269,8 +290,31 @@ public abstract class BaseWidget implements Widget {
      * condition ??null 或空则默认渲??
      */
     protected boolean checkCondition(Map<String, Integer> numericVars) {
+        return checkCondition(numericVars, currentRenderContext);
+    }
+
+    /**
+     * 检??condition 表达式，支持字符串比??
+     * 例如: ${play_tab} == 'singleplayer' 或 ${options_tab} != 'general'
+     */
+    protected boolean checkCondition(Map<String, Integer> numericVars, RenderContext ctx) {
         String condition = layout.condition();
         if (condition == null || condition.trim().isEmpty()) return true;
+
+        if (condition.contains("'")) {
+            java.util.regex.Pattern p = java.util.regex.Pattern.compile(
+                "\\$\\{([^}]+)\\}\\s*(==|!=)\\s*'([^']*)'");
+            java.util.regex.Matcher m = p.matcher(condition.trim());
+            if (m.matches()) {
+                String varName = m.group(1);
+                String op = m.group(2);
+                String expected = m.group(3);
+                String actual = resolveStringVar(varName, ctx);
+                boolean result = "==".equals(op) ? expected.equals(actual) : !expected.equals(actual);
+                return result;
+            }
+        }
+
         try {
             int result = ExpressionEvaluator.eval(
                 condition,
@@ -284,6 +328,48 @@ public abstract class BaseWidget implements Widget {
         } catch (RuntimeException e) {
             return true;
         }
+    }
+
+    private String resolveStringVar(String varName, RenderContext ctx) {
+        if (variables != null && variables.containsKey(varName)) {
+            return variables.get(varName);
+        }
+        if (member != null && member.containsKey(varName)) {
+            return member.get(varName);
+        }
+        if (ctx != null) {
+            if (ctx.sharedState() != null) {
+                String val = ctx.sharedState().get(varName);
+                if (val != null) return val;
+            }
+            if (ctx.variables() != null) {
+                String val = ctx.variables().get(varName);
+                if (val != null) return val;
+            }
+        }
+        return null;
+    }
+
+    protected Action resolveAction(Action a, Map<String, Integer> vars) {
+        if (a == null) return null;
+        String resolvedType = evalStringExpr(vars, a.getType());
+        String resolvedScreenId = evalStringExpr(vars, a.getScreenId());
+        boolean typeSame = (resolvedType == null) ? (a.getType() == null) : resolvedType.equals(a.getType());
+        boolean screenIdSame = (resolvedScreenId == null) ? (a.getScreenId() == null) : resolvedScreenId.equals(a.getScreenId());
+        if (typeSame && screenIdSame) {
+            return a;
+        }
+        Action resolved = new Action();
+        resolved.setType(resolvedType);
+        resolved.setScreenId(resolvedScreenId);
+        resolved.setUrl(a.getUrl());
+        resolved.setTarget(a.getTarget());
+        resolved.setContent(a.getContent());
+        resolved.setVarName(a.getVarName());
+        resolved.setVarValue(a.getVarValue());
+        resolved.setBoxId(a.getBoxId());
+        resolved.setTargetId(a.getTargetId());
+        return resolved;
     }
 
     /**
@@ -302,10 +388,14 @@ public abstract class BaseWidget implements Widget {
     }
 
     protected RenderContext mergeContext(RenderContext ctx) {
-        if ((variables == null || variables.isEmpty()) && (member == null || member.isEmpty())) return ctx;
+        if ((variables == null || variables.isEmpty()) && (member == null || member.isEmpty())) {
+            this.currentRenderContext = ctx;
+            return ctx;
+        }
         RenderContext result = ctx.copy();
         if (member != null) result.putAllVars(member);
         if (variables != null) result.putAllVars(variables);
+        this.currentRenderContext = result;
         return result;
     }
 
@@ -384,8 +474,10 @@ public abstract class BaseWidget implements Widget {
         int h = (hExpr == null || hExpr.equals("auto")) ? parentH : eval(hExpr, numVars);
         numVars.put("this.width", w);
         numVars.put("this.height", h);
-        int x = eval(layout.xExpr(), numVars);
-        int y = eval(layout.yExpr(), numVars);
+        String xExpr = layout.xExpr();
+        String yExpr = layout.yExpr();
+        int x = evalX(xExpr, numVars);
+        int y = evalY(yExpr, numVars);
         return new WidgetDimension(x, y, w, h);
     }
 

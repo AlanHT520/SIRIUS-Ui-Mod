@@ -244,10 +244,10 @@ public class PackDataSource {
         }
 
         private static String getSourceLabel(PackSource source) {
-            if (source == PackSource.BUILT_IN) return "Built-in";
-            if (source == PackSource.WORLD) return "World";
-            if (source == PackSource.SERVER) return "Server";
-            if (source == PackSource.FEATURE) return "Feature";
+            if (source == PackSource.BUILT_IN) return Component.translatable("pack.source.builtin").getString();
+            if (source == PackSource.WORLD) return Component.translatable("pack.source.world").getString();
+            if (source == PackSource.SERVER) return Component.translatable("pack.source.server").getString();
+            if (source == PackSource.FEATURE) return Component.translatable("pack.source.feature").getString();
             return "";
         }
 

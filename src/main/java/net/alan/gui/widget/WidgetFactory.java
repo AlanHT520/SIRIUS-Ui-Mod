@@ -21,9 +21,9 @@ import net.alan.gui.data.source.PackDataSource;
 import net.alan.gui.data.source.GameRulesDataSource;
 import net.alan.gui.render.ActionExecutor;
 import net.alan.gui.render.screen.BackgroundRenderer;
-import net.alan.gui.render.popup.PopupDefinition;
-import net.alan.gui.render.popup.PopupManager;
-import net.alan.gui.render.popup.PopupRegistry;
+import net.alan.gui.render.card.CardDefinition;
+import net.alan.gui.render.card.CardManager;
+import net.alan.gui.render.card.CardRegistry;
 import net.alan.gui.widget.*;
 import net.alan.gui.widget.ListWidget.RowDef;
 import net.alan.gui.widget.StringEditBoxWidget;
@@ -35,11 +35,7 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
 
 public class WidgetFactory {
@@ -122,6 +118,15 @@ public class WidgetFactory {
                 Action action = json.has("action")
                         ? new com.google.gson.Gson().fromJson(json.get("action"), Action.class)
                         : null;
+                if (action == null && json.has("role")) {
+                    String role = json.get("role").getAsString();
+                    action = new Action();
+                    if ("submit".equals(role)) {
+                        action.setType("card_submit");
+                    } else if ("cancel".equals(role)) {
+                        action.setType("card_cancel");
+                    }
+                }
                 int ingDuration = json.has("ing_duration") ? json.get("ing_duration").getAsInt() : 0;
                 Map<String, Map<String, String>> stateVariables = parseStateVariables(json);
                 yield new ButtonWidget(id, layout, variables, member, style, textProps, action, executor, children, ingDuration, stateVariables);
@@ -150,8 +155,11 @@ public class WidgetFactory {
                 }
                 String boxId = json.has("box_id") ? json.get("box_id").getAsString() : null;
                 String targetId = json.has("target_id") ? json.get("target_id").getAsString() : id;
+                Action action = json.has("action")
+                        ? new com.google.gson.Gson().fromJson(json.get("action"), Action.class)
+                        : null;
                 Map<String, Map<String, String>> stateVariables = parseStateVariables(json);
-                yield new ButtonContentWidget(id, layout, variables, member, style, textProps, executor, children, boxId, targetId, stateVariables);
+                yield new ButtonContentWidget(id, layout, variables, member, style, textProps, executor, action, children, boxId, targetId, stateVariables);
             }
             case "slider" -> {
                 SliderProps sliderProps = parseSlider(json);
@@ -361,6 +369,21 @@ public class WidgetFactory {
                 String stateKey = json.has("state_key") ? json.get("state_key").getAsString() : null;
                 yield new StringEditBoxWidget(id, layout, variables, member, editProps, stateKey);
             }
+            case "input_field" -> {
+                String label = json.has("label") ? json.get("label").getAsString() : null;
+                String hint = json.has("hint") ? json.get("hint").getAsString() : "";
+                int maxLen = json.has("max_length") ? json.get("max_length").getAsInt() : 128;
+                String initialVal = json.has("default") ? json.get("default").getAsString() : "";
+                String bgColor = json.has("background_color") ? json.get("background_color").getAsString() : null;
+                String brdColor = json.has("border_color") ? json.get("border_color").getAsString() : null;
+                String focusBrdColor = json.has("focus_border_color") ? json.get("focus_border_color").getAsString() : null;
+                String txtColor = json.has("text_color") ? json.get("text_color").getAsString() : null;
+                String hntColor = json.has("hint_color") ? json.get("hint_color").getAsString() : null;
+                String lblColor = json.has("label_color") ? json.get("label_color").getAsString() : null;
+                yield new InputFieldWidget(id, layout, variables, member, label, hint,
+                        maxLen, initialVal, bgColor, brdColor, focusBrdColor,
+                        txtColor, hntColor, lblColor);
+            }
             case "list" -> {
                 ListProps listProps = parseList(json, manager, executor);
                 yield new ListWidget(id, layout, variables, member, listProps);
@@ -379,6 +402,7 @@ public class WidgetFactory {
                 int rowH = json.has("row_height") ? json.get("row_height").getAsInt() : 36;
                 int gap = json.has("gap") ? json.get("gap").getAsInt() : 2;
                 String bg = json.has("background_color") ? json.get("background_color").getAsString() : null;
+                String bgTex = json.has("background_texture") ? json.get("background_texture").getAsString() : null;
                 JsonObject rowTemplate = null;
                 JsonObject editBtnTemplate = null;
                 JsonObject joinBtnTemplate = null;
@@ -398,7 +422,7 @@ public class WidgetFactory {
                             json, DynamicListStyleConfig.class);
                 }
                 DynamicListWidget dw = new DynamicListWidget(id, layout, variables, member, source, executor,
-                        rowH, gap, bg, rowTemplate, styleConfig,
+                        rowH, gap, bg, bgTex, rowTemplate, styleConfig,
                         editBtnTemplate, joinBtnTemplate, deleteBtnTemplate, recreateBtnTemplate);
                 if (json.has("search") && json.get("search").isJsonObject()) {
                     JsonObject sch = json.get("search").getAsJsonObject();
@@ -429,10 +453,11 @@ public class WidgetFactory {
                 PackListWidget.RowStyle unactiveRow = parseRowStyle(json, "unactive_row",
                     PackListWidget.RowStyle.DEFAULT_UNACTIVE);
                 PackListWidget.DividerStyle divider = parseDividerStyle(json);
+                PackListWidget.LayoutConfig layoutCfg = parseLayoutConfig(json);
 
                 PackDataSource dataSource = PackDataSource.getOrCreate(sourceId);
                 yield new PackListWidget(id, layout, variables, member, dataSource, mode, executor,
-                        entryH, entryGap, bg, activeRow, unactiveRow, divider, ordering);
+                        entryH, entryGap, bg, activeRow, unactiveRow, divider, layoutCfg, ordering);
             }
             case "content" -> {
                 yield parseContent(json, layout, variables, member, id, manager, executor);
@@ -455,18 +480,22 @@ public class WidgetFactory {
                 }
                 yield new EntityDisplayWidget(id, layout, variables, member, entityType, scale, lookAtMouse, animState, walkSpeed, attackEnabled);
             }
-            case "popup" -> {
-                JsonObject popupObj = json.has("popup") && json.get("popup").isJsonObject()
-                        ? json.get("popup").getAsJsonObject()
+            case "card" -> {
+                JsonObject cardObj = json.has("card") && json.get("card").isJsonObject()
+                        ? json.get("card").getAsJsonObject()
                         : json;
-                PopupDefinition def = PopupRegistry.createFromJson(popupObj);
+                CardDefinition def = CardRegistry.createFromJson(cardObj);
                 if (executor != null) {
-                    PopupManager pm = executor.getPopupManager();
-                    if (pm != null) {
-                        pm.registerPopupDefinition(id, def);
+                    CardManager cm = executor.getCardManager();
+                    if (cm != null) {
+                        cm.registerCardDefinition(id, def);
                     }
                 }
-                yield new PopupDefWidget(id, def);
+                yield new CardDefWidget(id, def);
+            }
+            case "splash" -> {
+                SplashWidget.SplashConfig splashConfig = parseSplashConfig(json);
+                yield new SplashWidget(id, layout, variables, member, splashConfig);
             }
             default -> throw new IllegalArgumentException("Unknown widget type: " + type);
         };
@@ -613,17 +642,22 @@ public class WidgetFactory {
     }
 
     private static StyleProps parseStyle(JsonObject json) {
+        JsonObject source = json;
+        if (json.has("style") && json.get("style").isJsonObject()) {
+            source = json.getAsJsonObject("style");
+        }
+
         TextureSet tex = null;
-        if (json.has("texture")) {
-            tex = new com.google.gson.Gson().fromJson(json.get("texture"), TextureSet.class);
-        } else if (json.has("image_texture")) {
-            String img = json.get("image_texture").getAsString();
+        if (source.has("texture")) {
+            tex = new com.google.gson.Gson().fromJson(source.get("texture"), TextureSet.class);
+        } else if (source.has("image_texture")) {
+            String img = source.get("image_texture").getAsString();
             tex = new TextureSet(img, img, img);
-        } else if (json.has("icon_source")) {
-            String icon = json.get("icon_source").getAsString();
+        } else if (source.has("icon_source")) {
+            String icon = source.get("icon_source").getAsString();
             tex = new TextureSet(icon, icon, icon);
         }
-        String bg = json.has("background_color") ? json.get("background_color").getAsString() : null;
+        String bg = source.has("background_color") ? source.get("background_color").getAsString() : null;
         return new StyleProps(tex, bg);
     }
 
@@ -794,7 +828,6 @@ public class WidgetFactory {
         if (json.has("padding_right")) padRight = json.get("padding_right").getAsInt();
 
         Map<String, Widget> elements = new LinkedHashMap<>();
-        String defaultId = json.has("default_id") ? json.get("default_id").getAsString() : null;
 
         if (json.has("elements") && json.get("elements").isJsonArray()) {
             JsonArray arr = json.get("elements").getAsJsonArray();
@@ -818,20 +851,21 @@ public class WidgetFactory {
             }
         }
 
-        if (defaultId == null) {
+        if (elements.isEmpty()) {
             LOGGER.warn("Box {} has no elements", id);
-            defaultId = "";
         }
 
-        BoxWidget boxWidget = new BoxWidget(id, layout, variables, member, elements, defaultId,
+        String defaultId = json.has("default_id") ? json.get("default_id").getAsString() : null;
+
+        BoxWidget box = new BoxWidget(id, layout, variables, member, elements, defaultId,
                 backgroundColor, borderColor, frameTexture,
                 padTop, padBottom, padLeft, padRight);
 
-        if (executor != null && id != null) {
-            executor.registerBox(id, boxWidget);
+        if (executor != null) {
+            executor.registerBox(id, box);
         }
 
-        return boxWidget;
+        return box;
     }
 
     private static Widget loadWidgetFromRef(String ref, ResourceManager manager, ActionExecutor executor, JsonObject override) {
@@ -1024,9 +1058,10 @@ public class WidgetFactory {
         String tex = obj.has("background_texture") ? obj.get("background_texture").getAsString() : defaultStyle.backgroundTexture;
         String text = obj.has("text_color") ? obj.get("text_color").getAsString() : defaultStyle.textColor;
         String hover = obj.has("hover_color") ? obj.get("hover_color").getAsString() : defaultStyle.hoverColor;
+        String selected = obj.has("selected_color") ? obj.get("selected_color").getAsString() : defaultStyle.selectedColor;
         String toggle = obj.has("toggle_color") ? obj.get("toggle_color").getAsString() : defaultStyle.toggleColor;
         String toggleHover = obj.has("toggle_hover_color") ? obj.get("toggle_hover_color").getAsString() : defaultStyle.toggleHoverColor;
-        return new PackListWidget.RowStyle(bg, tex, text, hover, toggle, toggleHover);
+        return new PackListWidget.RowStyle(bg, tex, text, hover, selected, toggle, toggleHover);
     }
 
     private static PackListWidget.DividerStyle parseDividerStyle(JsonObject json) {
@@ -1037,6 +1072,124 @@ public class WidgetFactory {
         String color = obj.has("color") ? obj.get("color").getAsString() : PackListWidget.DividerStyle.DEFAULT.color;
         String texture = obj.has("texture") ? obj.get("texture").getAsString() : PackListWidget.DividerStyle.DEFAULT.texture;
         return new PackListWidget.DividerStyle(h, color, texture);
+    }
+
+    private static PackListWidget.ListButtonConfig parseListButtonConfig(JsonObject json, String key,
+                                                                          PackListWidget.ListButtonConfig defaultCfg) {
+        if (json == null || !json.has(key) || !json.get(key).isJsonObject()) return defaultCfg;
+        JsonObject obj = json.get(key).getAsJsonObject();
+
+        TextureSet texture = null;
+        if (obj.has("texture") && obj.get("texture").isJsonObject()) {
+            texture = new com.google.gson.Gson().fromJson(obj.get("texture"), TextureSet.class);
+        }
+
+        String text = null;
+        String textKey = null;
+        String textColor = defaultCfg.textColor;
+        String highlightedTextColor = defaultCfg.highlightedTextColor;
+        boolean textShadow = defaultCfg.textShadow;
+
+        if (obj.has("text") && obj.get("text").isJsonObject()) {
+            JsonObject tObj = obj.get("text").getAsJsonObject();
+            if (tObj.has("text")) text = tObj.get("text").getAsString();
+            if (tObj.has("text_key")) textKey = tObj.get("text_key").getAsString();
+            if (tObj.has("color")) textColor = tObj.get("color").getAsString();
+            if (tObj.has("highlighted_color")) highlightedTextColor = tObj.get("highlighted_color").getAsString();
+            if (tObj.has("shadow")) textShadow = tObj.get("shadow").getAsBoolean();
+        } else {
+            if (obj.has("text")) text = obj.get("text").getAsString();
+            if (obj.has("text_key")) textKey = obj.get("text_key").getAsString();
+            if (obj.has("color")) textColor = obj.get("color").getAsString();
+            if (obj.has("highlighted_color")) highlightedTextColor = obj.get("highlighted_color").getAsString();
+        }
+
+        int width = defaultCfg.width;
+        int height = defaultCfg.height;
+        if (obj.has("size") && obj.get("size").isJsonObject()) {
+            JsonObject sz = obj.get("size").getAsJsonObject();
+            if (sz.has("width")) width = sz.get("width").getAsInt();
+            if (sz.has("height")) height = sz.get("height").getAsInt();
+        } else if (obj.has("size")) {
+            width = obj.get("size").getAsInt();
+            height = width;
+        }
+
+        Set<String> showWhen = defaultCfg.showWhen;
+        if (obj.has("show_when") && obj.get("show_when").isJsonArray()) {
+            showWhen = new HashSet<>();
+            for (JsonElement e : obj.get("show_when").getAsJsonArray()) {
+                showWhen.add(e.getAsString());
+            }
+        }
+
+        return new PackListWidget.ListButtonConfig(texture, text, textKey,
+            textColor, highlightedTextColor, textShadow, width, height, showWhen);
+    }
+
+    private static PackListWidget.LayoutConfig parseLayoutConfig(JsonObject json) {
+        if (!json.has("layout") || !json.get("layout").isJsonObject())
+            return PackListWidget.LayoutConfig.DEFAULT;
+        JsonObject lo = json.get("layout").getAsJsonObject();
+        PackListWidget.LayoutConfig def = PackListWidget.LayoutConfig.DEFAULT;
+
+        JsonObject icon = lo.has("icon") && lo.get("icon").isJsonObject() ? lo.get("icon").getAsJsonObject() : null;
+        int iconX = icon != null && icon.has("x") ? icon.get("x").getAsInt() : def.iconX;
+        int iconSize = icon != null && icon.has("size") ? icon.get("size").getAsInt() : def.iconSize;
+        String iconPlcColor = icon != null && icon.has("placeholder_color") ? icon.get("placeholder_color").getAsString() : def.iconPlaceholderColor;
+
+        JsonObject text = lo.has("text") && lo.get("text").isJsonObject() ? lo.get("text").getAsJsonObject() : null;
+        int iconTextGap = text != null && text.has("icon_gap") ? text.get("icon_gap").getAsInt() : def.iconTextGap;
+        int titleY = text != null && text.has("title_y") ? text.get("title_y").getAsInt() : def.titleY;
+        int descY = text != null && text.has("description_y") ? text.get("description_y").getAsInt() : def.descriptionY;
+        int compatY = text != null && text.has("compatibility_y") ? text.get("compatibility_y").getAsInt() : def.compatibilityY;
+        int titleMaxLen = text != null && text.has("title_max_length") ? text.get("title_max_length").getAsInt() : def.titleMaxLength;
+        int descMaxLen = text != null && text.has("description_max_length") ? text.get("description_max_length").getAsInt() : def.descriptionMaxLength;
+
+        JsonObject incompat = lo.has("incompatible") && lo.get("incompatible").isJsonObject() ? lo.get("incompatible").getAsJsonObject() : null;
+        String incompatBg = incompat != null && incompat.has("background_color") ? incompat.get("background_color").getAsString() : def.incompatibleBgColor;
+        String incompatText = incompat != null && incompat.has("text_color") ? incompat.get("text_color").getAsString() : def.incompatibleTextColor;
+        String incompatDesc = incompat != null && incompat.has("description_color") ? incompat.get("description_color").getAsString() : def.incompatibleDescColor;
+
+        JsonObject srcLabel = lo.has("source_label") && lo.get("source_label").isJsonObject() ? lo.get("source_label").getAsJsonObject() : null;
+        String srcColor = srcLabel != null && srcLabel.has("color") ? srcLabel.get("color").getAsString() : def.sourceLabelColor;
+        int srcPad = srcLabel != null && srcLabel.has("right_padding") ? srcLabel.get("right_padding").getAsInt() : def.sourceLabelRightPadding;
+
+        JsonObject toggleJson = lo.has("toggle") && lo.get("toggle").isJsonObject() ? lo.get("toggle").getAsJsonObject() : null;
+        int tglRPad = toggleJson != null && toggleJson.has("right_padding") ? toggleJson.get("right_padding").getAsInt() : def.toggle.rightPadding;
+        PackListWidget.ListButtonConfig actBtn = parseListButtonConfig(toggleJson, "activate", def.toggle.activate);
+        PackListWidget.ListButtonConfig deactBtn = parseListButtonConfig(toggleJson, "deactivate", def.toggle.deactivate);
+        PackListWidget.ListButtonConfig reqBtn = parseListButtonConfig(toggleJson, "required", def.toggle.required);
+        PackListWidget.ToggleConfig toggleCfg = new PackListWidget.ToggleConfig(tglRPad, actBtn, deactBtn, reqBtn);
+
+        JsonObject moveJson = lo.has("move") && lo.get("move").isJsonObject() ? lo.get("move").getAsJsonObject() : null;
+        int mvGap = moveJson != null && moveJson.has("gap") ? moveJson.get("gap").getAsInt() : def.move.gap;
+        PackListWidget.ListButtonConfig upBtn = parseListButtonConfig(moveJson, "up", def.move.up);
+        PackListWidget.ListButtonConfig dnBtn = parseListButtonConfig(moveJson, "down", def.move.down);
+        PackListWidget.MoveConfig moveCfg = new PackListWidget.MoveConfig(mvGap, upBtn, dnBtn);
+
+        JsonObject sb = lo.has("scrollbar") && lo.get("scrollbar").isJsonObject() ? lo.get("scrollbar").getAsJsonObject() : null;
+        int sbW = sb != null && sb.has("width") ? sb.get("width").getAsInt() : def.scrollbarWidth;
+        String sbColor = sb != null && sb.has("color") ? sb.get("color").getAsString() : def.scrollbarColor;
+        int sbMinH = sb != null && sb.has("min_height") ? sb.get("min_height").getAsInt() : def.scrollbarMinHeight;
+        int sbPad = sb != null && sb.has("padding") ? sb.get("padding").getAsInt() : def.scrollbarPadding;
+
+        JsonObject drag = lo.has("drag") && lo.get("drag").isJsonObject() ? lo.get("drag").getAsJsonObject() : null;
+        String dragColor = drag != null && drag.has("indicator_color") ? drag.get("indicator_color").getAsString() : def.dragIndicatorColor;
+        int dragSpeed = drag != null && drag.has("auto_scroll_speed") ? drag.get("auto_scroll_speed").getAsInt() : def.dragAutoScrollSpeed;
+
+        int scrSpeed = lo.has("scroll_speed") ? lo.get("scroll_speed").getAsInt() : def.scrollSpeed;
+
+        return new PackListWidget.LayoutConfig(
+            iconX, iconSize, iconPlcColor,
+            iconTextGap, titleY, descY, compatY,
+            titleMaxLen, descMaxLen,
+            incompatBg, incompatText, incompatDesc,
+            srcColor, srcPad,
+            toggleCfg, moveCfg,
+            sbW, sbColor, sbMinH, sbPad,
+            dragColor, dragSpeed, scrSpeed
+        );
     }
 
     private static JsonObject resolveButtonTemplate(JsonObject rowTemplateJson, String key,
@@ -1129,6 +1282,65 @@ public class WidgetFactory {
             return null;
         }
         
+        return config;
+    }
+
+    private static SplashWidget.SplashConfig parseSplashConfig(JsonObject json) {
+        SplashWidget.SplashConfig config = new SplashWidget.SplashConfig();
+
+        if (json.has("use_vanilla")) {
+            config.useVanilla = json.get("use_vanilla").getAsBoolean();
+        }
+        if (json.has("color")) {
+            config.color = json.get("color").getAsString();
+        }
+        if (json.has("rotation")) {
+            config.rotation = json.get("rotation").getAsFloat();
+        }
+
+        if (json.has("pulse") && json.get("pulse").isJsonObject()) {
+            JsonObject pulse = json.get("pulse").getAsJsonObject();
+            if (pulse.has("base_scale")) config.pulseBaseScale = pulse.get("base_scale").getAsFloat();
+            if (pulse.has("amplitude")) config.pulseAmplitude = pulse.get("amplitude").getAsFloat();
+            if (pulse.has("speed")) config.pulseSpeed = pulse.get("speed").getAsFloat();
+        }
+
+        if (json.has("splashes") && json.get("splashes").isJsonArray()) {
+            config.splashes = new ArrayList<>();
+            for (JsonElement elem : json.get("splashes").getAsJsonArray()) {
+                if (elem.isJsonPrimitive()) {
+                    config.splashes.add(new SplashWidget.WeightedText(elem.getAsString(), 1));
+                } else if (elem.isJsonObject()) {
+                    JsonObject obj = elem.getAsJsonObject();
+                    String text = obj.has("text") ? obj.get("text").getAsString() : "";
+                    int weight = obj.has("weight") ? obj.get("weight").getAsInt() : 1;
+                    config.splashes.add(new SplashWidget.WeightedText(text, weight));
+                }
+            }
+        }
+
+        if (json.has("date_splashes") && json.get("date_splashes").isJsonArray()) {
+            config.dateSplashes = new ArrayList<>();
+            for (JsonElement elem : json.get("date_splashes").getAsJsonArray()) {
+                if (elem.isJsonObject()) {
+                    JsonObject obj = elem.getAsJsonObject();
+                    SplashWidget.DateSplash ds = new SplashWidget.DateSplash();
+                    ds.month = obj.has("month") ? obj.get("month").getAsInt() : 1;
+                    ds.day = obj.has("day") ? obj.get("day").getAsInt() : 1;
+                    ds.text = obj.has("text") ? obj.get("text").getAsString() : "";
+                    ds.weight = obj.has("weight") ? obj.get("weight").getAsInt() : 1;
+                    config.dateSplashes.add(ds);
+                }
+            }
+        }
+
+        if (json.has("easter_egg") && json.get("easter_egg").isJsonObject()) {
+            JsonObject ee = json.get("easter_egg").getAsJsonObject();
+            config.easterEgg = new SplashWidget.EasterEgg();
+            if (ee.has("probability")) config.easterEgg.probability = ee.get("probability").getAsFloat();
+            if (ee.has("text")) config.easterEgg.text = ee.get("text").getAsString();
+        }
+
         return config;
     }
 }

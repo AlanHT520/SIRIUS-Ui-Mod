@@ -9,7 +9,7 @@ import net.alan.gui.data.screen.ScreenConfig;
 import net.alan.gui.data.screen.ScreenLayout;
 import net.alan.gui.data.widget.LayoutProps;
 import net.alan.gui.render.ActionExecutor;
-import net.alan.gui.render.popup.PopupManager;
+import net.alan.gui.render.card.CardManager;
 import net.alan.gui.widget.WidgetFactory;
 import net.alan.gui.widget.ContainerWidget;
 import net.alan.gui.widget.Widget;
@@ -33,7 +33,7 @@ public class JsonScreenRenderer {
     private RenderContext renderContext;
     private final Map<String, String> dynamicVars;
     private boolean dimensionsRegistered;
-    private final PopupManager popupManager;
+    private final CardManager cardManager;
 
     public JsonScreenRenderer(Minecraft minecraft, Screen parentScreen, ScreenLayout layout, String screenId) {
         this.minecraft = minecraft;
@@ -51,8 +51,8 @@ public class JsonScreenRenderer {
 
         ActionExecutor executor = new ActionExecutor(minecraft, parentScreen);
         executor.setSharedState(sharedState);
-        this.popupManager = new PopupManager(minecraft, executor);
-        executor.setPopupManager(this.popupManager);
+        this.cardManager = new CardManager(minecraft, executor);
+        executor.setCardManager(this.cardManager);
         List<Widget> widgets = new ArrayList<>();
         List<JsonElement> elements = config.getElements();
         if (elements != null) {
@@ -104,7 +104,7 @@ public class JsonScreenRenderer {
 
         if (rootWidget != null) {
             rootWidget.render(graphics, 0, 0, sw, sh, renderContext, mouseX, mouseY, delta);
-            if (!popupManager.isModalActive()) {
+            if (!cardManager.isModalActive()) {
                 rootWidget.mouseMoved(mouseX, mouseY, renderContext, 0, 0, sw, sh);
             }
             if (!dimensionsRegistered) {
@@ -113,7 +113,7 @@ public class JsonScreenRenderer {
             }
         }
 
-        popupManager.render(graphics, mouseX, mouseY, delta);
+        cardManager.render(graphics, mouseX, mouseY, delta);
     }
 
     private void registerWidgetDimensions() {
@@ -139,7 +139,7 @@ public class JsonScreenRenderer {
     }
 
     public boolean mouseClicked(double mx, double my, int btn) {
-        if (popupManager.mouseClicked(mx, my, btn)) return true;
+        if (cardManager.mouseClicked(mx, my, btn)) return true;
         if (rootWidget == null) return false;
         int sw = minecraft.getWindow().getGuiScaledWidth();
         int sh = minecraft.getWindow().getGuiScaledHeight();
@@ -147,7 +147,8 @@ public class JsonScreenRenderer {
     }
 
     public boolean mouseReleased(double mx, double my, int btn) {
-        if (popupManager.isModalActive()) return true;
+        if (cardManager.mouseReleased(mx, my, btn)) return true;
+        if (cardManager.isModalActive()) return true;
         if (rootWidget == null) return false;
         int sw = minecraft.getWindow().getGuiScaledWidth();
         int sh = minecraft.getWindow().getGuiScaledHeight();
@@ -155,7 +156,7 @@ public class JsonScreenRenderer {
     }
 
     public boolean mouseScrolled(double mx, double my, double sx, double sy) {
-        if (popupManager.isModalActive()) return true;
+        if (cardManager.isModalActive()) return true;
         if (rootWidget == null) return false;
         int sw = minecraft.getWindow().getGuiScaledWidth();
         int sh = minecraft.getWindow().getGuiScaledHeight();
@@ -163,7 +164,8 @@ public class JsonScreenRenderer {
     }
 
     public boolean mouseDragged(double mx, double my, int btn, double dragX, double dragY) {
-        if (popupManager.isModalActive()) return true;
+        if (cardManager.mouseDragged(mx, my, btn, dragX, dragY)) return true;
+        if (cardManager.isModalActive()) return true;
         if (rootWidget == null) return false;
         int sw = minecraft.getWindow().getGuiScaledWidth();
         int sh = minecraft.getWindow().getGuiScaledHeight();
@@ -171,7 +173,7 @@ public class JsonScreenRenderer {
     }
 
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (popupManager.keyPressed(keyCode, scanCode, modifiers)) return true;
+        if (cardManager.keyPressed(keyCode, scanCode, modifiers)) return true;
         if (rootWidget == null) return false;
         int sw = minecraft.getWindow().getGuiScaledWidth();
         int sh = minecraft.getWindow().getGuiScaledHeight();
@@ -179,7 +181,7 @@ public class JsonScreenRenderer {
     }
 
     public boolean charTyped(char codePoint, int modifiers) {
-        if (popupManager.charTyped(codePoint, modifiers)) return true;
+        if (cardManager.charTyped(codePoint, modifiers)) return true;
         if (rootWidget == null) return false;
         int sw = minecraft.getWindow().getGuiScaledWidth();
         int sh = minecraft.getWindow().getGuiScaledHeight();

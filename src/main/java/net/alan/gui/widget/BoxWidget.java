@@ -10,19 +10,11 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-/**
- * BoxWidget - 视图切换容器
- * 
- * 功能??
- * - 作为视图切换器，根据 currentId 显示不同的子元素
- * - 支持多个 id 对应不同??Widget（List、Button 等）
- * - 提供 switchTo() 方法供外部（??Content 内的 button）切换视??
- * - Content 内的 button 可以执行??button 的任何功??
- */
 public class BoxWidget extends BaseWidget {
     private static final Logger LOGGER = LoggerFactory.getLogger(BoxWidget.class);
 
     private final Map<String, Widget> elements;
+    private final String defaultId;
     private String currentId;
     private final String backgroundColor;
     private final String borderColor;
@@ -35,6 +27,7 @@ public class BoxWidget extends BaseWidget {
                      int paddingTop, int paddingBottom, int paddingLeft, int paddingRight) {
         super(id, layout, variables, member);
         this.elements = elements;
+        this.defaultId = defaultId;
         this.currentId = defaultId;
         this.backgroundColor = backgroundColor;
         this.borderColor = borderColor;
@@ -47,49 +40,38 @@ public class BoxWidget extends BaseWidget {
         if (elements.isEmpty()) {
             LOGGER.warn("Box {} created with no elements", id);
         }
-        if (!elements.containsKey(defaultId)) {
-            LOGGER.warn("Box {} defaultId '{}' not found, using first", id, defaultId);
-            this.currentId = elements.isEmpty() ? null : elements.keySet().iterator().next();
-        }
     }
 
-    /**
-     * 切换到指??id 的视??
-     * @param id 目标视图??id
-     * @return 是否切换成功
-     */
-    public boolean switchTo(String id) {
-        if (elements.containsKey(id)) {
-            this.currentId = id;
+    public boolean switchTo(String elementId) {
+        if (elements.containsKey(elementId)) {
+            this.currentId = elementId;
             return true;
         }
-        LOGGER.warn("Box {} attempted to switch to unknown id '{}'", this.id, id);
+        LOGGER.warn("Box {} has no element '{}'", id, elementId);
         return false;
     }
 
-    /**
-     * 获取当前视图??id
-     */
     public String getCurrentId() {
         return currentId;
     }
 
-    /**
-     * 获取所有可用的视图 id
-     */
-    public Set<String> getAvailableIds() {
-        return elements.keySet();
-    }
-
-    private Widget getCurrentElement() {
-        if (currentId == null) return null;
-        return elements.get(currentId);
+    public List<String> getAvailableIds() {
+        return new ArrayList<>(elements.keySet());
     }
 
     @Override
     public List<Widget> getChildren() {
         Widget current = getCurrentElement();
         return current != null ? List.of(current) : Collections.emptyList();
+    }
+
+    private Widget getCurrentElement() {
+        if (currentId == null || !elements.containsKey(currentId)) {
+            if (!elements.isEmpty()) {
+                currentId = elements.keySet().iterator().next();
+            }
+        }
+        return currentId != null ? elements.get(currentId) : null;
     }
 
     @Override
@@ -109,12 +91,10 @@ public class BoxWidget extends BaseWidget {
         int contentW = dim.w - paddingLeft - paddingRight;
         int contentH = dim.h - paddingTop - paddingBottom;
 
-        // 渲染背景??
         if (backgroundColor != null && !backgroundColor.isEmpty()) {
             graphics.fill(boxX, boxY, boxX + dim.w, boxY + dim.h, parseColor(backgroundColor));
         }
 
-        // 渲染框架纹理
         if (frameTexture != null && frameTexture.getNormal() != null) {
             var texId = ResourceLocation.tryParse(frameTexture.getNormal());
             if (texId != null) {
@@ -123,18 +103,16 @@ public class BoxWidget extends BaseWidget {
             }
         }
 
-        // 渲染当前元素，铺满内容区??
+        graphics.enableScissor(contentX, contentY, contentX + contentW, contentY + contentH);
+
         Widget current = getCurrentElement();
         if (current != null) {
-            // 注入 _box_current_id，供 button_content 判断 selected 状??
-            RenderContext boxCtx = mergedCtx.withVar("_box_current_id", currentId);
-            graphics.enableScissor(contentX, contentY, contentX + contentW, contentY + contentH);
             current.render(graphics, contentX, contentY, contentW, contentH,
-                    boxCtx, mouseX, mouseY, delta);
-            graphics.disableScissor();
+                    mergedCtx, mouseX, mouseY, delta);
         }
 
-        // 渲染边框（最后渲染，放在最上层，包在实际空间外部）
+        graphics.disableScissor();
+
         if (borderColor != null && !borderColor.isEmpty()) {
             int bc = parseColor(borderColor);
             graphics.fill(boxX - 1, boxY - 1, boxX + dim.w + 1, boxY, bc);
@@ -152,13 +130,9 @@ public class BoxWidget extends BaseWidget {
         WidgetDimension dim = computeLayout(mergedCtx, width, height);
         Map<String, Integer> vars = buildNumericVars(mergedCtx, width, height, dim.w, dim.h);
         if (!checkCondition(vars)) return false;
+        int[] cb = contentBounds(mergedCtx, x, y, width, height);
         Widget current = getCurrentElement();
-        if (current != null) {
-            return current.mouseClicked(mouseX, mouseY, button, mergedCtx,
-                    x + dim.x + paddingLeft, y + dim.y + paddingTop,
-                    dim.w - paddingLeft - paddingRight, dim.h - paddingTop - paddingBottom);
-        }
-        return false;
+        return current != null && current.mouseClicked(mouseX, mouseY, button, mergedCtx, cb[0], cb[1], cb[2], cb[3]);
     }
 
     @Override
@@ -168,13 +142,9 @@ public class BoxWidget extends BaseWidget {
         WidgetDimension dim = computeLayout(mergedCtx, width, height);
         Map<String, Integer> vars = buildNumericVars(mergedCtx, width, height, dim.w, dim.h);
         if (!checkCondition(vars)) return false;
+        int[] cb = contentBounds(mergedCtx, x, y, width, height);
         Widget current = getCurrentElement();
-        if (current != null) {
-            return current.mouseReleased(mouseX, mouseY, button, mergedCtx,
-                    x + dim.x + paddingLeft, y + dim.y + paddingTop,
-                    dim.w - paddingLeft - paddingRight, dim.h - paddingTop - paddingBottom);
-        }
-        return false;
+        return current != null && current.mouseReleased(mouseX, mouseY, button, mergedCtx, cb[0], cb[1], cb[2], cb[3]);
     }
 
     @Override
@@ -184,13 +154,9 @@ public class BoxWidget extends BaseWidget {
         WidgetDimension dim = computeLayout(mergedCtx, width, height);
         Map<String, Integer> vars = buildNumericVars(mergedCtx, width, height, dim.w, dim.h);
         if (!checkCondition(vars)) return false;
+        int[] cb = contentBounds(mergedCtx, x, y, width, height);
         Widget current = getCurrentElement();
-        if (current != null) {
-            return current.mouseScrolled(mouseX, mouseY, scrollX, scrollY, mergedCtx,
-                    x + dim.x + paddingLeft, y + dim.y + paddingTop,
-                    dim.w - paddingLeft - paddingRight, dim.h - paddingTop - paddingBottom);
-        }
-        return false;
+        return current != null && current.mouseScrolled(mouseX, mouseY, scrollX, scrollY, mergedCtx, cb[0], cb[1], cb[2], cb[3]);
     }
 
     @Override
@@ -200,13 +166,9 @@ public class BoxWidget extends BaseWidget {
         WidgetDimension dim = computeLayout(mergedCtx, width, height);
         Map<String, Integer> vars = buildNumericVars(mergedCtx, width, height, dim.w, dim.h);
         if (!checkCondition(vars)) return false;
+        int[] cb = contentBounds(mergedCtx, x, y, width, height);
         Widget current = getCurrentElement();
-        if (current != null) {
-            return current.mouseDragged(mouseX, mouseY, button, dragX, dragY, mergedCtx,
-                    x + dim.x + paddingLeft, y + dim.y + paddingTop,
-                    dim.w - paddingLeft - paddingRight, dim.h - paddingTop - paddingBottom);
-        }
-        return false;
+        return current != null && current.mouseDragged(mouseX, mouseY, button, dragX, dragY, mergedCtx, cb[0], cb[1], cb[2], cb[3]);
     }
 
     @Override
@@ -217,13 +179,9 @@ public class BoxWidget extends BaseWidget {
         WidgetDimension dim = computeLayout(mergedCtx, width, height);
         Map<String, Integer> vars = buildNumericVars(mergedCtx, width, height, dim.w, dim.h);
         if (!checkCondition(vars)) return false;
+        int[] cb = contentBounds(mergedCtx, x, y, width, height);
         Widget current = getCurrentElement();
-        if (current != null) {
-            return current.keyPressed(keyCode, scanCode, modifiers, mergedCtx,
-                    x + dim.x + paddingLeft, y + dim.y + paddingTop,
-                    dim.w - paddingLeft - paddingRight, dim.h - paddingTop - paddingBottom);
-        }
-        return false;
+        return current != null && current.keyPressed(keyCode, scanCode, modifiers, mergedCtx, cb[0], cb[1], cb[2], cb[3]);
     }
 
     @Override
@@ -234,13 +192,9 @@ public class BoxWidget extends BaseWidget {
         WidgetDimension dim = computeLayout(mergedCtx, width, height);
         Map<String, Integer> vars = buildNumericVars(mergedCtx, width, height, dim.w, dim.h);
         if (!checkCondition(vars)) return false;
+        int[] cb = contentBounds(mergedCtx, x, y, width, height);
         Widget current = getCurrentElement();
-        if (current != null) {
-            return current.charTyped(codePoint, modifiers, mergedCtx,
-                    x + dim.x + paddingLeft, y + dim.y + paddingTop,
-                    dim.w - paddingLeft - paddingRight, dim.h - paddingTop - paddingBottom);
-        }
-        return false;
+        return current != null && current.charTyped(codePoint, modifiers, mergedCtx, cb[0], cb[1], cb[2], cb[3]);
     }
 
     @Override
@@ -251,12 +205,21 @@ public class BoxWidget extends BaseWidget {
         WidgetDimension dim = computeLayout(mergedCtx, width, height);
         Map<String, Integer> vars = buildNumericVars(mergedCtx, width, height, dim.w, dim.h);
         if (!checkCondition(vars)) return;
+        int[] cb = contentBounds(mergedCtx, x, y, width, height);
         Widget current = getCurrentElement();
         if (current != null) {
-            current.mouseMoved(mouseX, mouseY, mergedCtx,
-                    x + dim.x + paddingLeft, y + dim.y + paddingTop,
-                    dim.w - paddingLeft - paddingRight, dim.h - paddingTop - paddingBottom);
+            current.mouseMoved(mouseX, mouseY, mergedCtx, cb[0], cb[1], cb[2], cb[3]);
         }
+    }
+
+    private int[] contentBounds(RenderContext context, int x, int y, int width, int height) {
+        WidgetDimension dim = computeLayout(context, width, height);
+        return new int[] {
+            x + dim.x + paddingLeft,
+            y + dim.y + paddingTop,
+            dim.w - paddingLeft - paddingRight,
+            dim.h - paddingTop - paddingBottom
+        };
     }
 
     private static int parseColor(String str) {

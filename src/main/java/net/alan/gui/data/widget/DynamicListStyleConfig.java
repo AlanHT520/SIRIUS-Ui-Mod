@@ -13,6 +13,7 @@ public class DynamicListStyleConfig {
         public String background_color = "0x10000000";
         public String background_color_alt = "0x00000000";
         public String hover_background_color = "0x20FFFFFF";
+        public String selected_background_color = null;
         public String background_texture = null;
         public String text_color = "0xFFFFFFFF";
         public String text_color_alt = "0xFFAAAAAA";

@@ -6,7 +6,7 @@ import net.alan.gui.data.source.GameRulesBridge;
 import net.alan.gui.data.source.DataPackBridge;
 import net.alan.gui.data.source.ServerListDataSource;
 import net.alan.gui.registry.ScreenRegistry;
-import net.alan.gui.render.popup.PopupManager;
+import net.alan.gui.render.card.CardManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.Util;
 import net.minecraft.client.gui.screens.*;
@@ -58,24 +58,28 @@ public class ActionExecutor {
     private final Minecraft minecraft;
     private final Screen parentScreen;
     private Map<String, String> sharedState;
-    private final Map<String, net.alan.gui.widget.BoxWidget> boxRegistry;
+    private final Map<String, net.alan.gui.widget.BoxWidget> boxRegistry = new HashMap<>();
     private final List<Runnable> refreshCallbacks = new ArrayList<>();
-    private PopupManager popupManager;
+    private CardManager cardManager;
+
+    private static final Map<String, String> CONFIRM_CARDS = Map.of(
+        "delete_server", "sirius_ui:cards/delete_confirm",
+        "delete_world", "sirius_ui:cards/delete_confirm"
+    );
 
     public ActionExecutor(Minecraft minecraft, Screen parentScreen) {
         this.minecraft = minecraft;
         this.parentScreen = parentScreen;
         this.sharedState = new HashMap<>();
-        this.boxRegistry = new HashMap<>();
         LOGGER.debug("ActionExecutor created with parentScreen: {}", parentScreen);
     }
 
-    public void setPopupManager(PopupManager popupManager) {
-        this.popupManager = popupManager;
+    public void setCardManager(CardManager cardManager) {
+        this.cardManager = cardManager;
     }
 
-    public PopupManager getPopupManager() {
-        return popupManager;
+    public CardManager getCardManager() {
+        return cardManager;
     }
 
     public void addRefreshCallback(Runnable callback) {
@@ -88,17 +92,11 @@ public class ActionExecutor {
         }
     }
 
-    /**
-     * 注册 BoxWidget 到注册表，供 switch_box 动作使用
-     */
     public void registerBox(String boxId, net.alan.gui.widget.BoxWidget box) {
         boxRegistry.put(boxId, box);
         LOGGER.debug("Registered BoxWidget: {}", boxId);
     }
 
-    /**
-     * 根据 boxId 获取 BoxWidget
-     */
     public net.alan.gui.widget.BoxWidget getBox(String boxId) {
         return boxRegistry.get(boxId);
     }
@@ -119,6 +117,14 @@ public class ActionExecutor {
         String type = action.getType();
         LOGGER.info("Executing action: type='{}', action={}", type, action);
 
+        if (action.getConfirmWith() == null && CONFIRM_CARDS.containsKey(type)) {
+            action.setConfirmWith(CONFIRM_CARDS.get(type));
+        }
+        if (action.getConfirmWith() != null && !action.getConfirmWith().isBlank()) {
+            showConfirmCard(action);
+            return;
+        }
+
         switch (type) {
             case "open_screen" -> {
                 String screenId = action.getScreenId();
@@ -138,34 +144,48 @@ public class ActionExecutor {
                     LOGGER.error("Cannot open screen: {}", screenId);
                 }
             }
-            case "show_popup" -> {
-                JsonElement popupEl = action.getPopup();
-                if (popupEl == null) {
-                    LOGGER.warn("show_popup action missing popup");
+            case "show_card" -> {
+                JsonElement cardEl = action.getCard();
+                if (cardEl == null) {
+                    LOGGER.warn("show_card action missing card");
                     return;
                 }
                 Map<String, String> params = action.getParams();
                 if (params == null) params = Map.of();
-                String instanceId = "popup_" + System.currentTimeMillis();
-                if (popupManager != null) {
-                    String popupId = action.getPopupId();
-                    JsonObject popupObj = action.getPopupObject();
-                    if (popupId != null) {
-                        popupManager.showPopup(popupId, instanceId, params);
-                    } else if (popupObj != null) {
-                        popupManager.showPopupFromJson(popupObj, instanceId, params);
+                String instanceId = "card_" + System.currentTimeMillis();
+                if (cardManager != null) {
+                    String cardId = action.getCardId();
+                    JsonObject cardObj = action.getCardObject();
+                    if (cardId != null) {
+                        cardManager.showCard(cardId, instanceId, params);
+                    } else if (cardObj != null) {
+                        cardManager.showCardFromJson(cardObj, instanceId, params);
                     } else {
-                        LOGGER.warn("show_popup action has invalid popup type");
+                        LOGGER.warn("show_card action has invalid card type");
                     }
                 }
             }
-            case "dismiss_popup" -> {
-                if (popupManager != null) {
-                    popupManager.dismissAll();
+            case "dismiss_card" -> {
+                if (cardManager != null) {
+                    cardManager.dismissAll();
+                }
+            }
+            case "card_submit" -> {
+                if (cardManager != null) {
+                    Action pending = cardManager.getTopPendingAction();
+                    cardManager.dismissAll();
+                    if (pending != null) {
+                        execute(pending);
+                    }
+                }
+            }
+            case "card_cancel" -> {
+                if (cardManager != null) {
+                    cardManager.dismissAll();
                 }
             }
             case "show_toast" -> {
-                if (popupManager != null) {
+                if (cardManager != null) {
                     String message = action.getContent() != null
                             ? action.getContent()
                             : Component.translatable("gui.toast.message").getString();
@@ -175,7 +195,7 @@ public class ActionExecutor {
                             duration = Integer.parseInt(action.getTarget());
                         } catch (NumberFormatException ignored) {}
                     }
-                    popupManager.showToast("toast_" + System.currentTimeMillis(), message, duration);
+                    cardManager.showToast("toast_" + System.currentTimeMillis(), message, duration);
                 }
             }
             case "quit_game" -> {
@@ -186,10 +206,24 @@ public class ActionExecutor {
                 LOGGER.info("Closing screen, parentScreen={}", parentScreen);
                 PackDataSource.commitAll();
                 if (parentScreen != null) {
-                    // 修复：如??parentScreen ??JsonScreen，返回到它的 lastScreen
-                    // 这样子屏幕（??LanguageSelectScreen）会返回??options_screen.json
-                    // ??options_screen.json ??Done 按钮会返回到 PauseScreen/TitleScreen
-                    Screen targetScreen = getRealParentScreen(parentScreen);
+                    Screen targetScreen = parentScreen;
+                    if (parentScreen instanceof net.alan.gui.screen.JsonScreen jsonScreen) {
+                        try {
+                            var field = net.alan.gui.screen.JsonScreen.class.getDeclaredField("lastScreen");
+                            field.setAccessible(true);
+                            Screen lastScreen = (Screen) field.get(jsonScreen);
+                            if (lastScreen != null) {
+                                targetScreen = lastScreen;
+                            }
+                        } catch (Exception e) {
+                            LOGGER.error("Failed to get lastScreen from JsonScreen", e);
+                        }
+                    } else {
+                        Screen parent = getParentFromScreen(parentScreen);
+                        if (parent != null) {
+                            targetScreen = parent;
+                        }
+                    }
                     minecraft.setScreen(targetScreen);
                     LOGGER.info("Returned to parent screen: {}", targetScreen);
                 } else {
@@ -286,27 +320,6 @@ public class ActionExecutor {
                     LOGGER.warn("delete_world action missing target (levelId)");
                     return;
                 }
-                String worldName = action.getContent() != null ? action.getContent() : levelId;
-                LOGGER.info("Showing delete confirmation for world: {}", levelId);
-                sharedState.put("pendingDeleteLevelId", levelId);
-                sharedState.put("pendingDeleteWorldName", worldName);
-                if (popupManager != null) {
-                    Map<String, String> popupParams = new LinkedHashMap<>();
-                    popupParams.put("title", Component.translatable("selectWorld.deleteQuestion").getString());
-                    popupParams.put("message", Component.translatable("selectWorld.deleteWarning", worldName).getString());
-                    popupParams.put("confirm_text", Component.translatable("selectWorld.deleteButton").getString());
-                    popupParams.put("cancel_text", CommonComponents.GUI_CANCEL.getString());
-                    popupParams.put("confirm_action", "_do_delete_world");
-                    popupManager.showPopup("sirius_ui:popups/delete_confirm",
-                            "delete_world_popup", popupParams);
-                }
-            }
-            case "_do_delete_world" -> {
-                String levelId = sharedState.get("pendingDeleteLevelId");
-                if (levelId == null) {
-                    LOGGER.warn("_do_delete_world action missing levelId");
-                    return;
-                }
                 LevelStorageSource levelSource = minecraft.getLevelSource();
                 try (LevelStorageSource.LevelStorageAccess access = levelSource.createAccess(levelId)) {
                     access.deleteLevel();
@@ -316,9 +329,6 @@ public class ActionExecutor {
                     SystemToast.onWorldDeleteFailure(minecraft, levelId);
                 }
                 refreshAllDynamicLists();
-                sharedState.remove("pendingDeleteLevelId");
-                sharedState.remove("pendingDeleteWorldName");
-                if (popupManager != null) popupManager.dismissAll();
             }
             case "delete_server" -> {
                 String indexStr = action.getTarget();
@@ -332,48 +342,16 @@ public class ActionExecutor {
                     serverList.load();
                     if (index >= 0 && index < serverList.size()) {
                         ServerData serverData = serverList.get(index);
-                        String serverName = serverData.name;
-                        LOGGER.info("Showing delete confirmation for server: {} ({})", serverName, serverData.ip);
-                        sharedState.put("pendingDeleteServerIndex", indexStr);
-                        if (popupManager != null) {
-                            Map<String, String> popupParams = new LinkedHashMap<>();
-                            popupParams.put("title", Component.translatable("selectServer.deleteQuestion").getString());
-                            popupParams.put("message", Component.translatable("selectServer.deleteWarning", serverName).getString());
-                            popupParams.put("confirm_text", Component.translatable("selectServer.deleteButton").getString());
-                            popupParams.put("cancel_text", CommonComponents.GUI_CANCEL.getString());
-                            popupParams.put("confirm_action", "_do_delete_server");
-                            popupManager.showPopup("sirius_ui:popups/delete_confirm",
-                                    "delete_server_popup", popupParams);
-                        }
+                        serverList.remove(serverData);
+                        serverList.save();
+                        LOGGER.info("Deleted server: {} ({})", serverData.name, serverData.ip);
+                        refreshAllDynamicLists();
                     } else {
                         LOGGER.warn("Invalid server index: {}", index);
                     }
                 } catch (NumberFormatException e) {
                     LOGGER.error("Invalid server index: {}", indexStr, e);
                 }
-            }
-            case "_do_delete_server" -> {
-                String indexStr = sharedState.get("pendingDeleteServerIndex");
-                if (indexStr == null) {
-                    LOGGER.warn("_do_delete_server action missing index");
-                    return;
-                }
-                try {
-                    int index = Integer.parseInt(indexStr);
-                    ServerList serverList = new ServerList(minecraft);
-                    serverList.load();
-                    if (index >= 0 && index < serverList.size()) {
-                        ServerData serverData = serverList.get(index);
-                        serverList.remove(serverData);
-                        serverList.save();
-                        LOGGER.info("Deleted server: {} ({})", serverData.name, serverData.ip);
-                        refreshAllDynamicLists();
-                    }
-                } catch (NumberFormatException e) {
-                    LOGGER.error("Invalid server index: {}", indexStr, e);
-                }
-                sharedState.remove("pendingDeleteServerIndex");
-                if (popupManager != null) popupManager.dismissAll();
             }
             case "edit_world" -> {
                 String levelId = action.getTarget();
@@ -448,18 +426,17 @@ public class ActionExecutor {
                     serverList.load();
                     if (index >= 0 && index < serverList.size()) {
                         ServerData serverData = serverList.get(index);
-                        LOGGER.info("Showing edit server input dialog: {} ({})", serverData.name, serverData.ip);
-                        sharedState.put("pendingEditServerIndex", indexStr);
-                        if (popupManager != null) {
-                            Map<String, String> popupParams = new LinkedHashMap<>();
-                            popupParams.put("title", I18n.get("selectServer.edit"));
-                            popupParams.put("confirm_text", CommonComponents.GUI_DONE.getString());
-                            popupParams.put("cancel_text", CommonComponents.GUI_CANCEL.getString());
-                            popupParams.put("confirm_action", "_do_edit_server");
-                            popupParams.put("name", serverData.name);
-                            popupParams.put("address", serverData.ip);
-                            popupManager.showPopup("sirius_ui:popups/server_input",
-                                    "edit_server_popup", popupParams);
+                        LOGGER.info("Showing edit server card: {} ({})", serverData.name, serverData.ip);
+                        if (cardManager != null) {
+                            Map<String, String> params = new LinkedHashMap<>();
+                            params.put("title", I18n.get("selectServer.edit"));
+                            params.put("confirm_text", CommonComponents.GUI_DONE.getString());
+                            params.put("cancel_text", CommonComponents.GUI_CANCEL.getString());
+                            params.put("name", serverData.name);
+                            params.put("address", serverData.ip);
+                            params.put("server_index", indexStr);
+                            cardManager.showCard("sirius_ui:cards/server_input",
+                                    "edit_server_card", params);
                         }
                     } else {
                         LOGGER.warn("Invalid server index: {}", index);
@@ -468,37 +445,52 @@ public class ActionExecutor {
                     LOGGER.error("Invalid server index: {}", indexStr, e);
                 }
             }
-            case "_do_edit_server" -> {
-                String indexStr = sharedState.get("pendingEditServerIndex");
-                if (indexStr == null) {
-                    LOGGER.warn("_do_edit_server action missing index");
+            case "edit_server_submit", "server_input_submit" -> {
+                String indexStr = cardManager != null ?
+                        cardManager.getTopCardParam("server_index") : null;
+                String name = cardManager != null ?
+                        cardManager.getInputValue("edit_server_card", "name") : null;
+                if (name == null) {
+                    name = cardManager != null ?
+                            cardManager.getInputValue("add_server_card", "name") : null;
+                }
+                String address = cardManager != null ?
+                        cardManager.getInputValue("edit_server_card", "address") : null;
+                if (address == null) {
+                    address = cardManager != null ?
+                            cardManager.getInputValue("add_server_card", "address") : null;
+                }
+                if (name == null || name.isBlank()) {
+                    name = I18n.get("selectServer.defaultName");
+                }
+                if (address == null || address.isBlank()) {
+                    LOGGER.warn("Server input address is empty");
                     return;
                 }
-                String name = popupManager != null ?
-                        popupManager.getInputValue("edit_server_popup", "name") : null;
-                String address = popupManager != null ?
-                        popupManager.getInputValue("edit_server_popup", "address") : null;
-                try {
-                    int index = Integer.parseInt(indexStr);
-                    ServerList serverList = new ServerList(minecraft);
-                    serverList.load();
-                    if (index >= 0 && index < serverList.size()) {
-                        ServerData serverData = serverList.get(index);
-                        if (name != null && !name.isBlank()) {
+                ServerList serverList = new ServerList(minecraft);
+                serverList.load();
+                if (indexStr != null) {
+                    try {
+                        int index = Integer.parseInt(indexStr);
+                        if (index >= 0 && index < serverList.size()) {
+                            ServerData serverData = serverList.get(index);
                             serverData.name = name;
-                        }
-                        if (address != null && !address.isBlank()) {
                             serverData.ip = address;
+                            serverList.save();
+                            LOGGER.info("Edited server: {} ({})", serverData.name, serverData.ip);
+                            refreshAllDynamicLists();
                         }
-                        serverList.save();
-                        LOGGER.info("Edited server: {} ({})", serverData.name, serverData.ip);
-                        refreshAllDynamicLists();
+                    } catch (NumberFormatException e) {
+                        LOGGER.error("Invalid server index: {}", indexStr, e);
                     }
-                } catch (NumberFormatException e) {
-                    LOGGER.error("Invalid server index: {}", indexStr, e);
+                } else {
+                    ServerData newServer = new ServerData(name, address, ServerData.Type.OTHER);
+                    serverList.add(newServer, false);
+                    serverList.save();
+                    LOGGER.info("Added server: {} ({})", name, address);
+                    refreshAllDynamicLists();
                 }
-                sharedState.remove("pendingEditServerIndex");
-                if (popupManager != null) popupManager.dismissAll();
+                if (cardManager != null) cardManager.dismissAll();
             }
             case "open_folder" -> {
                 String target = action.getTarget();
@@ -644,20 +636,19 @@ public class ActionExecutor {
                 }
             }
             case "direct_connect" -> {
-                LOGGER.info("Showing direct connect input dialog");
-                if (popupManager != null) {
-                    Map<String, String> popupParams = new LinkedHashMap<>();
-                    popupParams.put("title", I18n.get("selectServer.direct"));
-                    popupParams.put("confirm_text", CommonComponents.GUI_PROCEED.getString());
-                    popupParams.put("cancel_text", CommonComponents.GUI_CANCEL.getString());
-                    popupParams.put("confirm_action", "_do_direct_connect");
-                    popupManager.showPopup("sirius_ui:popups/direct_connect",
-                            "direct_connect_popup", popupParams);
+                LOGGER.info("Showing direct connect card");
+                if (cardManager != null) {
+                    Map<String, String> params = new LinkedHashMap<>();
+                    params.put("title", I18n.get("selectServer.direct"));
+                    params.put("confirm_text", CommonComponents.GUI_PROCEED.getString());
+                    params.put("cancel_text", CommonComponents.GUI_CANCEL.getString());
+                    cardManager.showCard("sirius_ui:cards/direct_connect",
+                            "direct_connect_card", params);
                 }
             }
-            case "_do_direct_connect" -> {
-                String address = popupManager != null ?
-                        popupManager.getInputValue("direct_connect_popup", "address") : null;
+            case "direct_connect_submit" -> {
+                String address = cardManager != null ?
+                        cardManager.getInputValue("direct_connect_card", "address") : null;
                 if (address == null || address.isBlank()) {
                     LOGGER.warn("Direct connect address is empty");
                     return;
@@ -667,47 +658,57 @@ public class ActionExecutor {
                 ServerData serverData = new ServerData(
                         I18n.get("selectServer.defaultName"), address, ServerData.Type.OTHER);
                 ConnectScreen.startConnecting(parentScreen, minecraft, serverAddress, serverData, false, null);
-                if (popupManager != null) popupManager.dismissAll();
+                if (cardManager != null) cardManager.dismissAll();
             }
             case "add_server" -> {
-                LOGGER.info("Showing add server input dialog");
-                if (popupManager != null) {
-                    Map<String, String> popupParams = new LinkedHashMap<>();
-                    popupParams.put("title", I18n.get("selectServer.add"));
-                    popupParams.put("confirm_text", CommonComponents.GUI_DONE.getString());
-                    popupParams.put("cancel_text", CommonComponents.GUI_CANCEL.getString());
-                    popupParams.put("confirm_action", "_do_add_server");
-                    popupParams.put("name", I18n.get("selectServer.defaultName"));
-                    popupManager.showPopup("sirius_ui:popups/server_input",
-                            "add_server_popup", popupParams);
+                LOGGER.info("Showing add server card");
+                if (cardManager != null) {
+                    Map<String, String> params = new LinkedHashMap<>();
+                    params.put("title", I18n.get("selectServer.add"));
+                    params.put("confirm_text", CommonComponents.GUI_DONE.getString());
+                    params.put("cancel_text", CommonComponents.GUI_CANCEL.getString());
+                    params.put("name", I18n.get("selectServer.defaultName"));
+                    cardManager.showCard("sirius_ui:cards/server_input",
+                            "add_server_card", params);
                 }
             }
-            case "_do_add_server" -> {
-                String name = popupManager != null ?
-                        popupManager.getInputValue("add_server_popup", "name") : null;
-                String address = popupManager != null ?
-                        popupManager.getInputValue("add_server_popup", "address") : null;
-                if (name == null || name.isBlank()) {
-                    name = I18n.get("selectServer.defaultName");
-                }
-                if (address == null || address.isBlank()) {
-                    LOGGER.warn("Add server address is empty");
-                    return;
-                }
-                LOGGER.info("Adding server: {} ({})", name, address);
-                ServerData newServer = new ServerData(name, address, ServerData.Type.OTHER);
-                ServerList serverList = new ServerList(minecraft);
-                serverList.load();
-                serverList.add(newServer, false);
-                serverList.save();
-                refreshAllDynamicLists();
-                if (popupManager != null) popupManager.dismissAll();
+            case "add_server_submit" -> {
+                Action resolved = new Action();
+                resolved.setType("server_input_submit");
+                execute(resolved);
             }
             case "refresh_servers" -> {
                 LOGGER.info("Refreshing server list");
                 ServerListDataSource.pingServers(() -> refreshAllDynamicLists());
             }
             default -> LOGGER.warn("Unknown action type: {}", type);
+        }
+    }
+
+    private void showConfirmCard(Action action) {
+        String cardId = action.getConfirmWith();
+        String instanceId = "card_confirm_" + action.getType() + "_" + System.currentTimeMillis();
+
+        Map<String, String> context = new LinkedHashMap<>();
+        context.put("action_type", action.getType());
+        if (action.getTarget() != null) context.put("target", action.getTarget());
+        if (action.getContent() != null) context.put("content", action.getContent());
+        if (action.getParams() != null) context.putAll(action.getParams());
+
+        Action pendingAction = new Action();
+        pendingAction.setType(action.getType());
+        pendingAction.setTarget(action.getTarget());
+        pendingAction.setContent(action.getContent());
+        pendingAction.setScreenId(action.getScreenId());
+        pendingAction.setUrl(action.getUrl());
+        pendingAction.setVarName(action.getVarName());
+        pendingAction.setVarValue(action.getVarValue());
+        pendingAction.setBoxId(action.getBoxId());
+        pendingAction.setTargetId(action.getTargetId());
+        pendingAction.setParams(action.getParams());
+
+        if (cardManager != null) {
+            cardManager.showCardWithConfirm(cardId, instanceId, context, pendingAction);
         }
     }
 
@@ -731,40 +732,6 @@ public class ActionExecutor {
             minecraft.setScreen(new JoinMultiplayerScreen(titleScreen));
         }
         LOGGER.info("Disconnected: isLocal={}, isRealm={}", isLocal, serverData != null && serverData.isRealm());
-    }
-
-    /**
-     * 获取真实的父屏幕
-     * 如果 parentScreen ??JsonScreen，则递归获取它的 lastScreen
-     * 这样可以确保 close_screen 动作返回到正确的父屏??
-     */
-    private Screen getRealParentScreen(Screen screen) {
-        java.util.Set<Screen> visited = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
-        Screen current = screen;
-        while (current != null && !visited.contains(current)) {
-            visited.add(current);
-            if (current instanceof net.alan.gui.screen.JsonScreen jsonScreen) {
-                try {
-                    var field = net.alan.gui.screen.JsonScreen.class.getDeclaredField("lastScreen");
-                    field.setAccessible(true);
-                    Screen lastScreen = (Screen) field.get(jsonScreen);
-                    if (lastScreen != null) {
-                        current = lastScreen;
-                        continue;
-                    }
-                } catch (Exception e) {
-                    LOGGER.error("Failed to get lastScreen from JsonScreen", e);
-                }
-                break;
-            }
-            Screen parent = getParentFromScreen(current);
-            if (parent != null) {
-                current = parent;
-                continue;
-            }
-            break;
-        }
-        return current;
     }
 
     private Screen getParentFromScreen(Screen screen) {

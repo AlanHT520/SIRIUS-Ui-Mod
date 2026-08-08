@@ -2,20 +2,21 @@ package net.alan.gui.widget;
 
 import net.alan.gui.context.RenderContext;
 import net.alan.gui.data.widget.LayoutProps;
+import net.alan.gui.render.card.CardDefinition;
 import net.minecraft.client.gui.GuiGraphics;
 
 import java.util.Map;
 
-public class PopupDefWidget extends BaseWidget {
+public class CardDefWidget extends BaseWidget {
 
-    private final net.alan.gui.render.popup.PopupDefinition definition;
+    private final CardDefinition definition;
 
-    public PopupDefWidget(String id, net.alan.gui.render.popup.PopupDefinition definition) {
+    public CardDefWidget(String id, CardDefinition definition) {
         super(id, new LayoutProps(), Map.of(), Map.of());
         this.definition = definition;
     }
 
-    public net.alan.gui.render.popup.PopupDefinition getDefinition() {
+    public CardDefinition getDefinition() {
         return definition;
     }
 

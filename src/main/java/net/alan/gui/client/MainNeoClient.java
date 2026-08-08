@@ -2,6 +2,8 @@ package net.alan.gui.client;
 
 import net.alan.gui.Main;
 import net.alan.gui.MainNeo;
+import net.alan.gui.data.source.CardDataSourceRegistry;
+import net.alan.gui.data.source.DeleteConfirmDataSource;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -20,9 +22,7 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 public class MainNeoClient {
     public MainNeoClient(IEventBus modEventBus, ModContainer container) {
         ModSoundEvents.register(modEventBus);
-        // Allows NeoForge to create a config screen for this mod's configs.
-        // The config screen is accessed by going to the Mods screen > clicking on your mod > clicking on config.
-        // Do not forget to add translations for your config options to the en_us.json file.
+        CardDataSourceRegistry.register("delete_confirm_info", new DeleteConfirmDataSource());
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
 

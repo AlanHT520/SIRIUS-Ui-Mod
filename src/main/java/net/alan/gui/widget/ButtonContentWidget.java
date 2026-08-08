@@ -1,6 +1,7 @@
 package net.alan.gui.widget;
 
 import net.alan.gui.context.RenderContext;
+import net.alan.gui.data.Action;
 import net.alan.gui.data.widget.LayoutProps;
 import net.alan.gui.data.widget.StyleProps;
 import net.alan.gui.data.widget.TextProps;
@@ -19,6 +20,7 @@ public class ButtonContentWidget extends BaseWidget {
 
     private final StyleProps style;
     private final ActionExecutor actionExecutor;
+    private final Action action;
     private final List<Widget> children;
     private boolean isHovered = false;
     private final String boxId;
@@ -27,12 +29,14 @@ public class ButtonContentWidget extends BaseWidget {
 
     public ButtonContentWidget(String id, LayoutProps layout, Map<String, String> variables, Map<String, String> member,
                                StyleProps style, TextProps textProps,
-                               ActionExecutor actionExecutor, List<Widget> children,
+                               ActionExecutor actionExecutor, Action action,
+                               List<Widget> children,
                                String boxId, String targetId,
                                Map<String, Map<String, String>> stateVariables) {
         super(id, layout, variables, member);
         this.style = style;
         this.actionExecutor = actionExecutor;
+        this.action = action;
         this.children = new ArrayList<>();
         this.boxId = boxId;
         this.targetId = targetId != null ? targetId : id;
@@ -151,18 +155,16 @@ public class ButtonContentWidget extends BaseWidget {
         if (mouseX >= screenX && mouseX <= screenX + dim.w &&
                 mouseY >= screenY && mouseY <= screenY + dim.h) {
             playClickSound();
-            String resolvedBoxId = evalStringExpr(vars, boxId);
-            String resolvedTargetId = evalStringExpr(vars, targetId);
-            if (actionExecutor != null && resolvedBoxId != null) {
+            if (action != null && actionExecutor != null) {
+                actionExecutor.execute(resolveAction(action, vars));
+            } else if (boxId != null && targetId != null && actionExecutor != null) {
+                String resolvedBoxId = evalStringExpr(vars, boxId);
+                String resolvedTargetId = evalStringExpr(vars, targetId);
                 BoxWidget box = actionExecutor.getBox(resolvedBoxId);
                 if (box != null) {
                     box.switchTo(resolvedTargetId);
                     LOGGER.info("ButtonContent {} switched box '{}' to '{}'", id, resolvedBoxId, resolvedTargetId);
-                } else {
-                    LOGGER.warn("ButtonContent {} cannot find box '{}'", id, resolvedBoxId);
                 }
-            } else {
-                LOGGER.warn("ButtonContent {} has no boxId or executor", id);
             }
             return true;
         }

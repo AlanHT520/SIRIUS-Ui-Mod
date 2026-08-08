@@ -82,6 +82,17 @@
           "height": "screen.height - 74"
         },
         "background_color": "0x00000000",
+        "search": {
+          "x": 4,
+          "y": 0,
+          "width": -1,
+          "height": 18,
+          "hint": "gui.search",
+          "max_length": 32,
+          "bordered": true,
+          "text_color": "0xFFE0E4EA",
+          "hint_color": "0xFF8A9BB5"
+        },
         "scrollbar": {
           "width": 3,
           "x": "parent.width - 3",

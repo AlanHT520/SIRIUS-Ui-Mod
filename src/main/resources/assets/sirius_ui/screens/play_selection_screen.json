@@ -147,8 +147,9 @@
                   "background_color": "0x00000000",
                   "row_style": {
                     "background_color": "0x18FFFFFF",
-                    "background_color_alt": "0x0CFFFFFF",
-                    "hover_background_color": "0x28FFFFFF"
+                    "background_color_alt": "0x18FFFFFF",
+                    "hover_background_color": "0x28FFFFFF",
+                    "selected_background_color": "0x38FFFFFF"
                   },
                   "scrollbar": {
                     "track_color": "0x00000000",
@@ -223,14 +224,15 @@
                   "background_color": "0x00000000",
                   "row_style": {
                     "background_color": "0x18FFFFFF",
-                    "background_color_alt": "0x0CFFFFFF",
-                    "hover_background_color": "0x28FFFFFF"
+                    "background_color_alt": "0x18FFFFFF",
+                    "hover_background_color": "0x28FFFFFF",
+                    "selected_background_color": "0x38FFFFFF"
                   },
                   "search": {
                     "x": 4,
                     "y": 0,
-                    "width": 200,
-                    "height": 16,
+                    "width": -1,
+                    "height": 18,
                     "hint": "selectServer.search",
                     "max_length": 32,
                     "bordered": true,
@@ -269,8 +271,9 @@
                   "background_color": "0x00000000",
                   "row_style": {
                     "background_color": "0x18FFFFFF",
-                    "background_color_alt": "0x0CFFFFFF",
-                    "hover_background_color": "0x28FFFFFF"
+                    "background_color_alt": "0x18FFFFFF",
+                    "hover_background_color": "0x28FFFFFF",
+                    "selected_background_color": "0x38FFFFFF"
                   },
                   "scrollbar": {
                     "track_color": "0x00000000",

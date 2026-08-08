@@ -33,8 +33,27 @@ public class ContainerWidget extends BaseWidget {
         int containerX = x + dim.x;
         int containerY = y + dim.y;
 
+        injectChildLayoutVars(mergedCtx, dim.w, dim.h);
+
         for (Widget child : children) {
             child.render(graphics, containerX, containerY, dim.w, dim.h, mergedCtx, mouseX, mouseY, delta);
+        }
+    }
+
+    private void injectChildLayoutVars(RenderContext ctx, int parentW, int parentH) {
+        for (Widget child : children) {
+            if (child instanceof BaseWidget baseChild) {
+                String childId = baseChild.getId();
+                if (childId == null) continue;
+                try {
+                    WidgetDimension childDim = baseChild.computeLayout(ctx, parentW, parentH);
+                    ctx.variables().put(childId + ".x", String.valueOf(childDim.x));
+                    ctx.variables().put(childId + ".y", String.valueOf(childDim.y));
+                    ctx.variables().put(childId + ".width", String.valueOf(childDim.w));
+                    ctx.variables().put(childId + ".height", String.valueOf(childDim.h));
+                } catch (Exception ignored) {
+                }
+            }
         }
     }
 
@@ -49,10 +68,11 @@ public class ContainerWidget extends BaseWidget {
         int containerX = x + dim.x;
         int containerY = y + dim.y;
 
+        injectChildLayoutVars(mergedCtx, dim.w, dim.h);
+
         for (int i = children.size() - 1; i >= 0; i--) {
             Widget child = children.get(i);
             if (child.mouseClicked(mouseX, mouseY, button, mergedCtx, containerX, containerY, dim.w, dim.h)) {
-                // 获得焦点的子组件设为 focused，其他失??
                 for (Widget w : children) {
                     w.setFocused(w == child);
                 }
@@ -73,8 +93,8 @@ public class ContainerWidget extends BaseWidget {
         int containerX = x + dim.x;
         int containerY = y + dim.y;
 
-        // 必须通知所有子组件，不能因为某个返??true 就提前终??
-        // 否则子组件的 isDragging 等状态无法重??
+        injectChildLayoutVars(mergedCtx, dim.w, dim.h);
+
         boolean consumed = false;
         for (int i = children.size() - 1; i >= 0; i--) {
             Widget child = children.get(i);
@@ -96,6 +116,8 @@ public class ContainerWidget extends BaseWidget {
         int containerX = x + dim.x;
         int containerY = y + dim.y;
 
+        injectChildLayoutVars(mergedCtx, dim.w, dim.h);
+
         for (int i = children.size() - 1; i >= 0; i--) {
             Widget child = children.get(i);
             if (child.mouseScrolled(mouseX, mouseY, scrollX, scrollY, mergedCtx, containerX, containerY, dim.w, dim.h)) {
@@ -115,6 +137,8 @@ public class ContainerWidget extends BaseWidget {
         if (!checkCondition(vars)) return false;
         int containerX = x + dim.x;
         int containerY = y + dim.y;
+
+        injectChildLayoutVars(mergedCtx, dim.w, dim.h);
 
         for (int i = children.size() - 1; i >= 0; i--) {
             Widget child = children.get(i);
@@ -136,6 +160,8 @@ public class ContainerWidget extends BaseWidget {
         int containerX = x + dim.x;
         int containerY = y + dim.y;
 
+        injectChildLayoutVars(mergedCtx, dim.w, dim.h);
+
         for (Widget child : children) {
             if (child.keyPressed(keyCode, scanCode, modifiers, mergedCtx, containerX, containerY, dim.w, dim.h)) {
                 return true;
@@ -155,6 +181,8 @@ public class ContainerWidget extends BaseWidget {
         int containerX = x + dim.x;
         int containerY = y + dim.y;
 
+        injectChildLayoutVars(mergedCtx, dim.w, dim.h);
+
         for (Widget child : children) {
             child.mouseMoved(mouseX, mouseY, mergedCtx, containerX, containerY, dim.w, dim.h);
         }
@@ -170,6 +198,8 @@ public class ContainerWidget extends BaseWidget {
         if (!checkCondition(vars)) return false;
         int containerX = x + dim.x;
         int containerY = y + dim.y;
+
+        injectChildLayoutVars(mergedCtx, dim.w, dim.h);
 
         for (Widget child : children) {
             if (child.charTyped(codePoint, modifiers, mergedCtx, containerX, containerY, dim.w, dim.h)) {

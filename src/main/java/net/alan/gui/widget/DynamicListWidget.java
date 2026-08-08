@@ -33,6 +33,7 @@ public class DynamicListWidget extends BaseWidget {
     private final int rowHeight;
     private final int gap;
     private final String backgroundColor;
+    private final String backgroundTexture;
     private final JsonObject rowTemplate;
     private final DynamicListStyleConfig styleConfig;
     private final JsonObject editBtnTemplate;
@@ -44,6 +45,7 @@ public class DynamicListWidget extends BaseWidget {
     private boolean scrolling;
     private double lastMouseY;
     private int hoveredRowIndex = -1;
+    private int selectedIndex = -1;
     private final Map<String, ResourceLocation> iconCache = new HashMap<>();
 
     private final Map<Integer, ButtonWidget> joinButtons = new HashMap<>();
@@ -62,7 +64,7 @@ public class DynamicListWidget extends BaseWidget {
     public DynamicListWidget(String id, LayoutProps layout, Map<String, String> variables,
                              Map<String, String> member, Supplier<List<DynamicListData>> dataSource,
                              ActionExecutor executor, int rowHeight, int gap,
-                             String backgroundColor,
+                             String backgroundColor, String backgroundTexture,
                              JsonObject rowTemplate, DynamicListStyleConfig styleConfig,
                              JsonObject editBtnTemplate, JsonObject joinBtnTemplate,
                              JsonObject deleteBtnTemplate, JsonObject recreateBtnTemplate) {
@@ -72,6 +74,7 @@ public class DynamicListWidget extends BaseWidget {
         this.rowHeight = rowHeight;
         this.gap = gap;
         this.backgroundColor = backgroundColor;
+        this.backgroundTexture = backgroundTexture;
         this.rowTemplate = rowTemplate;
         this.styleConfig = styleConfig;
         this.editBtnTemplate = editBtnTemplate;
@@ -87,6 +90,7 @@ public class DynamicListWidget extends BaseWidget {
     public void reload() {
         rows = dataSource.get();
         scrollAmount = 0;
+        selectedIndex = -1;
         iconCache.clear();
         rebuildButtons();
     }
@@ -111,6 +115,7 @@ public class DynamicListWidget extends BaseWidget {
         this.searchBox.setResponder(text -> {
             this.filterText = text != null ? text.toLowerCase() : "";
             this.scrollAmount = 0;
+            this.selectedIndex = -1;
         });
     }
 
@@ -229,6 +234,7 @@ public class DynamicListWidget extends BaseWidget {
         action.setVarValue(templateAction.getVarValue());
         action.setBoxId(templateAction.getBoxId());
         action.setTargetId(templateAction.getTargetId());
+        action.setConfirmWith(templateAction.getConfirmWith());
         return action;
     }
 
@@ -259,10 +265,18 @@ public class DynamicListWidget extends BaseWidget {
             } catch (NumberFormatException ignored) {}
         }
 
+        if (backgroundTexture != null) {
+            ResourceLocation tex = ResourceLocation.tryParse(backgroundTexture);
+            if (tex != null) {
+                graphics.blitSprite(tex, listX, listY, dim.w, dim.h);
+            }
+        }
+
         int searchOffset = 0;
         if (searchEnabled && searchBox != null) {
             searchOffset = searchBoxH + 4;
-            searchBox.setRectangle(Math.max(1, searchBoxW), Math.max(1, searchBoxH),
+            int effectiveW = searchBoxW > 0 ? searchBoxW : Math.max(1, dim.w - searchBoxX * 2);
+            searchBox.setRectangle(effectiveW, Math.max(1, searchBoxH),
                     listX + searchBoxX, listY + searchBoxY);
             searchBox.render(graphics, mouseX, mouseY, delta);
         }
@@ -302,6 +316,9 @@ public class DynamicListWidget extends BaseWidget {
                 int rowBgColor;
                 if (mouseOnRow && rowStyle != null && rowStyle.hover_background_color != null) {
                     rowBgColor = parseColor(rowStyle.hover_background_color);
+                } else if (i == selectedIndex && rowStyle != null
+                        && rowStyle.selected_background_color != null) {
+                    rowBgColor = parseColor(rowStyle.selected_background_color);
                 } else if (rowStyle != null) {
                     rowBgColor = (i % 2 == 0)
                             ? parseColor(rowStyle.background_color)
@@ -456,7 +473,8 @@ public class DynamicListWidget extends BaseWidget {
         int screenY = y + dim.y;
 
         if (searchEnabled && searchBox != null) {
-            if (mouseX >= screenX + searchBoxX && mouseX <= screenX + searchBoxX + searchBoxW
+            int effectiveW = searchBoxW > 0 ? searchBoxW : Math.max(1, dim.w - searchBoxX * 2);
+            if (mouseX >= screenX + searchBoxX && mouseX <= screenX + searchBoxX + effectiveW
                     && mouseY >= screenY + searchBoxY && mouseY <= screenY + searchBoxY + searchBoxH) {
                 searchBox.setFocused(true);
                 return true;
@@ -468,6 +486,7 @@ public class DynamicListWidget extends BaseWidget {
 
         if (mouseX < screenX || mouseX > screenX + dim.w
                 || mouseY < listContentY || mouseY > screenY + dim.h) {
+            selectedIndex = -1;
             return false;
         }
 
@@ -500,6 +519,11 @@ public class DynamicListWidget extends BaseWidget {
                 if (recreateBtn != null && recreateBtn.mouseClicked(mouseX, mouseY, button,
                         mergedCtx, screenX, rowTop, dim.w, rowHeight)) {
                     return true;
+                }
+
+                if (button == 0 && mouseX >= screenX && mouseX <= screenX + dim.w
+                        && mouseY >= rowTop && mouseY <= rowBottom) {
+                    selectedIndex = i;
                 }
             }
             currentY += rowHeight + gap + dividerH;

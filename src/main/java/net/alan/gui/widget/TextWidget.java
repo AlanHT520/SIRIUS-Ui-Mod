@@ -133,8 +133,8 @@ public class TextWidget extends BaseWidget {
         }
 
         // 解析位置（使??state_v 覆盖后的有效表达式）
-        int posX = eval(getEffectiveXExpr(mergedCtx), numVars);
-        int posY = eval(getEffectiveYExpr(mergedCtx), numVars);
+        int posX = evalX(getEffectiveXExpr(mergedCtx), numVars);
+        int posY = evalY(getEffectiveYExpr(mergedCtx), numVars);
         int screenX = x + posX;
         int screenY = y + posY;
 
@@ -188,6 +188,7 @@ public class TextWidget extends BaseWidget {
                     int s = step.start() >= 0 ? step.start() : Math.max(0, simVisibleChars);
                     int e = step.end() > 0 ? step.end() : fullStr.length();
                     simVisibleChars = Math.min(e, fullStr.length());
+                    lastVisibleChars = simVisibleChars;
                 }
                 cursor = stepEnd;
             }
@@ -221,8 +222,8 @@ public class TextWidget extends BaseWidget {
                         renderText = fullStr.substring(0, lastVisibleChars);
                         int tw = (int) (minecraft.font.width(renderText) * scale);
                         numVars.put("this.width", tw);
-                        renderX = x + eval(getEffectiveXExpr(mergedCtx), numVars);
-                        renderY = y + eval(getEffectiveYExpr(mergedCtx), numVars);
+                        renderX = x + evalX(getEffectiveXExpr(mergedCtx), numVars);
+                        renderY = y + evalY(getEffectiveYExpr(mergedCtx), numVars);
                         showCursor = (stepLocalElapsed / 500) % 2 == 0;
                     }
                     case "hold" -> {
@@ -230,8 +231,8 @@ public class TextWidget extends BaseWidget {
                         renderText = fullStr.substring(0, holdChars);
                         int tw = (int) (minecraft.font.width(renderText) * scale);
                         numVars.put("this.width", tw);
-                        renderX = x + eval(getEffectiveXExpr(mergedCtx), numVars);
-                        renderY = y + eval(getEffectiveYExpr(mergedCtx), numVars);
+                        renderX = x + evalX(getEffectiveXExpr(mergedCtx), numVars);
+                        renderY = y + evalY(getEffectiveYExpr(mergedCtx), numVars);
                     }
                     case "fade_in" -> {
                         float progress = currentStep.duration() > 0
@@ -306,8 +307,8 @@ public class TextWidget extends BaseWidget {
                         String visibleText = fullStr.substring(0, visibleChars);
                         textWidth = (int) (minecraft.font.width(visibleText) * scale);
                         numVars.put("this.width", textWidth);
-                        screenX = x + eval(getEffectiveXExpr(mergedCtx), numVars);
-                        screenY = y + eval(getEffectiveYExpr(mergedCtx), numVars);
+                        screenX = x + evalX(getEffectiveXExpr(mergedCtx), numVars);
+                        screenY = y + evalY(getEffectiveYExpr(mergedCtx), numVars);
 
                         graphics.pose().pushPose();
                         graphics.pose().translate(screenX, screenY, 0);
@@ -336,6 +337,88 @@ public class TextWidget extends BaseWidget {
             graphics.drawString(minecraft.font, finalText, 0, 0, color, textProps.shadow());
         }
         graphics.pose().popPose();
+    }
+
+    @Override
+    public WidgetDimension computeLayout(RenderContext ctx, int parentW, int parentH) {
+        String wExpr = layout.widthExpr();
+        String hExpr = layout.heightExpr();
+        boolean wAuto = wExpr == null || wExpr.equals("auto");
+        boolean hAuto = hExpr == null || hExpr.equals("auto");
+
+        if (!wAuto && !hAuto) {
+            return super.computeLayout(ctx, parentW, parentH);
+        }
+
+        String fullText = resolveFullText(ctx);
+        if (fullText == null || fullText.isEmpty()) {
+            return super.computeLayout(ctx, parentW, parentH);
+        }
+
+        float scale = textProps.scale();
+        int textW = (int) (minecraft.font.width(fullText) * scale);
+        int textH = (int) (minecraft.font.lineHeight * scale);
+
+        Map<String, Integer> numVars = buildNumericVars(ctx, parentW, parentH, parentW, parentH);
+        int w = wAuto ? textW : eval(wExpr, numVars);
+        int h = hAuto ? textH : eval(hExpr, numVars);
+        numVars.put("this.width", w);
+        numVars.put("this.height", h);
+        int x = evalX(layout.xExpr(), numVars);
+        int y = evalY(layout.yExpr(), numVars);
+        return new WidgetDimension(x, y, w, h);
+    }
+
+    private String resolveFullText(RenderContext ctx) {
+        RenderContext mergedCtx = mergeContext(ctx);
+        Map<String, Integer> vars = new HashMap<>();
+        vars.put("screen.width", mergedCtx.screenWidth());
+        vars.put("screen.height", mergedCtx.screenHeight());
+        vars.put("parent.width", mergedCtx.screenWidth());
+        vars.put("parent.height", mergedCtx.screenHeight());
+        for (Map.Entry<String, String> entry : mergedCtx.variables().entrySet()) {
+            try {
+                vars.put(entry.getKey(), Integer.parseInt(entry.getValue()));
+            } catch (NumberFormatException ignored) {}
+        }
+
+        String dynamic = textProps.dynamicType();
+
+        String dynKey = evalStringExpr(vars, textProps.textKeyDynamic());
+        if (dynKey != null && !dynKey.isEmpty()) {
+            String replacedKey = replaceVars(dynKey, mergedCtx.variables());
+            return Component.translatable(replacedKey).getString();
+        }
+
+        if (textProps.textKey() != null && !textProps.textKey().isEmpty()
+                && textProps.textKeyOption() != null && !textProps.textKeyOption().isEmpty()) {
+            String replacedKey = replaceVars(evalStringExpr(vars, textProps.textKey()), mergedCtx.variables());
+            return Component.translatable(replacedKey).getString();
+        }
+
+        if (textProps.textKeyOption() != null && !textProps.textKeyOption().isEmpty()) {
+            String currentValue = mergedCtx.variables().get("current_value");
+            if (currentValue != null) {
+                return Component.translatable(currentValue).getString();
+            }
+        }
+
+        if (dynamic != null && !dynamic.isEmpty()) {
+            return resolveDynamicValue(dynamic);
+        }
+
+        String rawKey = evalStringExpr(vars, textProps.textKey());
+        if (rawKey != null && !rawKey.isEmpty()) {
+            String replacedKey = replaceVars(rawKey, mergedCtx.variables());
+            return Component.translatable(replacedKey).getString();
+        }
+
+        String raw = evalStringExpr(vars, textProps.text());
+        if (raw != null) {
+            return replaceVars(raw, mergedCtx.variables());
+        }
+
+        return null;
     }
 
     /**

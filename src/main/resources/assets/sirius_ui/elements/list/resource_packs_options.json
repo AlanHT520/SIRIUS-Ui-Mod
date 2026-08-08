@@ -5,11 +5,12 @@
   "background_color": "0x50000000",
   "children": [
     {
+      "comment": "左侧面板 - 可用材质包列表",
       "type": "pack_list",
-      "id": "options_pack_list",
+      "id": "unactive_pack_list",
       "source": "resource_packs",
-      "mode": "all",
-      "entry_height": 36,
+      "mode": "unactive",
+      "entry_height": 48,
       "entry_gap": 2,
       "background_color": "0x00000000",
       "active_row": {
@@ -26,10 +27,107 @@
         "toggle_color": "0xCCAA0000",
         "toggle_hover_color": "0xCCFF5555"
       },
-      "position": { "x": "6", "y": "0" },
-      "size": { "width": "parent.width - 12", "height": "parent.height - 26" }
+      "position": { "x": "0", "y": "0" },
+      "size": { "width": "parent.width / 2 - 2", "height": "parent.height - 26" },
+      "layout": {
+        "icon": { "x": 4, "size": 32, "placeholder_color": "0xFF555555" },
+        "text": { "icon_gap": 6, "title_y": 4, "description_y": 16, "compatibility_y": 28, "title_max_length": 30, "description_max_length": 40 },
+        "incompatible": { "background_color": "0x55897843", "text_color": "0xFFFF5555", "description_color": "0xCCFF8888" },
+        "source_label": { "color": "0xCCAAAAAA", "right_padding": 24 },
+        "toggle": {
+            "right_padding": 20,
+            "activate": {
+              "size": 16, "show_when": ["hovered", "selected"],
+              "text": { "text": "?", "color": "0xFFFFFFFF", "highlighted_color": "0xCC55FF55" }
+            },
+            "deactivate": {
+              "size": 16, "show_when": ["hovered", "selected"],
+              "text": { "text": "?", "color": "0xFFFFFFFF", "highlighted_color": "0xCCFF5555" }
+            },
+            "required": {
+              "size": 16, "show_when": ["always"],
+              "text": { "text": "!", "color": "0xCCAAAAAA" }
+            }
+          },
+          "move": {
+            "gap": 20,
+            "up": {
+              "size": { "width": 16, "height": 8 }, "show_when": ["hovered", "selected"],
+              "text": { "text": "▲", "color": "0xCC888888", "highlighted_color": "0xCCFFFFFF" }
+            },
+            "down": {
+              "size": { "width": 16, "height": 8 }, "show_when": ["hovered", "selected"],
+              "text": { "text": "▼", "color": "0xCC888888", "highlighted_color": "0xCCFFFFFF" }
+            }
+          },
+          "scrollbar": { "width": 4, "color": "0x44FFFFFF", "min_height": 16, "padding": 2 },
+          "drag": { "indicator_color": "0xCCFFFFFF", "auto_scroll_speed": 4 },
+          "scroll_speed": 20
+        }
+      },
+      {
+        "comment": "右侧面板 - 已加载材质包列表",
+        "type": "pack_list",
+        "id": "active_pack_list",
+        "source": "resource_packs",
+        "mode": "active",
+        "entry_height": 48,
+        "entry_gap": 2,
+        "background_color": "0x00000000",
+        "active_row": {
+          "background_color": "0x2000CC00",
+          "text_color": "0xFFFFFFFF",
+          "hover_color": "0x4000CC00",
+          "toggle_color": "0xCC00AA00",
+          "toggle_hover_color": "0xCC55FF55"
+        },
+        "unactive_row": {
+          "background_color": "0x20000000",
+          "text_color": "0xCCAAAAAA",
+          "hover_color": "0x40000000",
+          "toggle_color": "0xCCAA0000",
+          "toggle_hover_color": "0xCCFF5555"
+        },
+        "position": { "x": "parent.width / 2 + 2", "y": "0" },
+        "size": { "width": "parent.width / 2 - 2", "height": "parent.height - 26" },
+        "layout": {
+          "icon": { "x": 4, "size": 32, "placeholder_color": "0xFF555555" },
+          "text": { "icon_gap": 6, "title_y": 4, "description_y": 16, "compatibility_y": 28, "title_max_length": 30, "description_max_length": 40 },
+          "incompatible": { "background_color": "0x55897843", "text_color": "0xFFFF5555", "description_color": "0xCCFF8888" },
+          "source_label": { "color": "0xCCAAAAAA", "right_padding": 24 },
+          "toggle": {
+            "right_padding": 20,
+            "activate": {
+              "size": 16, "show_when": ["hovered", "selected"],
+              "text": { "text": "?", "color": "0xFFFFFFFF", "highlighted_color": "0xCC55FF55" }
+            },
+            "deactivate": {
+              "size": 16, "show_when": ["hovered", "selected"],
+              "text": { "text": "?", "color": "0xFFFFFFFF", "highlighted_color": "0xCCFF5555" }
+            },
+            "required": {
+              "size": 16, "show_when": ["always"],
+              "text": { "text": "!", "color": "0xCCAAAAAA" }
+            }
+          },
+          "move": {
+            "gap": 20,
+            "up": {
+              "size": { "width": 16, "height": 8 }, "show_when": ["hovered", "selected"],
+              "text": { "text": "▲", "color": "0xCC888888", "highlighted_color": "0xCCFFFFFF" }
+            },
+            "down": {
+              "size": { "width": 16, "height": 8 }, "show_when": ["hovered", "selected"],
+              "text": { "text": "▼", "color": "0xCC888888", "highlighted_color": "0xCCFFFFFF" }
+            }
+          },
+        "scrollbar": { "width": 4, "color": "0x44FFFFFF", "min_height": 16, "padding": 2 },
+        "drag": { "indicator_color": "0xCCFFFFFF", "auto_scroll_speed": 4 },
+        "scroll_speed": 20
+      }
     },
     {
+      "comment": "打开材质包文件夹",
       "type": "button",
       "position": { "x": "6", "y": "parent.height - 22" },
       "size": { "width": "80", "height": "20" },
@@ -45,6 +143,7 @@
       }
     },
     {
+      "comment": "完成按钮",
       "type": "button",
       "position": { "x": "parent.width - 56", "y": "parent.height - 22" },
       "size": { "width": "50", "height": "20" },

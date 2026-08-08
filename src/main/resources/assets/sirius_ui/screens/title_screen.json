@@ -15,6 +15,17 @@
           "height": 64
         }
       },
+
+      {
+        "comment": "闪烁标语",
+        "ref": "sirius_ui:elements/splash/splash.json",
+        "position": {
+          "x": "screen.width / 2 + 123",
+          "y": "69"
+        },
+        "size": { "width": "0", "height": "0" }
+      },
+
       {
         "comment": "开始按钮",
         "ref": "sirius_ui:elements/buttons/titlemenu/play_button.json",
@@ -94,7 +105,7 @@
       {
         "comment": "SIRIUS Ui 版本标识",
         "type": "text",
-        "text": "SIRIUS Ui v-0.4.86-Dev.64",
+        "text": "SIRIUS Ui 0.5.0",
         "animations": [
           {
             "type": "typewriter",
@@ -109,6 +120,19 @@
         "shadow": true,
         "position": {
           "x": "0",
+          "y": "screen.height - this.height"
+        },
+        "size": { "width": "this.width", "height": "this.height" }
+      },
+
+      {
+        "comment": "Minecraft 标识",
+        "type": "text",
+        "text": "©MOJANG AB | Minecraft",
+        "color": "0x20FFFFFF",
+        "shadow": true,
+        "position": {
+          "x": "screen.width - this.width",
           "y": "screen.height - this.height"
         },
         "size": { "width": "this.width", "height": "this.height" }

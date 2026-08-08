@@ -72,7 +72,42 @@
         "entry_gap": 2,
         "background_color": "0x00000000",
         "position": { "x": "8", "y": "52" },
-        "size": { "width": "screen.width / 2 - 12", "height": "screen.height - 86" }
+        "size": { "width": "screen.width / 2 - 12", "height": "screen.height - 86" },
+        "layout": {
+          "icon": { "x": 4, "size": 32, "placeholder_color": "0xFF555555" },
+          "text": { "icon_gap": 6, "title_y": 4, "description_y": 16, "compatibility_y": 28, "title_max_length": 30, "description_max_length": 40 },
+          "incompatible": { "background_color": "0x55897843", "text_color": "0xFFFF5555", "description_color": "0xCCFF8888" },
+          "source_label": { "color": "0xCCAAAAAA", "right_padding": 24 },
+          "toggle": {
+            "right_padding": 20,
+            "activate": {
+              "size": 16, "show_when": ["hovered", "selected"],
+              "text": { "text": "✓", "color": "0xFFFFFFFF", "highlighted_color": "0xCC55FF55" }
+            },
+            "deactivate": {
+              "size": 16, "show_when": ["hovered", "selected"],
+              "text": { "text": "✕", "color": "0xFFFFFFFF", "highlighted_color": "0xCCFF5555" }
+            },
+            "required": {
+              "size": 16, "show_when": ["always"],
+              "text": { "text": "!", "color": "0xCCAAAAAA" }
+            }
+          },
+          "move": {
+            "gap": 20,
+            "up": {
+              "size": { "width": 16, "height": 8 }, "show_when": ["hovered", "selected"],
+              "text": { "text": "▲", "color": "0xCC888888", "highlighted_color": "0xCCFFFFFF" }
+            },
+            "down": {
+              "size": { "width": 16, "height": 8 }, "show_when": ["hovered", "selected"],
+              "text": { "text": "▼", "color": "0xCC888888", "highlighted_color": "0xCCFFFFFF" }
+            }
+          },
+          "scrollbar": { "width": 4, "color": "0x44FFFFFF", "min_height": 16, "padding": 2 },
+          "drag": { "indicator_color": "0xCCFFFFFF", "auto_scroll_speed": 4 },
+          "scroll_speed": 20
+        }
       },
       {
         "comment": "右侧面板 - 已加载数据包列表",
@@ -84,7 +119,42 @@
         "entry_gap": 2,
         "background_color": "0x00000000",
         "position": { "x": "screen.width / 2 + 4", "y": "52" },
-        "size": { "width": "screen.width / 2 - 12", "height": "screen.height - 86" }
+        "size": { "width": "screen.width / 2 - 12", "height": "screen.height - 86" },
+        "layout": {
+          "icon": { "x": 4, "size": 32, "placeholder_color": "0xFF555555" },
+          "text": { "icon_gap": 6, "title_y": 4, "description_y": 16, "compatibility_y": 28, "title_max_length": 30, "description_max_length": 40 },
+          "incompatible": { "background_color": "0x55897843", "text_color": "0xFFFF5555", "description_color": "0xCCFF8888" },
+          "source_label": { "color": "0xCCAAAAAA", "right_padding": 24 },
+          "toggle": {
+            "right_padding": 20,
+            "activate": {
+              "size": 16, "show_when": ["hovered", "selected"],
+              "text": { "text": "✓", "color": "0xFFFFFFFF", "highlighted_color": "0xCC55FF55" }
+            },
+            "deactivate": {
+              "size": 16, "show_when": ["hovered", "selected"],
+              "text": { "text": "✕", "color": "0xFFFFFFFF", "highlighted_color": "0xCCFF5555" }
+            },
+            "required": {
+              "size": 16, "show_when": ["always"],
+              "text": { "text": "!", "color": "0xCCAAAAAA" }
+            }
+          },
+          "move": {
+            "gap": 20,
+            "up": {
+              "size": { "width": 16, "height": 8 }, "show_when": ["hovered", "selected"],
+              "text": { "text": "▲", "color": "0xCC888888", "highlighted_color": "0xCCFFFFFF" }
+            },
+            "down": {
+              "size": { "width": 16, "height": 8 }, "show_when": ["hovered", "selected"],
+              "text": { "text": "▼", "color": "0xCC888888", "highlighted_color": "0xCCFFFFFF" }
+            }
+          },
+          "scrollbar": { "width": 4, "color": "0x44FFFFFF", "min_height": 16, "padding": 2 },
+          "drag": { "indicator_color": "0xCCFFFFFF", "auto_scroll_speed": 4 },
+          "scroll_speed": 20
+        }
       },
       {
         "comment": "完成按钮",
