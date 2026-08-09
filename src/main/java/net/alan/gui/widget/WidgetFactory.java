@@ -467,19 +467,27 @@ public class WidgetFactory {
                 String entityType = json.has("entity_type") ? json.get("entity_type").getAsString() : "player";
                 float scale = json.has("scale") ? json.get("scale").getAsFloat() : 30.0f;
                 boolean lookAtMouse = !json.has("look_at_mouse") || json.get("look_at_mouse").getAsBoolean();
+                float offsetX = json.has("offset_x") ? json.get("offset_x").getAsFloat() : 0.0f;
+                float offsetY = json.has("offset_y") ? json.get("offset_y").getAsFloat() : 0.0f;
+                float lookSensitivityX = json.has("look_sensitivity_x") ? json.get("look_sensitivity_x").getAsFloat() : 1.0f;
+                float lookSensitivityY = json.has("look_sensitivity_y") ? json.get("look_sensitivity_y").getAsFloat() : 1.0f;
                 String animState = "idle";
                 float walkSpeed = 0.5F;
+                float walkAmplitude = 0.4F;
                 boolean attackEnabled = false;
                 if (json.has("animation")) {
                     JsonObject anim = json.get("animation").getAsJsonObject();
                     animState = anim.has("state") ? anim.get("state").getAsString() : "idle";
                     walkSpeed = anim.has("walk_speed") ? anim.get("walk_speed").getAsFloat() : 0.5F;
+                    walkAmplitude = anim.has("walk_amplitude") ? anim.get("walk_amplitude").getAsFloat() : 0.4F;
                     if (anim.has("attack")) {
                         JsonObject attack = anim.get("attack").getAsJsonObject();
                         attackEnabled = attack.has("enabled") && attack.get("enabled").getAsBoolean();
                     }
                 }
-                yield new EntityDisplayWidget(id, layout, variables, member, entityType, scale, lookAtMouse, animState, walkSpeed, attackEnabled);
+                yield new EntityDisplayWidget(id, layout, variables, member, entityType, scale, lookAtMouse,
+                        animState, walkSpeed, walkAmplitude, attackEnabled,
+                        offsetX, offsetY, lookSensitivityX, lookSensitivityY);
             }
             case "card" -> {
                 JsonObject cardObj = json.has("card") && json.get("card").isJsonObject()

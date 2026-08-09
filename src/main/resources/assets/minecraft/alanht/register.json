@@ -2,7 +2,7 @@
   "titleScreen": "sirius_ui:screens/title_screen.json",
   "pauseScreen": "sirius_ui:screens/pause_screen.json",
   "deathScreen": "sirius_ui:screens/death_screen.json",
-  "selectGame": "sirius_ui:screens/play_selection_screen.json",
+  "selectGame": "sirius_ui:screens/game_selection_screen.json",
   "pause_other": "sirius_ui:screens/pause_other_screen.json",
   "settings": "sirius_ui:screens/options_screen.json",
   "mouse_settings": "sirius_ui:screens/mouse_settings_screen.json",

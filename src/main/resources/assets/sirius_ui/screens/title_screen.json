@@ -91,21 +91,11 @@
         },
         "size": { "width": 20, "height": 20 },
         "action": { "type": "open_screen", "screenId": "mods_list" }
-      }
-    ,
-      {
-        "comment": "玩家模型展示",
-        "ref": "sirius_ui:elements/buttons/titlemenu/player.json",
-        "size": { "width": 125, "height": 250 },
-        "position": {
-          "x": "screen.width / 2 - this.width / 2",
-          "y": "screen.height - 195"
-        }
       },
       {
         "comment": "SIRIUS Ui 版本标识",
         "type": "text",
-        "text": "SIRIUS Ui 0.5.0",
+        "text": "SIRIUS Ui 0.4.87-Dev.65",
         "animations": [
           {
             "type": "typewriter",

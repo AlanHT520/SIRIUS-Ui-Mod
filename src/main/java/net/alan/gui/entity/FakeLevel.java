@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.CommonListenerCookie;
+import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.Holder;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
@@ -39,6 +40,7 @@ import java.util.OptionalLong;
 public class FakeLevel extends ClientLevel {
 
     private static FakeLevel INSTANCE;
+    private static RegistryAccess lastRegistryAccess;
 
     private FakeLevel(RegistryAccess registryAccess) {
         super(
@@ -48,9 +50,20 @@ public class FakeLevel extends ClientLevel {
             OVERWORLD_DIMENSION_TYPE,
             2, 2,
             () -> Minecraft.getInstance().getProfiler(),
-            Minecraft.getInstance().levelRenderer,
+            getLevelRenderer(),
             false, 0
         );
+    }
+
+    private static LevelRenderer getLevelRenderer() {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.levelRenderer != null) {
+            return mc.levelRenderer;
+        }
+        return mc.getEntityRenderDispatcher() != null
+                ? new LevelRenderer(mc, mc.getEntityRenderDispatcher(),
+                        mc.getBlockEntityRenderDispatcher(), mc.renderBuffers())
+                : null;
     }
 
     private static final Holder<DimensionType> OVERWORLD_DIMENSION_TYPE = Holder.direct(new DimensionType(
@@ -97,10 +110,13 @@ public class FakeLevel extends ClientLevel {
     }
 
     public static FakeLevel getInstance() {
-        if (INSTANCE == null) {
-            RegistryAccess ra = getRegistryAccess();
-            if (ra == null) return null;
-            INSTANCE = new FakeLevel(ra);
+        RegistryAccess currentRa = getRegistryAccess();
+        if (currentRa == null) return null;
+
+        if (INSTANCE == null || lastRegistryAccess == null
+                || !lastRegistryAccess.equals(currentRa)) {
+            INSTANCE = new FakeLevel(currentRa);
+            lastRegistryAccess = currentRa;
         }
         return INSTANCE;
     }

@@ -20,21 +20,31 @@ public class EntityDisplayWidget extends BaseWidget {
     private final boolean lookAtMouse;
     private final String animState;
     private final float walkSpeed;
+    private final float walkAmplitude;
     private final boolean attackEnabled;
+    private final float offsetX;
+    private final float offsetY;
+    private final float lookSensitivityX;
+    private final float lookSensitivityY;
 
     private LivingEntity cachedEntity;
-    private boolean triedCache;
 
     public EntityDisplayWidget(String id, LayoutProps layout, Map<String, String> variables, Map<String, String> member,
                                 String entityType, float scale, boolean lookAtMouse,
-                                String animState, float walkSpeed, boolean attackEnabled) {
+                                String animState, float walkSpeed, float walkAmplitude, boolean attackEnabled,
+                                float offsetX, float offsetY, float lookSensitivityX, float lookSensitivityY) {
         super(id, layout, variables, member);
         this.entityType = entityType;
         this.scale = scale;
         this.lookAtMouse = lookAtMouse;
         this.animState = animState;
         this.walkSpeed = walkSpeed;
+        this.walkAmplitude = walkAmplitude;
         this.attackEnabled = attackEnabled;
+        this.offsetX = offsetX;
+        this.offsetY = offsetY;
+        this.lookSensitivityX = lookSensitivityX;
+        this.lookSensitivityY = lookSensitivityY;
     }
 
     @Override
@@ -54,14 +64,16 @@ public class EntityDisplayWidget extends BaseWidget {
 
         updateEntityAnimation(entity);
 
+        float centerX = screenX + dim.w / 2.0F + offsetX;
+        float centerY = screenY + dim.h / 2.0F + offsetY;
+
         float angleX, angleY;
         if (lookAtMouse) {
-            float centerX = (screenX + screenX + dim.w) / 2.0F;
-            float centerY = (screenY + screenY + dim.h) / 2.0F;
-            angleX = (float) (centerX - mouseX) / (float) dim.w;
-            angleY = (float) (centerY - mouseY) / (float) dim.h;
+            angleX = (centerX - mouseX) / (float) dim.w * lookSensitivityX;
+            angleY = (centerY - mouseY) / (float) dim.h * lookSensitivityY;
         } else {
-            angleX = 0.0f;
+            float time = (System.currentTimeMillis() % 10000) / 10000.0F;
+            angleX = (float) Math.sin(time * Math.PI * 2) * 0.15F;
             angleY = 0.0f;
         }
 
@@ -86,14 +98,11 @@ public class EntityDisplayWidget extends BaseWidget {
         entity.yHeadRotO = entity.getYRot();
 
         float entityScale = entity.getScale();
-        float renderScale = (float) ((int) scale) / entityScale;
+        float renderScale = Math.round(scale) / entityScale;
         Vector3f translate = new Vector3f(0.0F, entity.getBbHeight() / 2.0F, 0.0F);
 
-        float centerXRender = (screenX + screenX + dim.w) / 2.0F;
-        float centerYRender = (screenY + screenY + dim.h) / 2.0F;
-
         InventoryScreen.renderEntityInInventory(
-            graphics, centerXRender, centerYRender, renderScale, translate, pose, cameraOrientation, entity
+            graphics, centerX, centerY, renderScale, translate, pose, cameraOrientation, entity
         );
 
         entity.yBodyRot = savedBodyRot;
@@ -107,7 +116,7 @@ public class EntityDisplayWidget extends BaseWidget {
 
     private void updateEntityAnimation(LivingEntity entity) {
         if (entity instanceof FakePlayer fakePlayer) {
-            fakePlayer.setAnimationConfig(animState, walkSpeed, attackEnabled);
+            fakePlayer.setAnimationConfig(animState, walkSpeed, walkAmplitude, attackEnabled);
             fakePlayer.updateAnimation();
         }
     }
@@ -136,8 +145,7 @@ public class EntityDisplayWidget extends BaseWidget {
     }
 
     private LivingEntity getEntity() {
-        if (triedCache) return cachedEntity;
-        triedCache = true;
+        if (cachedEntity != null) return cachedEntity;
 
         Minecraft mc = Minecraft.getInstance();
         if ("player".equals(entityType)) {

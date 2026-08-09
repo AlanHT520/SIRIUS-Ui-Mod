@@ -1,6 +1,6 @@
 ﻿{
   "type": "arrow_switch",
-  "option_key": "guiScale",  "button_width": "parent.height",  "sound": { "click": { "name": "sirius_ui:switch", "volume": 0.3 } },
+  "option_key": "guiScale",  "button_width": "parent.height",  "sound": { "click": { "id": "arrow_switch_change", "volume": 0.7 } },
   "values": [
     {"key": "0", "text_key": "options.guiScale.auto"},
     {"key": "1", "text_key": "1"},
