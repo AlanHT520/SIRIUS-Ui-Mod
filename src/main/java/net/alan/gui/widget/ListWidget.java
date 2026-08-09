@@ -114,7 +114,10 @@ public class ListWidget extends BaseWidget {
             int sy = evalExpr(sd.y(), mergedCtx, y, width, height);
             int sw = evalExpr(sd.width(), mergedCtx, x, width, height);
             int sh = evalExpr(sd.height(), mergedCtx, y, width, height);
-            searchBox.setRectangle(Math.max(1, sw), Math.max(1, sh), sx, sy);
+            searchBox.setWidth(Math.max(1, sw));
+            searchBox.setHeight(Math.max(1, sh));
+            searchBox.setX(sx);
+            searchBox.setY(sy);
             searchBox.render(graphics, mouseX, mouseY, delta);
         }
 
@@ -166,7 +169,7 @@ public class ListWidget extends BaseWidget {
     private void renderBackground(GuiGraphics graphics, int listX, int listY, int listW, int listH, RenderContext ctx) {
         TextureSet bgTex = props.backgroundTexture();
         if (bgTex != null && bgTex.getNormal() != null) {
-            ResourceLocation tex = ResourceLocation.tryParse(bgTex.getNormal());
+            ResourceLocation tex = parseTexturePath(bgTex.getNormal());
             if (tex != null) {
                 graphics.blit(tex, listX, listY, 0, 0, listW, listH, listW, listH);
                 return;
@@ -222,7 +225,7 @@ public class ListWidget extends BaseWidget {
 
     private void renderScrollPart(GuiGraphics graphics, int x, int y, int w, int h, TextureSet tex, String color, int defaultColor) {
         if (tex != null && tex.getNormal() != null) {
-            ResourceLocation rl = ResourceLocation.tryParse(tex.getNormal());
+            ResourceLocation rl = parseTexturePath(tex.getNormal());
             if (rl != null) {
                 graphics.blit(rl, x, y, 0, 0, w, h, w, h);
                 return;

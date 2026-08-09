@@ -7,6 +7,7 @@ import net.alan.gui.data.widget.TextProps;
 import net.alan.gui.data.widget.TextureSet;
 import net.alan.gui.render.screen.BackgroundRenderer;
 import net.alan.gui.render.screen.OptionBinder;
+import net.alan.gui.util.NineSliceHelper;
 import net.alan.gui.widget.BaseWidget;
 import net.alan.gui.widget.TextWidget;
 import net.alan.gui.widget.Widget;
@@ -183,10 +184,15 @@ public class ArrowSwitchWidget extends BaseWidget {
     private void renderButton(GuiGraphics graphics, int x, int y, int w, int h, TextureSet tex, int partIndex) {
         String texPath = getTexturePath(tex, partIndex == hoveredPart);
         if (texPath != null && !texPath.isEmpty()) {
-            var id = ResourceLocation.tryParse(texPath);
+            var id = parseTexturePath(texPath);
             if (id != null) {
                 graphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-                graphics.blitSprite(id, x, y, w, h);
+                NineSliceHelper.NineSliceInfo nineSlice = NineSliceHelper.loadNineSlice(id);
+                if (nineSlice != null) {
+                    NineSliceHelper.blitNineSliced(graphics, id, x, y, w, h, nineSlice);
+                } else {
+                    graphics.blit(id, x, y, 0, 0, w, h, w, h);
+                }
             }
         } else {
             int bgColor;

@@ -6,7 +6,7 @@ import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.repository.ServerPacksSource;
 import net.minecraft.world.level.WorldDataConfiguration;
 import net.minecraft.world.flag.FeatureFlags;
-import net.neoforged.neoforge.resource.ResourcePackLoader;
+import net.minecraftforge.resource.ResourcePackLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,8 +35,7 @@ public class DataPackBridge {
 
         Minecraft mc = Minecraft.getInstance();
 
-        tempDataPackRepository = ServerPacksSource.createPackRepository(tempDataPackDir, mc.directoryValidator());
-        ResourcePackLoader.populatePackRepository(tempDataPackRepository, PackType.SERVER_DATA, false);
+        tempDataPackRepository = ServerPacksSource.createPackRepository(tempDataPackDir);
         tempDataPackRepository.reload();
         tempDataPackRepository.setSelected(List.of("vanilla"));
 

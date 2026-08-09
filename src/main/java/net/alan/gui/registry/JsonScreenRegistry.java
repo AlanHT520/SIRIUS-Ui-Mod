@@ -17,7 +17,7 @@ import java.util.Optional;
 
 public class JsonScreenRegistry {
     private static final Logger LOGGER = LoggerFactory.getLogger(JsonScreenRegistry.class);
-    private static final ResourceLocation REGISTER_LOCATION = ResourceLocation.withDefaultNamespace("alanht/register.json");
+    private static final ResourceLocation REGISTER_LOCATION = new ResourceLocation("alanht/register.json");
     private static final Gson GSON = new Gson();
     private static Map<String, ResourceLocation> mappings = new HashMap<>();
     private static boolean loaded = false;
@@ -36,7 +36,7 @@ public class JsonScreenRegistry {
                 if (raw != null) {
                     raw.forEach((id, location) -> {
                         try {
-                            ResourceLocation layoutId = ResourceLocation.parse(location);
+                            ResourceLocation layoutId = new ResourceLocation(location);
                             mappings.put(id, layoutId);
                         } catch (Exception e) {
                             LOGGER.error("Invalid layout ResourceLocation for screen '{}': {}", id, location, e);

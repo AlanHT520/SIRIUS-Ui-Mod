@@ -67,7 +67,7 @@ public class JsonLoader {
 
             if (screenObj.has("parent") && screenObj.get("parent").isJsonPrimitive()) {
                 String parentPath = screenObj.get("parent").getAsString();
-                ResourceLocation parentId = ResourceLocation.parse(parentPath);
+                ResourceLocation parentId = new ResourceLocation(parentPath);
                 ScreenLayout parentLayout = loadScreenLayout(manager, parentId, visited);
                 if (parentLayout != null) {
                     config = mergeScreenConfig(parentLayout.getScreen(), config);
@@ -189,7 +189,7 @@ public class JsonLoader {
                 if (obj.has("ref")) {
                     String refPath = obj.get("ref").getAsString();
                     try {
-                        ResourceLocation refId = ResourceLocation.parse(refPath);
+                        ResourceLocation refId = new ResourceLocation(refPath);
                         JsonElement refContent = loadElement(manager, refId);
                         if (refContent == null) {
                             LOGGER.warn("Referenced element not found: {}, skipping", refPath);

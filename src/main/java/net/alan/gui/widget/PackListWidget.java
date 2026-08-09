@@ -419,7 +419,7 @@ public class PackListWidget extends BaseWidget {
                                       int listW, int rowH, RowStyle style, PackDataSource.PackEntryData entry,
                                       boolean mouseInRow, boolean isSelected) {
         if (style.backgroundTexture != null) {
-            ResourceLocation tex = ResourceLocation.parse(style.backgroundTexture);
+            ResourceLocation tex = new ResourceLocation(style.backgroundTexture);
             graphics.blit(tex, listX, rowTop, 0, 0, listW, rowH, listW, rowH);
             return;
         }
@@ -560,7 +560,7 @@ public class PackListWidget extends BaseWidget {
         }
 
         if (texPath != null && !texPath.isEmpty()) {
-            ResourceLocation tex = ResourceLocation.parse(texPath);
+            ResourceLocation tex = new ResourceLocation(texPath);
             RenderSystem.enableBlend();
             graphics.blit(tex, btnX, btnY, 0, 0, btnW, btnH, btnW, btnH);
             RenderSystem.disableBlend();

@@ -1,6 +1,9 @@
 package net.alan.gui.registry;
 
 import com.mojang.realmsclient.RealmsMainScreen;
+import net.alan.gui.Main;
+import net.minecraft.client.gui.screens.controls.ControlsScreen;
+import net.minecraft.client.gui.screens.controls.KeyBindsScreen;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
 import net.alan.gui.screen.JsonScreen;
 import net.minecraft.client.Minecraft;
@@ -8,9 +11,6 @@ import net.minecraft.client.gui.screens.*;
 import net.minecraft.client.gui.screens.achievement.StatsScreen;
 import net.minecraft.client.gui.screens.advancements.AdvancementsScreen;
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
-import net.minecraft.client.gui.screens.options.*;
-import net.minecraft.client.gui.screens.options.controls.ControlsScreen;
-import net.minecraft.client.gui.screens.options.controls.KeyBindsScreen;
 import net.minecraft.client.gui.screens.social.SocialInteractionsScreen;
 import net.minecraft.client.gui.screens.telemetry.TelemetryInfoScreen;
 import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
@@ -31,19 +31,19 @@ public class ScreenRegistry {
         // Mixin-replaced screens ??layout paths are defined in register.json
         register("titleScreen", parent -> new JsonScreen(parent,
                 JsonScreenRegistry.getLayoutId("titleScreen")
-                        .orElse(ResourceLocation.fromNamespaceAndPath("sirius_ui", "screens/title_screen.json"))));
+                        .orElse(new ResourceLocation(Main.MOD_ID, "screens/title_screen.json"))));
         register("pauseScreen", parent -> new JsonScreen(parent,
                 JsonScreenRegistry.getLayoutId("pauseScreen")
-                        .orElse(ResourceLocation.fromNamespaceAndPath("sirius_ui", "screens/pause_screen.json"))));
+                        .orElse(new ResourceLocation(Main.MOD_ID, "screens/pause_screen.json"))));
         register("deathScreen", parent -> new JsonScreen(parent,
                 JsonScreenRegistry.getLayoutId("deathScreen")
-                        .orElse(ResourceLocation.fromNamespaceAndPath("sirius_ui", "screens/death_screen.json"))));
+                        .orElse(new ResourceLocation(Main.MOD_ID, "screens/death_screen.json"))));
 
         register("world_select", parent -> new SelectWorldScreen(parent));
         register("multiplayer", parent -> new JoinMultiplayerScreen(parent));
         register("realms", parent -> new RealmsMainScreen(parent));
         register("options", parent -> new OptionsScreen(parent, Minecraft.getInstance().options));
-        register("video_settings", parent -> new VideoSettingsScreen(parent, Minecraft.getInstance(), Minecraft.getInstance().options));
+        register("video_settings", parent -> new VideoSettingsScreen(parent, Minecraft.getInstance().options));
         register("sound_settings", parent -> new SoundOptionsScreen(parent, Minecraft.getInstance().options));
         register("keybinds", parent -> new KeyBindsScreen(parent, Minecraft.getInstance().options));
         register("chat_settings", parent -> new ChatOptionsScreen(parent, Minecraft.getInstance().options));
@@ -58,16 +58,16 @@ public class ScreenRegistry {
         register("telemetry", parent -> new TelemetryInfoScreen(parent, Minecraft.getInstance().options));
         register("credits", parent -> new CreditsAndAttributionScreen(parent));
         register("player_social", parent -> new SocialInteractionsScreen());
-        register("advancements", parent -> new AdvancementsScreen(Minecraft.getInstance().player.connection.getAdvancements(), parent));
+        register("advancements", parent -> new AdvancementsScreen(Minecraft.getInstance().player.connection.getAdvancements()));
         register("stats", parent -> new StatsScreen(parent, Minecraft.getInstance().player.getStats()));
         register("share_to_lan", parent -> new ShareToLanScreen(parent));
 
         register("mods_list", parent -> {
             try {
-                Class<?> modListScreenClass = Class.forName("net.neoforged.neoforge.client.gui.ModListScreen");
+                Class<?> modListScreenClass = Class.forName("net.minecraftforge.client.gui.ModListScreen");
                 return (Screen) modListScreenClass.getConstructor(Screen.class).newInstance(parent);
             } catch (Exception e) {
-                LOGGER.error("Failed to open NeoForge mod list screen", e);
+                LOGGER.error("Failed to open Forge mod list screen", e);
                 return null;
             }
         });

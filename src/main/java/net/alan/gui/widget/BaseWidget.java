@@ -12,6 +12,7 @@ import net.alan.gui.util.GameStateProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 
 import java.util.*;
@@ -587,5 +588,20 @@ public abstract class BaseWidget implements Widget {
         if (soundConfig != null && soundConfig.hasRelease()) {
             playSound(soundConfig.getRelease());
         }
+    }
+
+    public static ResourceLocation parseTexturePath(String texPath) {
+        if (texPath == null || texPath.isEmpty()) return null;
+        if (!texPath.contains("textures/")) {
+            int colonIdx = texPath.indexOf(':');
+            if (colonIdx > 0) {
+                String namespace = texPath.substring(0, colonIdx);
+                String path = texPath.substring(colonIdx + 1);
+                texPath = namespace + ":textures/gui/sprites/" + path + ".png";
+            } else {
+                texPath = "textures/gui/sprites/" + texPath + ".png";
+            }
+        }
+        return ResourceLocation.tryParse(texPath);
     }
 }

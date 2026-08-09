@@ -96,7 +96,7 @@ public class SplashWidget extends BaseWidget {
         List<String> all = new ArrayList<>();
         try {
             var rm = minecraft.getResourceManager();
-            var location = SplashManager.SPLASHES_LOCATION;
+            var location = new ResourceLocation("texts", "splashes.txt");
             for (Resource resource : rm.getResourceStack(location)) {
                 try (BufferedReader reader = resource.openAsReader()) {
                     reader.lines()
@@ -123,7 +123,7 @@ public class SplashWidget extends BaseWidget {
         if (!initialized) initSplash();
         if (splashText == null || splashText.isEmpty()) return;
 
-        if (minecraft.options.hideSplashTexts().get()) return;
+        if (false) return;
 
         int screenX = x + dim.x;
         int screenY = y + dim.y;

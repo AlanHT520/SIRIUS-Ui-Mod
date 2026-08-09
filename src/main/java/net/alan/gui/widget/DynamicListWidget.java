@@ -266,9 +266,9 @@ public class DynamicListWidget extends BaseWidget {
         }
 
         if (backgroundTexture != null) {
-            ResourceLocation tex = ResourceLocation.tryParse(backgroundTexture);
+            ResourceLocation tex = parseTexturePath(backgroundTexture);
             if (tex != null) {
-                graphics.blitSprite(tex, listX, listY, dim.w, dim.h);
+                graphics.blit(tex, listX, listY, 0, 0, dim.w, dim.h, dim.w, dim.h);
             }
         }
 
@@ -277,8 +277,10 @@ public class DynamicListWidget extends BaseWidget {
             int searchGap = styleConfig != null ? styleConfig.searchGap() : 4;
             searchOffset = searchBoxH + searchGap;
             int effectiveW = searchBoxW > 0 ? searchBoxW : Math.max(1, dim.w - searchBoxX * 2);
-            searchBox.setRectangle(effectiveW, Math.max(1, searchBoxH),
-                    listX + searchBoxX, listY + searchBoxY);
+            searchBox.setWidth(effectiveW);
+            searchBox.setHeight(Math.max(1, searchBoxH));
+            searchBox.setX(listX + searchBoxX);
+            searchBox.setY(listY + searchBoxY);
             searchBox.render(graphics, mouseX, mouseY, delta);
         }
 
@@ -332,9 +334,9 @@ public class DynamicListWidget extends BaseWidget {
                 }
 
                 if (rowStyle != null && rowStyle.background_texture != null) {
-                    ResourceLocation tex = ResourceLocation.tryParse(rowStyle.background_texture);
+                    ResourceLocation tex = parseTexturePath(rowStyle.background_texture);
                     if (tex != null) {
-                        graphics.blitSprite(tex, listX, rowTop, dim.w, rowHeight);
+                        graphics.blit(tex, listX, rowTop, 0, 0, dim.w, rowHeight, dim.w, rowHeight);
                     }
                 }
 
@@ -454,7 +456,7 @@ public class DynamicListWidget extends BaseWidget {
                         java.nio.file.Files.newInputStream(iconFile));
                 TextureManager textureManager = Minecraft.getInstance().getTextureManager();
                 String hash = Integer.toHexString(path.hashCode());
-                ResourceLocation loc = ResourceLocation.withDefaultNamespace(
+                ResourceLocation loc = new ResourceLocation(
                         "dynamic_list_icon/" + hash);
                 textureManager.register(loc, new DynamicTexture(iconImage));
                 return loc;

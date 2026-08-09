@@ -8,6 +8,7 @@ import net.alan.gui.data.widget.TextProps;
 import net.alan.gui.data.widget.TextureSet;
 import net.alan.gui.render.screen.BackgroundRenderer;
 import net.alan.gui.render.screen.OptionBinder;
+import net.alan.gui.util.NineSliceHelper;
 import net.alan.gui.widget.BaseWidget;
 import net.alan.gui.widget.TextWidget;
 import net.alan.gui.widget.Widget;
@@ -139,10 +140,15 @@ public class CycleButtonWidget extends BaseWidget {
 
         String texPath = getSprite();
         if (texPath != null && !texPath.isEmpty()) {
-            var id = ResourceLocation.tryParse(texPath);
+            var id = parseTexturePath(texPath);
             if (id != null) {
                 graphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-                graphics.blitSprite(id, screenX, screenY, dim.w, dim.h);
+                NineSliceHelper.NineSliceInfo nineSlice = NineSliceHelper.loadNineSlice(id);
+                if (nineSlice != null) {
+                    NineSliceHelper.blitNineSliced(graphics, id, screenX, screenY, dim.w, dim.h, nineSlice);
+                } else {
+                    graphics.blit(id, screenX, screenY, 0, 0, dim.w, dim.h, dim.w, dim.h);
+                }
             }
         } else {
             int bgColor = isHovered ? highlightedBackgroundColor : backgroundColor;

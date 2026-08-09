@@ -35,7 +35,7 @@ public abstract class TitleScreenMixin extends Screen {
         ResourceManager rm = client.getResourceManager();
 
         ResourceLocation layoutId = JsonScreenRegistry.getLayoutId("titleScreen")
-                .orElse(ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "screens/title_screen.json"));
+                .orElse(new ResourceLocation(Main.MOD_ID, "screens/title_screen.json"));
         ScreenLayout layout = JsonLoader.loadScreenLayout(rm, layoutId);
 
         if (layout != null) {
@@ -83,11 +83,11 @@ public abstract class TitleScreenMixin extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollDelta) {
         if (sirius$isActive()) {
-            return sirius$uiRenderer.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+            return sirius$uiRenderer.mouseScrolled(mouseX, mouseY, 0, scrollDelta);
         }
-        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+        return super.mouseScrolled(mouseX, mouseY, scrollDelta);
     }
 
     @Override

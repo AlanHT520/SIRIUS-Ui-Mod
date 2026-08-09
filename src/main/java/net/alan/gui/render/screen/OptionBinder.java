@@ -47,7 +47,7 @@ public class OptionBinder {
             case "simulationDistance" -> opts.simulationDistance().get().doubleValue();
             case "maxFps" -> opts.framerateLimit().get().doubleValue();
             case "entityDistanceScaling" -> opts.entityDistanceScaling().get();
-            case "menuBackgroundBlurriness" -> opts.menuBackgroundBlurriness().get().doubleValue();
+            case "menuBackgroundBlurriness" -> 0.0;
             case "gamma" -> opts.gamma().get();
             case "screenEffectScale" -> opts.screenEffectScale().get();
             case "fovEffectScale" -> opts.fovEffectScale().get();
@@ -92,7 +92,7 @@ public class OptionBinder {
                 Minecraft.getInstance().getWindow().setFramerateLimit((int) Math.round(value));
             }
             case "entityDistanceScaling" -> opts.entityDistanceScaling().set(value);
-            case "menuBackgroundBlurriness" -> opts.menuBackgroundBlurriness().set((int) Math.round(value));
+            case "menuBackgroundBlurriness" -> {}
             case "gamma" -> opts.gamma().set(value);
             case "screenEffectScale" -> opts.screenEffectScale().set(value);
             case "fovEffectScale" -> opts.fovEffectScale().set(value);
@@ -244,8 +244,8 @@ public class OptionBinder {
             case "backgroundForChatOnly" -> String.valueOf(opts.backgroundForChatOnly().get()).toLowerCase();
             case "hideLightningFlash" -> String.valueOf(opts.hideLightningFlash().get()).toLowerCase();
             case "darkMojangStudiosBackground" -> String.valueOf(opts.darkMojangStudiosBackground().get()).toLowerCase();
-            case "hideSplashTexts" -> String.valueOf(opts.hideSplashTexts().get()).toLowerCase();
-            case "narratorHotkey" -> String.valueOf(opts.narratorHotkey().get()).toLowerCase();
+            case "hideSplashTexts" -> "false";
+            case "narratorHotkey" -> "false";
             case "mainHand" -> String.valueOf(opts.mainHand().get().ordinal());
             case "modelPartCape" -> String.valueOf(opts.isModelPartEnabled(net.minecraft.world.entity.player.PlayerModelPart.CAPE)).toLowerCase();
             case "modelPartJacket" -> String.valueOf(opts.isModelPartEnabled(net.minecraft.world.entity.player.PlayerModelPart.JACKET)).toLowerCase();
@@ -267,7 +267,7 @@ public class OptionBinder {
             case "touchscreen" -> String.valueOf(opts.touchscreen().get()).toLowerCase();
             case "rawMouseInput" -> String.valueOf(opts.rawMouseInput().get()).toLowerCase();
             case "forceUnicodeFont" -> String.valueOf(opts.forceUnicodeFont().get()).toLowerCase();
-            case "japaneseGlyphVariants" -> String.valueOf(opts.japaneseGlyphVariants().get()).toLowerCase();
+            case "japaneseGlyphVariants" -> "false";
             case "realmsNotifications" -> String.valueOf(opts.realmsNotifications().get()).toLowerCase();
             case "allowServerListing" -> String.valueOf(opts.allowServerListing().get()).toLowerCase();
             case "telemetryOptInExtra" -> String.valueOf(opts.telemetryOptInExtra().get()).toLowerCase();
@@ -365,8 +365,8 @@ public class OptionBinder {
             case "backgroundForChatOnly" -> opts.backgroundForChatOnly().set(Boolean.parseBoolean(valueKey));
             case "hideLightningFlash" -> opts.hideLightningFlash().set(Boolean.parseBoolean(valueKey));
             case "darkMojangStudiosBackground" -> opts.darkMojangStudiosBackground().set(Boolean.parseBoolean(valueKey));
-            case "hideSplashTexts" -> opts.hideSplashTexts().set(Boolean.parseBoolean(valueKey));
-            case "narratorHotkey" -> opts.narratorHotkey().set(Boolean.parseBoolean(valueKey));
+            case "hideSplashTexts" -> {}
+            case "narratorHotkey" -> {}
             case "mainHand" -> {
                 var values = net.minecraft.world.entity.HumanoidArm.values();
                 int idx = Integer.parseInt(valueKey);
@@ -400,7 +400,7 @@ public class OptionBinder {
             case "touchscreen" -> opts.touchscreen().set(Boolean.parseBoolean(valueKey));
             case "rawMouseInput" -> opts.rawMouseInput().set(Boolean.parseBoolean(valueKey));
             case "forceUnicodeFont" -> opts.forceUnicodeFont().set(Boolean.parseBoolean(valueKey));
-            case "japaneseGlyphVariants" -> opts.japaneseGlyphVariants().set(Boolean.parseBoolean(valueKey));
+            case "japaneseGlyphVariants" -> {}
             case "realmsNotifications" -> opts.realmsNotifications().set(Boolean.parseBoolean(valueKey));
             case "allowServerListing" -> opts.allowServerListing().set(Boolean.parseBoolean(valueKey));
             case "telemetryOptInExtra" -> opts.telemetryOptInExtra().set(Boolean.parseBoolean(valueKey));
@@ -458,8 +458,8 @@ public class OptionBinder {
             case "backgroundForChatOnly" -> opts.backgroundForChatOnly().set(true);
             case "hideLightningFlash" -> opts.hideLightningFlash().set(false);
             case "darkMojangStudiosBackground" -> opts.darkMojangStudiosBackground().set(false);
-            case "hideSplashTexts" -> opts.hideSplashTexts().set(false);
-            case "narratorHotkey" -> opts.narratorHotkey().set(true);
+            case "hideSplashTexts" -> {}
+            case "narratorHotkey" -> {}
             case "mainHand" -> {
                 opts.mainHand().set(net.minecraft.world.entity.HumanoidArm.RIGHT);
             }
@@ -487,7 +487,7 @@ public class OptionBinder {
             case "touchscreen" -> opts.touchscreen().set(false);
             case "rawMouseInput" -> opts.rawMouseInput().set(true);
             case "forceUnicodeFont" -> opts.forceUnicodeFont().set(false);
-            case "japaneseGlyphVariants" -> opts.japaneseGlyphVariants().set(false);
+            case "japaneseGlyphVariants" -> {}
             case "realmsNotifications" -> opts.realmsNotifications().set(true);
             case "allowServerListing" -> opts.allowServerListing().set(true);
             case "telemetryOptInExtra" -> opts.telemetryOptInExtra().set(false);

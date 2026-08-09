@@ -5,10 +5,12 @@ import net.alan.gui.data.Action;
 import net.alan.gui.data.source.CardDataSourceRegistry;
 import net.alan.gui.data.widget.LayoutProps;
 import net.alan.gui.render.ActionExecutor;
+import net.alan.gui.util.NineSliceHelper;
+import net.alan.gui.widget.BaseWidget;
+import net.alan.gui.widget.Widget;
 import net.alan.gui.widget.WidgetFactory;
 import net.alan.gui.widget.ContainerWidget;
 import net.alan.gui.widget.InputFieldWidget;
-import net.alan.gui.widget.Widget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
@@ -263,7 +265,8 @@ public class CardInstance {
     private void renderBackground(GuiGraphics graphics, int x, int y, int w, int h, BackgroundDef bg) {
         if (bg == null) return;
         if (bg.hasTexture()) {
-            ResourceLocation tex = ResourceLocation.parse(bg.getTexture());
+            ResourceLocation tex = BaseWidget.parseTexturePath(bg.getTexture());
+            if (tex == null) return;
             String mode = bg.getTextureMode();
             if ("tile".equals(mode)) {
                 int tileW = w;
@@ -276,7 +279,12 @@ public class CardInstance {
                     }
                 }
             } else {
-                graphics.blit(tex, x, y, 0, 0, w, h, w, h);
+                NineSliceHelper.NineSliceInfo nineSlice = NineSliceHelper.loadNineSlice(tex);
+                if (nineSlice != null) {
+                    NineSliceHelper.blitNineSliced(graphics, tex, x, y, w, h, nineSlice);
+                } else {
+                    graphics.blit(tex, x, y, 0, 0, w, h, w, h);
+                }
             }
         }
         if (bg.hasColor()) {
@@ -341,7 +349,7 @@ public class CardInstance {
         renderShadow(graphics, cardX, cardY, cardW, cardH, Math.max(1, def.getShadowOffset() - 1), def.getShadowAlpha());
 
         if (def.getBackground().hasTexture()) {
-            ResourceLocation tex = ResourceLocation.parse(def.getBackground().getTexture());
+            ResourceLocation tex = new ResourceLocation(def.getBackground().getTexture());
             graphics.blit(tex, cardX, cardY, 0, 0, cardW, cardH, cardW, cardH);
         }
         if (def.getBackground().hasColor()) {

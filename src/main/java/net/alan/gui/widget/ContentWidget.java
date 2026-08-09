@@ -65,9 +65,9 @@ public class ContentWidget extends BaseWidget {
         int cy = y + dim.y;
 
         if (backgroundTexture != null && backgroundTexture.getNormal() != null) {
-            var texId = ResourceLocation.tryParse(backgroundTexture.getNormal());
+            var texId = parseTexturePath(backgroundTexture.getNormal());
             if (texId != null) {
-                graphics.blitSprite(texId, cx, cy, dim.w, dim.h);
+                graphics.blit(texId, cx, cy, 0, 0, dim.w, dim.h, dim.w, dim.h);
             }
         } else if (backgroundColor != null && !backgroundColor.isEmpty()) {
             graphics.fill(cx, cy, cx + dim.w, cy + dim.h, BackgroundRenderer.parseColor(backgroundColor));
@@ -150,9 +150,9 @@ public class ContentWidget extends BaseWidget {
 
         ListProps.TrackDef track = scrollbar.track();
         if (track.texture() != null && track.texture().getNormal() != null) {
-            var texId = ResourceLocation.tryParse(track.texture().getNormal());
+            var texId = parseTexturePath(track.texture().getNormal());
             if (texId != null) {
-                graphics.blitSprite(texId, sbX, sbY, sbW, ch);
+                graphics.blit(texId, sbX, sbY, 0, 0, sbW, ch, sbW, ch);
             }
         } else if (track.color() != null) {
             graphics.fill(sbX, sbY, sbX + sbW, sbY + ch, BackgroundRenderer.parseColor(track.color()));
@@ -165,9 +165,9 @@ public class ContentWidget extends BaseWidget {
         int thumbY = cy + (int) ((scrollAmount / maxScroll) * (ch - thumbH));
 
         if (thumb.texture() != null && thumb.texture().getNormal() != null) {
-            var texId = ResourceLocation.tryParse(thumb.texture().getNormal());
+            var texId = parseTexturePath(thumb.texture().getNormal());
             if (texId != null) {
-                graphics.blitSprite(texId, sbX, thumbY, sbW, thumbH);
+                graphics.blit(texId, sbX, thumbY, 0, 0, sbW, thumbH, sbW, thumbH);
             }
         } else if (thumb.color() != null) {
             renderScrollPart(graphics, sbX, thumbY, sbW, thumbH, null, thumb.color(), 0xAAFFFFFF);
@@ -183,9 +183,9 @@ public class ContentWidget extends BaseWidget {
 
         ListProps.TrackDef track = scrollbar.track();
         if (track.texture() != null && track.texture().getNormal() != null) {
-            var texId = ResourceLocation.tryParse(track.texture().getNormal());
+            var texId = parseTexturePath(track.texture().getNormal());
             if (texId != null) {
-                graphics.blitSprite(texId, sbX, sbY, cw, sbH);
+                graphics.blit(texId, sbX, sbY, 0, 0, cw, sbH, cw, sbH);
             }
         } else if (track.color() != null) {
             graphics.fill(sbX, sbY, sbX + cw, sbY + sbH, BackgroundRenderer.parseColor(track.color()));
@@ -198,9 +198,9 @@ public class ContentWidget extends BaseWidget {
         int thumbX = cx + (int) ((scrollAmount / maxScroll) * (cw - thumbW));
 
         if (thumb.texture() != null && thumb.texture().getNormal() != null) {
-            var texId = ResourceLocation.tryParse(thumb.texture().getNormal());
+            var texId = parseTexturePath(thumb.texture().getNormal());
             if (texId != null) {
-                graphics.blitSprite(texId, thumbX, sbY, thumbW, sbH);
+                graphics.blit(texId, thumbX, sbY, 0, 0, thumbW, sbH, thumbW, sbH);
             }
         } else if (thumb.color() != null) {
             renderScrollPart(graphics, thumbX, sbY, thumbW, sbH, null, thumb.color(), 0xAAFFFFFF);
@@ -230,7 +230,7 @@ public class ContentWidget extends BaseWidget {
 
     private void renderScrollPart(GuiGraphics graphics, int x, int y, int w, int h, TextureSet tex, String color, int defaultColor) {
         if (tex != null && tex.getNormal() != null) {
-            ResourceLocation rl = ResourceLocation.tryParse(tex.getNormal());
+            ResourceLocation rl = parseTexturePath(tex.getNormal());
             if (rl != null) {
                 graphics.blit(rl, x, y, 0, 0, w, h, w, h);
                 return;

@@ -238,13 +238,9 @@ public class ActionExecutor {
             }
             case "disconnect", "exit_to_title" -> disconnectAndGoToTitle();
             case "open_link" -> {
-                try {
                     LOGGER.info("Opening link: {}", action.getUrl());
-                    ConfirmLinkScreen.confirmLinkNow(parentScreen, new URI(action.getUrl()));
-                } catch (URISyntaxException e) {
-                    LOGGER.error("Invalid URL: {}", action.getUrl(), e);
+                    ConfirmLinkScreen.confirmLinkNow(action.getUrl(), parentScreen, false);
                 }
-            }
             case "respawn" -> {
                 if (minecraft.player != null && minecraft.player.isDeadOrDying()) {
                     LOGGER.info("Respawning player.json");
@@ -290,7 +286,7 @@ public class ActionExecutor {
                     return;
                 }
                 LOGGER.info("Joining world: {}", levelId);
-                minecraft.createWorldOpenFlows().openWorld(levelId, () -> {});
+                minecraft.createWorldOpenFlows().loadLevel(parentScreen, levelId);
             }
             case "join_server" -> {
                 String indexStr = action.getTarget();
@@ -306,7 +302,7 @@ public class ActionExecutor {
                         ServerData serverData = serverList.get(index);
                         LOGGER.info("Joining server: {} ({})", serverData.name, serverData.ip);
                         ServerAddress address = ServerAddress.parseString(serverData.ip);
-                        ConnectScreen.startConnecting(parentScreen, minecraft, address, serverData, false, null);
+                        ConnectScreen.startConnecting(parentScreen, minecraft, address, serverData, false);
                     } else {
                         LOGGER.warn("Invalid server index: {}", index);
                     }
@@ -363,11 +359,14 @@ public class ActionExecutor {
                 try {
                     LevelStorageSource.LevelStorageAccess access = minecraft.getLevelSource()
                             .validateAndCreateAccess(levelId);
-                    minecraft.setScreen(EditWorldScreen.create(minecraft, access, confirmed -> {
-                        access.safeClose();
+                    minecraft.setScreen(new EditWorldScreen(confirmed -> {
+                        try {
+                            access.close();
+                        } catch (IOException ignored) {
+                        }
                         refreshAllDynamicLists();
                         minecraft.setScreen(parentScreen);
-                    }));
+                    }, access));
                 } catch (IOException e) {
                     LOGGER.error("Failed to access level for editing: {}", levelId, e);
                     SystemToast.onWorldAccessFailure(minecraft, levelId);
@@ -392,7 +391,7 @@ public class ActionExecutor {
                     var path = CreateWorldScreen.createTempDataPackDirFromExistingWorld(
                             access.getLevelPath(net.minecraft.world.level.storage.LevelResource.DATAPACK_DIR),
                             minecraft);
-                    worldCreationContext.validate();
+                    // worldCreationContext.validate(); // not available in 1.20.1
                     if (worldCreationContext.options().isOldCustomizedWorld()) {
                         minecraft.setScreen(new ConfirmScreen(
                                 confirmed -> minecraft.setScreen(
@@ -408,7 +407,7 @@ public class ActionExecutor {
                         minecraft.setScreen(CreateWorldScreen.createFromExisting(minecraft, parentScreen,
                                 levelSettings, worldCreationContext, path));
                     }
-                    access.safeClose();
+                    access.close();
                 } catch (Exception e) {
                     LOGGER.error("Failed to recreate world: {}", levelId, e);
                     minecraft.setScreen(parentScreen);
@@ -484,7 +483,7 @@ public class ActionExecutor {
                         LOGGER.error("Invalid server index: {}", indexStr, e);
                     }
                 } else {
-                    ServerData newServer = new ServerData(name, address, ServerData.Type.OTHER);
+                    ServerData newServer = new ServerData(name, address, false);
                     serverList.add(newServer, false);
                     serverList.save();
                     LOGGER.info("Added server: {} ({})", name, address);
@@ -500,7 +499,7 @@ public class ActionExecutor {
                 }
                 if ("resourcepacks".equals(target)) {
                     LOGGER.info("Opening resource packs folder");
-                    Util.getPlatform().openPath(minecraft.getResourcePackDirectory());
+                    Util.getPlatform().openFile(minecraft.getResourcePackDirectory().toFile());
                 } else if ("screenshots".equals(target)) {
                     LOGGER.info("Opening screenshots folder");
                     Util.getPlatform().openFile(minecraft.gameDirectory);
@@ -614,7 +613,7 @@ public class ActionExecutor {
                 Runnable doCreate = () -> {
                     DataPackBridge.cleanup();
                     minecraft.createWorldOpenFlows().createFreshLevel(
-                        worldName, levelSettings, worldOptions, dimensionGetter, parentScreen);
+                        worldName, levelSettings, worldOptions, dimensionGetter);
                 };
 
                 if (allowExperiments) {
@@ -656,8 +655,8 @@ public class ActionExecutor {
                 LOGGER.info("Direct connecting to: {}", address);
                 ServerAddress serverAddress = ServerAddress.parseString(address);
                 ServerData serverData = new ServerData(
-                        I18n.get("selectServer.defaultName"), address, ServerData.Type.OTHER);
-                ConnectScreen.startConnecting(parentScreen, minecraft, serverAddress, serverData, false, null);
+                        I18n.get("selectServer.defaultName"), address, false);
+                ConnectScreen.startConnecting(parentScreen, minecraft, serverAddress, serverData, false);
                 if (cardManager != null) cardManager.dismissAll();
             }
             case "add_server" -> {
@@ -714,24 +713,17 @@ public class ActionExecutor {
 
     private void disconnectAndGoToTitle() {
         boolean isLocal = minecraft.isLocalServer();
-        ServerData serverData = minecraft.getCurrentServer();
         if (minecraft.level != null) {
             minecraft.level.disconnect();
         }
         if (isLocal) {
-            minecraft.disconnect(new GenericMessageScreen(Component.translatable("menu.savingLevel")));
+            minecraft.clearLevel(new GenericDirtMessageScreen(Component.translatable("menu.savingLevel")));
         } else {
-            minecraft.disconnect();
+            minecraft.clearLevel(new GenericDirtMessageScreen(Component.translatable("connect.joining")));
         }
         TitleScreen titleScreen = new TitleScreen();
-        if (isLocal) {
-            minecraft.setScreen(titleScreen);
-        } else if (serverData != null && serverData.isRealm()) {
-            minecraft.setScreen(new RealmsMainScreen(titleScreen));
-        } else {
-            minecraft.setScreen(new JoinMultiplayerScreen(titleScreen));
-        }
-        LOGGER.info("Disconnected: isLocal={}, isRealm={}", isLocal, serverData != null && serverData.isRealm());
+        minecraft.setScreen(titleScreen);
+        LOGGER.info("Disconnected: isLocal={}", isLocal);
     }
 
     private Screen getParentFromScreen(Screen screen) {

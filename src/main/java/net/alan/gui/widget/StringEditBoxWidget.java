@@ -57,7 +57,10 @@ public class StringEditBoxWidget extends BaseWidget {
         int screenX = x + dim.x;
         int screenY = y + dim.y;
 
-        editBox.setRectangle(dim.w, dim.h, screenX, screenY);
+        editBox.setWidth(dim.w);
+        editBox.setHeight(dim.h);
+        editBox.setX(screenX);
+        editBox.setY(screenY);
         editBox.render(graphics, mouseX, mouseY, delta);
 
         if (stateKey != null && mergedCtx.sharedState() != null) {
@@ -77,7 +80,10 @@ public class StringEditBoxWidget extends BaseWidget {
         int screenX = x + dim.x;
         int screenY = y + dim.y;
 
-        editBox.setRectangle(dim.w, dim.h, screenX, screenY);
+        editBox.setWidth(dim.w);
+        editBox.setHeight(dim.h);
+        editBox.setX(screenX);
+        editBox.setY(screenY);
         return editBox.mouseClicked(mouseX, mouseY, button);
     }
 

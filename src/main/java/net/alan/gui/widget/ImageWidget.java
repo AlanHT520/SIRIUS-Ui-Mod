@@ -32,7 +32,7 @@ public class ImageWidget extends BaseWidget {
         String normal = evalStringExpr(vars, style.texture().getNormal());
         if (normal == null || normal.isEmpty()) return;
 
-        ResourceLocation id = ResourceLocation.tryParse(normal);
+        ResourceLocation id = parseTexturePath(normal);
         if (id == null) return;
 
         graphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);

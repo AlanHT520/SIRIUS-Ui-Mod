@@ -32,7 +32,7 @@ public abstract class PauseScreenMixin extends Screen {
     @Inject(method = "init", at = @At("TAIL"))
     private void alan$onInit(CallbackInfo ci) {
         PauseScreen screen = (PauseScreen) (Object) this;
-        if (!screen.showsPauseMenu()) {
+        if (!Config.ENABLE_CUSTOM_UI.get()) {
             return;
         }
 
@@ -40,7 +40,7 @@ public abstract class PauseScreenMixin extends Screen {
         ResourceManager resourceManager = client.getResourceManager();
 
         ResourceLocation layoutId = JsonScreenRegistry.getLayoutId("pauseScreen")
-                .orElse(ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "screens/pause_screen.json"));
+                .orElse(new ResourceLocation(Main.MOD_ID, "screens/pause_screen.json"));
         ScreenLayout layout = JsonLoader.loadScreenLayout(resourceManager, layoutId);
 
         if (layout != null) {
@@ -58,13 +58,6 @@ public abstract class PauseScreenMixin extends Screen {
     private void onRender(GuiGraphics graphics, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if (alan$isActive()) {
             alan$uiRenderer.render(graphics, mouseX, mouseY, delta);
-            ci.cancel();
-        }
-    }
-
-    @Inject(method = "renderBackground", at = @At("HEAD"), cancellable = true)
-    private void onBackground(GuiGraphics graphics, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        if (alan$isActive()) {
             ci.cancel();
         }
     }
@@ -94,11 +87,11 @@ public abstract class PauseScreenMixin extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollDelta) {
         if (alan$isActive()) {
-            return alan$uiRenderer.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+            return alan$uiRenderer.mouseScrolled(mouseX, mouseY, 0, scrollDelta);
         }
-        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+        return super.mouseScrolled(mouseX, mouseY, scrollDelta);
     }
 
     @Override

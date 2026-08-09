@@ -6,6 +6,7 @@ import net.alan.gui.data.widget.LayoutProps;
 import net.alan.gui.data.widget.StyleProps;
 import net.alan.gui.data.widget.TextProps;
 import net.alan.gui.render.ActionExecutor;
+import net.alan.gui.util.NineSliceHelper;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
@@ -120,10 +121,15 @@ public class ButtonContentWidget extends BaseWidget {
             else texPath = evalStringExpr(vars, style.texture().getNormal());
 
             if (texPath != null && !texPath.isEmpty()) {
-                var texId = ResourceLocation.tryParse(texPath);
+                var texId = parseTexturePath(texPath);
                 if (texId != null) {
                     graphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-                    graphics.blitSprite(texId, screenX, screenY, dim.w, dim.h);
+                    NineSliceHelper.NineSliceInfo nineSlice = NineSliceHelper.loadNineSlice(texId);
+                    if (nineSlice != null) {
+                        NineSliceHelper.blitNineSliced(graphics, texId, screenX, screenY, dim.w, dim.h, nineSlice);
+                    } else {
+                        graphics.blit(texId, screenX, screenY, 0, 0, dim.w, dim.h, dim.w, dim.h);
+                    }
                 }
             }
         }

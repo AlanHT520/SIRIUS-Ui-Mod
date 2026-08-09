@@ -1,6 +1,7 @@
 package net.alan.gui.entity;
 
 import com.mojang.authlib.GameProfile;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -16,41 +17,52 @@ public class FakePlayer extends AbstractClientPlayer {
 
     private String currentState = "idle";
     private float walkSpeed = 0.5F;
+    private float walkAmplitude = 0.4F;
     private boolean attackEnabled = true;
 
     public FakePlayer(ClientLevel clientLevel, GameProfile gameProfile) {
         super(clientLevel, gameProfile);
     }
 
-    public void setAnimationConfig(String state, float walkSpeed, boolean attackEnabled) {
+    public void setAnimationConfig(String state, float walkSpeed, float walkAmplitude, boolean attackEnabled) {
         this.currentState = state;
         this.walkSpeed = walkSpeed;
+        this.walkAmplitude = walkAmplitude;
         this.attackEnabled = attackEnabled;
     }
 
     public void triggerSwing() {
         if (!attackEnabled) return;
-        if (!this.swinging || this.swingTime >= this.getCurrentSwingDuration() / 2 || this.swingTime < 0) {
+        if (!this.swinging || this.swingTime >= 6 / 2 || this.swingTime < 0) {
             this.swingTime = -1;
             this.swinging = true;
         }
     }
 
+    private float swingAccumulator = 0;
+
     public void updateAnimation() {
         this.tickCount++;
 
+        float deltaTime = Minecraft.getInstance().getFrameTime();
+
         if ("walk".equals(currentState)) {
-            this.walkAnimation.update(walkSpeed, 0.4F);
+            this.walkAnimation.update(walkSpeed * deltaTime, walkAmplitude);
         }
 
         if (this.swinging) {
-            this.swingTime++;
-            if (this.swingTime >= this.getCurrentSwingDuration()) {
+            swingAccumulator += deltaTime;
+            while (swingAccumulator >= 1.0F) {
+                swingAccumulator -= 1.0F;
+                this.swingTime++;
+            }
+            if (this.swingTime >= 6) {
                 this.swingTime = 0;
                 this.swinging = false;
+                swingAccumulator = 0;
             }
         }
-        this.attackAnim = (float) this.swingTime / (float) this.getCurrentSwingDuration();
+        this.attackAnim = (float) this.swingTime / 6.0F;
     }
 
     @Override

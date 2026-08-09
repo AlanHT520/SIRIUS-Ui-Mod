@@ -6,6 +6,7 @@ import net.alan.gui.data.widget.SliderProps;
 import net.alan.gui.data.widget.TextProps;
 import net.alan.gui.data.widget.TextureSet;
 import net.alan.gui.render.screen.OptionBinder;
+import net.alan.gui.util.NineSliceHelper;
 import net.minecraft.client.InputType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -88,10 +89,15 @@ public class SliderWidget extends BaseWidget {
         // 轨道
         String trackTex = getTrackSprite();
         if (trackTex != null && !trackTex.isEmpty()) {
-            var id = ResourceLocation.tryParse(trackTex);
+            var id = parseTexturePath(trackTex);
             if (id != null) {
                 graphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-                graphics.blitSprite(id, screenX, screenY, dim.w, dim.h);
+                NineSliceHelper.NineSliceInfo nineSlice = NineSliceHelper.loadNineSlice(id);
+                if (nineSlice != null) {
+                    NineSliceHelper.blitNineSliced(graphics, id, screenX, screenY, dim.w, dim.h, nineSlice);
+                } else {
+                    graphics.blit(id, screenX, screenY, 0, 0, dim.w, dim.h, dim.w, dim.h);
+                }
             }
         } else {
             int trackY = screenY + dim.h / 2 - 2;
@@ -104,10 +110,15 @@ public class SliderWidget extends BaseWidget {
             int handleCenterX = screenX + (int) (currentRatio * (dim.w - HANDLE_WIDTH)) + HANDLE_WIDTH / 2;
             int fillW = handleCenterX - screenX;
             if (fillW > 0) {
-                var id = ResourceLocation.tryParse(filledTex);
+                var id = parseTexturePath(filledTex);
                 if (id != null) {
                     graphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-                    graphics.blitSprite(id, screenX, screenY, fillW, dim.h);
+                    NineSliceHelper.NineSliceInfo nineSlice = NineSliceHelper.loadNineSlice(id);
+                    if (nineSlice != null) {
+                        NineSliceHelper.blitNineSliced(graphics, id, screenX, screenY, fillW, dim.h, nineSlice);
+                    } else {
+                        graphics.blit(id, screenX, screenY, 0, 0, fillW, dim.h, fillW, dim.h);
+                    }
                 }
             }
         }
@@ -116,10 +127,15 @@ public class SliderWidget extends BaseWidget {
         int handleX = screenX + (int) (currentRatio * (dim.w - HANDLE_WIDTH));
         String handleTex = getHandleSprite();
         if (handleTex != null && !handleTex.isEmpty()) {
-            var id = ResourceLocation.tryParse(handleTex);
+            var id = parseTexturePath(handleTex);
             if (id != null) {
                 graphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-                graphics.blitSprite(id, handleX, screenY, HANDLE_WIDTH, dim.h);
+                NineSliceHelper.NineSliceInfo nineSlice = NineSliceHelper.loadNineSlice(id);
+                if (nineSlice != null) {
+                    NineSliceHelper.blitNineSliced(graphics, id, handleX, screenY, HANDLE_WIDTH, dim.h, nineSlice);
+                } else {
+                    graphics.blit(id, handleX, screenY, 0, 0, HANDLE_WIDTH, dim.h, HANDLE_WIDTH, dim.h);
+                }
             }
         } else {
             graphics.fill(handleX, screenY, handleX + HANDLE_WIDTH, screenY + dim.h, 0xFFFFFFFF);

@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 
 public class PackDataSource {
     private static final Logger LOGGER = LoggerFactory.getLogger(PackDataSource.class);
-    private static final ResourceLocation DEFAULT_ICON = ResourceLocation.withDefaultNamespace("textures/misc/unknown_pack.png");
+    private static final ResourceLocation DEFAULT_ICON = new ResourceLocation("textures/misc/unknown_pack.png");
     private static final Map<String, PackDataSource> INSTANCES = new HashMap<>();
 
     private final PackRepository repository;
@@ -191,7 +191,7 @@ public class PackDataSource {
                     return DEFAULT_ICON;
                 }
                 String s = pack.getId();
-                ResourceLocation loc = ResourceLocation.withDefaultNamespace(
+                ResourceLocation loc = new ResourceLocation(
                     "pack/" + Util.sanitizeName(s, ResourceLocation::validPathChar) + "/" + Hashing.sha1().hashUnencodedChars(s) + "/icon"
                 );
                 try (InputStream inputStream = supplier.get()) {

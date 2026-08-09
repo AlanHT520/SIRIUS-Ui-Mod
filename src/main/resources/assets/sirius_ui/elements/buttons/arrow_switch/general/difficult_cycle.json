@@ -1,7 +1,7 @@
 ﻿{
   "type": "arrow_switch",
   "condition": "game.in_level",
-  "option_key": "difficulty",  "button_width": "parent.height",  "sound": { "click": { "name": "sirius_ui:switch", "volume": 0.3 } },
+  "option_key": "difficulty",  "button_width": "parent.height",  "sound": { "click": { "id": "arrow_switch_change", "volume": 0.7 } },
   "values": [
     {"key": "peaceful", "text_key": "options.difficulty.peaceful"},
     {"key": "easy", "text_key": "options.difficulty.easy"},

@@ -80,9 +80,6 @@ public class ServerListDataSource {
                 pinger.pingServer(data, () -> {
                     serverList.save();
                     if (onComplete != null) onComplete.run();
-                }, () -> {
-                    serverList.save();
-                    if (onComplete != null) onComplete.run();
                 });
             } catch (Exception e) {
                 LOGGER.warn("Failed to ping server: {} ({})", data.name, data.ip);

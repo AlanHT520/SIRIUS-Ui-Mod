@@ -36,7 +36,7 @@ public abstract class DeathScreenMixin extends Screen {
         ResourceManager resourceManager = client.getResourceManager();
 
         ResourceLocation layoutId = JsonScreenRegistry.getLayoutId("deathScreen")
-                .orElse(ResourceLocation.fromNamespaceAndPath(Main.MOD_ID, "screens/death_screen.json"));
+                .orElse(new ResourceLocation(Main.MOD_ID, "screens/death_screen.json"));
         ScreenLayout layout = JsonLoader.loadScreenLayout(resourceManager, layoutId);
 
         if (layout != null) {
@@ -54,13 +54,6 @@ public abstract class DeathScreenMixin extends Screen {
     private void onRender(GuiGraphics graphics, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if (alan$isActive()) {
             alan$uiRenderer.render(graphics, mouseX, mouseY, delta);
-            ci.cancel();
-        }
-    }
-
-    @Inject(method = "renderBackground", at = @At("HEAD"), cancellable = true)
-    private void onBackground(GuiGraphics graphics, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        if (alan$isActive()) {
             ci.cancel();
         }
     }

@@ -2,6 +2,8 @@ package net.alan.gui.data.widget;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -76,9 +78,9 @@ public class SoundEventConfig {
         }
         try {
             if (id.contains(":")) {
-                ResourceLocation location = ResourceLocation.parse(id);
+                ResourceLocation location = new ResourceLocation(id);
                 if (BuiltInRegistries.SOUND_EVENT.containsKey(location)) {
-                    Holder<SoundEvent> holder = BuiltInRegistries.SOUND_EVENT.getHolder(location).orElse(null);
+                    Holder<SoundEvent> holder = BuiltInRegistries.SOUND_EVENT.getHolder(ResourceKey.create(Registries.SOUND_EVENT, location)).orElse(null);
                     if (holder != null) {
                         SOUND_CACHE.put(id, holder);
                     }

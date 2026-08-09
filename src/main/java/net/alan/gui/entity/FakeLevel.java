@@ -5,7 +5,9 @@ import com.mojang.serialization.Lifecycle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.client.multiplayer.CommonListenerCookie;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.telemetry.TelemetryEventSender;
+import net.minecraft.client.telemetry.WorldSessionTelemetryManager;
 import net.minecraft.core.Holder;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
@@ -16,12 +18,10 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.ServerLinks;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.*;
-import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeGenerationSettings;
 import net.minecraft.world.level.biome.BiomeSpecialEffects;
@@ -29,28 +29,49 @@ import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.DimensionType;
-import net.neoforged.neoforge.network.connection.ConnectionType;
 
+import java.lang.reflect.Field;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.OptionalLong;
 
 public class FakeLevel extends ClientLevel {
 
     private static FakeLevel INSTANCE;
+    private static RegistryAccess lastRegistryAccess;
+    private static final ThreadLocal<RegistryAccess> CURRENT_REGISTRY_ACCESS = new ThreadLocal<>();
 
     private FakeLevel(RegistryAccess registryAccess) {
         super(
             createPacketListener(registryAccess),
             new ClientLevelData(Difficulty.NORMAL, false, false),
             Level.OVERWORLD,
-            OVERWORLD_DIMENSION_TYPE,
+            registryAccess.registryOrThrow(Registries.DIMENSION_TYPE)
+                .getHolderOrThrow(ResourceKey.create(Registries.DIMENSION_TYPE, Level.OVERWORLD.location())),
             2, 2,
             () -> Minecraft.getInstance().getProfiler(),
-            Minecraft.getInstance().levelRenderer,
+            getLevelRenderer(),
             false, 0
         );
+    }
+
+    @Override
+    public RegistryAccess registryAccess() {
+        RegistryAccess ra = CURRENT_REGISTRY_ACCESS.get();
+        if (ra != null) return ra;
+        return super.registryAccess();
+    }
+
+    private static LevelRenderer getLevelRenderer() {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.levelRenderer != null) {
+            return mc.levelRenderer;
+        }
+        return mc.getEntityRenderDispatcher() != null
+                ? new LevelRenderer(mc, mc.getEntityRenderDispatcher(),
+                        mc.getBlockEntityRenderDispatcher(), mc.renderBuffers())
+                : null;
     }
 
     private static final Holder<DimensionType> OVERWORLD_DIMENSION_TYPE = Holder.direct(new DimensionType(
@@ -65,42 +86,44 @@ public class FakeLevel extends ClientLevel {
         -64,
         384,
         384,
-        TagKey.create(Registries.BLOCK, ResourceLocation.withDefaultNamespace("infiniburn_overworld")),
-        ResourceLocation.withDefaultNamespace("overworld"),
+        TagKey.create(Registries.BLOCK, new ResourceLocation("infiniburn_overworld")),
+        new ResourceLocation("overworld"),
         0.0f,
         new DimensionType.MonsterSettings(false, true, UniformInt.of(0, 7), 0)
     ));
 
     private static ClientPacketListener createPacketListener(RegistryAccess registryAccess) {
         Minecraft mc = Minecraft.getInstance();
-        RegistryAccess.Frozen frozen = registryAccess instanceof RegistryAccess.Frozen
-            ? (RegistryAccess.Frozen) registryAccess
-            : RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
+        GameProfile gameProfile = mc.getUser().getGameProfile();
 
         return new ClientPacketListener(
             mc,
+            null,
             new Connection(PacketFlow.CLIENTBOUND),
-            new CommonListenerCookie(
-                mc.getGameProfile(),
-                null,
-                frozen,
-                FeatureFlagSet.of(),
-                null, null, null,
-                Map.of(),
-                null,
-                false,
-                Map.of(),
-                ServerLinks.EMPTY,
-                ConnectionType.OTHER
-            )
-        );
+            null,
+            gameProfile,
+            new WorldSessionTelemetryManager(TelemetryEventSender.DISABLED, false, Duration.ZERO, "")
+        ) {
+            @Override
+            public RegistryAccess registryAccess() {
+                return registryAccess;
+            }
+        };
     }
 
     public static FakeLevel getInstance() {
-        if (INSTANCE == null) {
-            RegistryAccess ra = getRegistryAccess();
-            if (ra == null) return null;
-            INSTANCE = new FakeLevel(ra);
+        RegistryAccess currentRa = getRegistryAccess();
+        if (currentRa == null) return null;
+
+        if (INSTANCE == null || lastRegistryAccess == null
+                || !lastRegistryAccess.equals(currentRa)) {
+            CURRENT_REGISTRY_ACCESS.set(currentRa);
+            try {
+                INSTANCE = new FakeLevel(currentRa);
+            } finally {
+                CURRENT_REGISTRY_ACCESS.remove();
+            }
+            lastRegistryAccess = currentRa;
         }
         return INSTANCE;
     }
@@ -111,7 +134,7 @@ public class FakeLevel extends ClientLevel {
         if (mc.level != null) {
             return mc.level.getGameTime();
         }
-        return (long) mc.getTimer().getGameTimeDeltaTicks();
+        return System.currentTimeMillis() / 50L;
     }
 
     @Override
@@ -136,7 +159,6 @@ public class FakeLevel extends ClientLevel {
         );
 
         registerDamageType(damageTypeRegistry, DamageTypes.IN_FIRE, dummyType);
-        registerDamageType(damageTypeRegistry, DamageTypes.CAMPFIRE, dummyType);
         registerDamageType(damageTypeRegistry, DamageTypes.LIGHTNING_BOLT, dummyType);
         registerDamageType(damageTypeRegistry, DamageTypes.ON_FIRE, dummyType);
         registerDamageType(damageTypeRegistry, DamageTypes.LAVA, dummyType);
@@ -167,8 +189,6 @@ public class FakeLevel extends ClientLevel {
         registerDamageType(damageTypeRegistry, DamageTypes.ARROW, dummyType);
         registerDamageType(damageTypeRegistry, DamageTypes.TRIDENT, dummyType);
         registerDamageType(damageTypeRegistry, DamageTypes.MOB_PROJECTILE, dummyType);
-        registerDamageType(damageTypeRegistry, DamageTypes.SPIT, dummyType);
-        registerDamageType(damageTypeRegistry, DamageTypes.WIND_CHARGE, dummyType);
         registerDamageType(damageTypeRegistry, DamageTypes.FIREWORKS, dummyType);
         registerDamageType(damageTypeRegistry, DamageTypes.FIREBALL, dummyType);
         registerDamageType(damageTypeRegistry, DamageTypes.UNATTRIBUTED_FIREBALL, dummyType);
@@ -233,7 +253,7 @@ public class FakeLevel extends ClientLevel {
     }
 
     public FakePlayer createPlayer() {
-        GameProfile profile = Minecraft.getInstance().getGameProfile();
+        GameProfile profile = Minecraft.getInstance().getUser().getGameProfile();
         if (profile == null) return null;
         return new FakePlayer(this, profile);
     }

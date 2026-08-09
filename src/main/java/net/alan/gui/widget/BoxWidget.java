@@ -3,6 +3,7 @@ package net.alan.gui.widget;
 import net.alan.gui.context.RenderContext;
 import net.alan.gui.data.widget.LayoutProps;
 import net.alan.gui.data.widget.TextureSet;
+import net.alan.gui.util.NineSliceHelper;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
@@ -96,10 +97,15 @@ public class BoxWidget extends BaseWidget {
         }
 
         if (frameTexture != null && frameTexture.getNormal() != null) {
-            var texId = ResourceLocation.tryParse(frameTexture.getNormal());
+            var texId = parseTexturePath(frameTexture.getNormal());
             if (texId != null) {
                 graphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-                graphics.blitSprite(texId, boxX, boxY, dim.w, dim.h);
+                NineSliceHelper.NineSliceInfo nineSlice = NineSliceHelper.loadNineSlice(texId);
+                if (nineSlice != null) {
+                    NineSliceHelper.blitNineSliced(graphics, texId, boxX, boxY, dim.w, dim.h, nineSlice);
+                } else {
+                    graphics.blit(texId, boxX, boxY, 0, 0, dim.w, dim.h, dim.w, dim.h);
+                }
             }
         }
 

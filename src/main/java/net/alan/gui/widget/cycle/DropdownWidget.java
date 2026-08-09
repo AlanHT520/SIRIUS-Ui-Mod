@@ -238,7 +238,7 @@ public class DropdownWidget extends BaseWidget {
             var id = ResourceLocation.tryParse(texPath);
             if (id != null) {
                 graphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-                graphics.blitSprite(id, x, y, w, h);
+                graphics.blit(id, x, y, 0, 0, w, h, w, h);
             }
         } else {
             int bgColor = 0xFF3A3A3C;
@@ -253,7 +253,7 @@ public class DropdownWidget extends BaseWidget {
                 var id = ResourceLocation.tryParse(texPath);
                 if (id != null) {
                     graphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-                    graphics.blitSprite(id, x, y, w, h);
+                    graphics.blit(id, x, y, 0, 0, w, h, w, h);
                 }
             }
         } else {
@@ -269,7 +269,7 @@ public class DropdownWidget extends BaseWidget {
                 var id = ResourceLocation.tryParse(texPath);
                 if (id != null) {
                     graphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-                    graphics.blitSprite(id, x + 2, y, w - 4, h);
+                    graphics.blit(id, x + 2, y, 0, 0, w - 4, h, w - 4, h);
                 }
             }
         } else {

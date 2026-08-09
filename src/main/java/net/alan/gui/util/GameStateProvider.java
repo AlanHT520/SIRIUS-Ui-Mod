@@ -46,7 +46,7 @@ public class GameStateProvider {
                 if (mc.player == null) yield 0;
                 if (mc.hasSingleplayerServer()) {
                     IntegratedServer server = mc.getSingleplayerServer();
-                    yield server != null && server.getWorldData().isAllowCommands() ? 1 : 0;
+                    yield server != null && server.getWorldData().getAllowCommands() ? 1 : 0;
                 }
                 yield mc.player.hasPermissions(2) ? 1 : 0;
             }

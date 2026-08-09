@@ -37,7 +37,7 @@ public class CardRegistry {
     }
 
     private static CardDefinition load(ResourceManager manager, String cardId) {
-        ResourceLocation location = ResourceLocation.parse(cardId);
+        ResourceLocation location = new ResourceLocation(cardId);
         if (!location.getPath().endsWith(".json")) {
             location = location.withPath(location.getPath() + ".json");
         }

@@ -1,6 +1,7 @@
 package net.alan.gui.render.screen;
 
 import net.alan.gui.data.screen.BackgroundLayer;
+import net.alan.gui.widget.BaseWidget;
 import net.alan.gui.data.screen.PanoramaConfig;
 import net.alan.gui.data.screen.Slide;
 import net.alan.gui.data.screen.SlideGroup;
@@ -50,7 +51,7 @@ public class BackgroundRenderer {
                 case "ppt" -> renderPpt(graphics, delta, screenWidth, screenHeight, bgConfig);
                 case "vanilla" -> {
                     if (minecraft.level == null) {
-                        if (PANORAMA != null) PANORAMA.render(graphics, screenWidth, screenHeight, 1.0F, delta);
+                        if (PANORAMA != null) PANORAMA.render(delta, 1.0F);
                         graphics.fill(0, 0, screenWidth, screenHeight, 0x40000000);
                     }
                 }
@@ -59,7 +60,7 @@ public class BackgroundRenderer {
                     String path = evalStringExpr(rawPath, screenWidth, screenHeight);
                     if (path != null && !path.isEmpty()) {
                         try {
-                            ResourceLocation id = ResourceLocation.tryParse(path);
+                            ResourceLocation id = BaseWidget.parseTexturePath(path);
                             if (id != null) renderScaled(graphics, id, screenWidth, screenHeight);
                         } catch (Exception e) {
                             LOGGER.error("Failed to render image background {}: {}", path, e.getMessage());

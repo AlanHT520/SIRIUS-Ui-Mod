@@ -6,6 +6,7 @@ import net.alan.gui.data.widget.LayoutProps;
 import net.alan.gui.data.widget.StyleProps;
 import net.alan.gui.data.widget.TextProps;
 import net.alan.gui.render.ActionExecutor;
+import net.alan.gui.util.NineSliceHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
@@ -120,10 +121,15 @@ public class ButtonWidget extends BaseWidget {
             else if (isHovered) texPath = evalStringExpr(vars, style.texture().getHighlighted());
             else texPath = evalStringExpr(vars, style.texture().getNormal());
             if (texPath != null && !texPath.isEmpty()) {
-                var texId = ResourceLocation.tryParse(texPath);
+                var texId = parseTexturePath(texPath);
                 if (texId != null) {
                     graphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
-                    graphics.blitSprite(texId, screenX, screenY, dim.w, dim.h);
+                    NineSliceHelper.NineSliceInfo nineSlice = NineSliceHelper.loadNineSlice(texId);
+                    if (nineSlice != null) {
+                        NineSliceHelper.blitNineSliced(graphics, texId, screenX, screenY, dim.w, dim.h, nineSlice);
+                    } else {
+                        graphics.blit(texId, screenX, screenY, 0, 0, dim.w, dim.h, dim.w, dim.h);
+                    }
                 }
             }
         } else {
@@ -151,7 +157,7 @@ public class ButtonWidget extends BaseWidget {
 
         // ing 状态计时：持续时间结束后触??action
         if (isIng) {
-            ingTimer += Minecraft.getInstance().getTimer().getRealtimeDeltaTicks();
+            ingTimer += Minecraft.getInstance().getFrameTime();
             if (ingTimer >= ingDuration) {
                 isIng = false;
                 ingTimer = 0.0f;

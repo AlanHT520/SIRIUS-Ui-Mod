@@ -6,7 +6,6 @@ import com.google.gson.GsonBuilder;
 import net.minecraft.client.resources.sounds.SoundEventRegistration;
 import net.minecraft.client.resources.sounds.SoundEventRegistrationSerializer;
 import net.minecraft.client.sounds.SoundManager;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
@@ -26,7 +25,7 @@ public abstract class SoundManagerMixin {
 
     @Unique
     private static final Gson sirius$GSON = new GsonBuilder()
-            .registerTypeHierarchyAdapter(Component.class, new Component.SerializerAdapter(RegistryAccess.EMPTY))
+            .registerTypeHierarchyAdapter(Component.class, new Component.Serializer())
             .registerTypeAdapter(SoundEventRegistration.class, new SoundEventRegistrationSerializer())
             .create();
 
@@ -36,7 +35,7 @@ public abstract class SoundManagerMixin {
 
     @Unique
     private static final ResourceLocation sirius$CUSTOM_SOUNDS_JSON =
-            ResourceLocation.fromNamespaceAndPath("minecraft", "alanht/sounds.json");
+            new ResourceLocation("minecraft", "alanht/sounds.json");
 
     @Unique
     private static final String sirius$SOUND_NAMESPACE = "sirius_ui";
@@ -54,7 +53,7 @@ public abstract class SoundManagerMixin {
                             sirius$GSON.fromJson(reader, sirius$SOUND_EVENT_REGISTRATION_TYPE.getType());
                     for (Map.Entry<String, SoundEventRegistration> entry : map.entrySet()) {
                         ResourceLocation soundLocation =
-                                ResourceLocation.fromNamespaceAndPath(sirius$SOUND_NAMESPACE, entry.getKey());
+                                new ResourceLocation(sirius$SOUND_NAMESPACE, entry.getKey());
                         accessor.sirius$invokeHandleRegistration(soundLocation, entry.getValue());
                     }
                 }

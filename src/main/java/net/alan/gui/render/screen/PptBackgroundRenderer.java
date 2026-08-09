@@ -5,6 +5,7 @@ import com.mojang.logging.LogUtils;
 import net.alan.gui.data.screen.PanoramaConfig;
 import net.alan.gui.data.screen.Slide;
 import net.alan.gui.data.screen.SlideGroup;
+import net.alan.gui.widget.BaseWidget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
@@ -95,7 +96,7 @@ public class PptBackgroundRenderer implements AutoCloseable {
             graphics.fill(0, 0, screenWidth, screenHeight, 0xFF000000);
             return;
         }
-        ResourceLocation textureId = ResourceLocation.tryParse(texturePath);
+        ResourceLocation textureId = BaseWidget.parseTexturePath(texturePath);
         if (textureId == null) {
             graphics.fill(0, 0, screenWidth, screenHeight, 0xFF000000);
             return;
@@ -239,7 +240,7 @@ public class PptBackgroundRenderer implements AutoCloseable {
         if (slideIndex < slides.size()) {
             Slide cur = slides.get(slideIndex);
             if (cur.getTexture() != null && !cur.getTexture().isEmpty()) {
-                previousTexture = ResourceLocation.tryParse(cur.getTexture());
+                previousTexture = BaseWidget.parseTexturePath(cur.getTexture());
             }
         }
 
