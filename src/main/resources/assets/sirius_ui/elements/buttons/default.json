@@ -4,7 +4,7 @@
     "button_label": "",
     "text_color": "0xFFFFFFFF"
   },
-  "ing_duration": 5,
+  "ing_duration": 2,
   "texture": {
     "normal": "sirius_ui:buttons/default_button",
     "highlighted": "sirius_ui:buttons/default_button_highlighted",

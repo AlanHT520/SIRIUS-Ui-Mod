@@ -26,7 +26,11 @@
           "color": "0xFFFFFF00"
         },
         "selected": {
-          "color": "0xFFFFFFFF"
+          "color": "0xFFFFFFFF",
+          "position": {
+            "x": "parent.width / 2 - this.width / 2",
+            "y": "parent.height / 2 - this.height / 2 + 1"
+          }
         }
       }
     }

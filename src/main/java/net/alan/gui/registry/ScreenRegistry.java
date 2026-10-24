@@ -26,9 +26,10 @@ import java.util.function.Function;
 public class ScreenRegistry {
     private static final Logger LOGGER = LoggerFactory.getLogger(ScreenRegistry.class);
     private static final Map<String, Function<Screen, Screen>> REGISTRY = new HashMap<>();
+    private static boolean eventPosted = false;
 
     static {
-        // Mixin-replaced screens ??layout paths are defined in register.json
+        //register.json
         register("titleScreen", parent -> new JsonScreen(parent,
                 JsonScreenRegistry.getLayoutId("titleScreen")
                         .orElse(ResourceLocation.fromNamespaceAndPath("sirius_ui", "screens/title_screen.json"))));
@@ -78,7 +79,17 @@ public class ScreenRegistry {
         REGISTRY.put(id, factory);
     }
 
+    private static void triggerRegisterEvent() {
+        if (eventPosted) return;
+        eventPosted = true;
+        RegisterScreenEvent.fire().forEach((id, factory) -> {
+            LOGGER.info("Registered screen via event: {}", id);
+            REGISTRY.put(id, factory);
+        });
+    }
+
     public static Screen openScreen(String id, Screen parent) {
+        triggerRegisterEvent();
         if (!JsonScreenRegistry.isLoaded()) {
             try {
                 JsonScreenRegistry.load(Minecraft.getInstance().getResourceManager());

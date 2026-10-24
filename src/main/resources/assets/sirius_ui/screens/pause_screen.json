@@ -2,49 +2,221 @@
   "screen": {
     "parent": "sirius_ui:screens/screen.json",
     "graphicsDraw": [
-      {
-        "comment": "全屏半透明遮罩",
-        "x": "0",
-        "y": "0",
-        "width": "screen.width",
-        "height": "screen.height",
-        "color": "0x88000000"
-      }
+      { "comment": "全屏暗色遮罩", "x": "0", "y": "0", "width": "screen.width", "height": "screen.height", "color": "0xB8000000" },
+
+      { "comment": "顶部栏背景", "x": "0", "y": "0", "width": "screen.width", "height": "28", "color": "0xDD111111" },
+      { "comment": "顶部栏下沿高亮线", "x": "0", "y": "27", "width": "screen.width", "height": "1", "color": "0x30FFFFFF" },
+
+      { "comment": "底部栏背景", "x": "0", "y": "screen.height - 24", "width": "screen.width", "height": "24", "color": "0xDD111111" },
+      { "comment": "底部栏上沿高亮线", "x": "0", "y": "screen.height - 25", "width": "screen.width", "height": "1", "color": "0x30FFFFFF" },
+
+      { "comment": "左侧侧边栏面板", "x": "0", "y": "28", "width": "screen.width * 32 / 100", "height": "screen.height - 52", "color": "0xCC1A1A1A" },
+      { "comment": "侧边栏右侧分隔高亮线", "x": "screen.width * 32 / 100 - 1", "y": "28", "width": "1", "height": "screen.height - 52", "color": "0x40FFFFFF" },
+      { "comment": "侧边栏右侧暗色阴影线", "x": "screen.width * 32 / 100", "y": "28", "width": "1", "height": "screen.height - 52", "color": "0x80000000" },
+
+      { "comment": "侧边栏内装饰横线（标题下方）", "x": "screen.width * 32 / 100 / 2 - 50", "y": "screen.height * 28 / 100", "width": "100", "height": "1", "color": "0x30FFFFFF" },
+
+      { "comment": "右侧区域装饰横线（标题下方）", "x": "screen.width * 32 / 100 + 20", "y": "screen.height * 14 / 100", "width": "screen.width - screen.width * 32 / 100 - 40", "height": "1", "color": "0x18FFFFFF" }
     ],
     "elements": [
       {
+        "comment": "顶部栏：暂停标题（居中）",
+        "type": "text",
+        "text_key": "menu.game",
+        "position": { "x": "screen.width / 2 - this.width / 2", "y": "14" },
+        "color": "0xFFFFFFFF",
+        "shadow": true
+      },
+
+      {
+        "comment": "侧边栏：MINECRAFT Logo（缩小）",
         "type": "image",
-        "image_texture": "sirius_ui:textures/gui/images/title/minecraft_white.png",
-        "position": { "x": "screen.width/2 - this.width/2", "y": "screen.height/8" },
-        "size": { "width": 192, "height": 48 }
+        "image_texture": "sirius_ui:textures/gui/images/title/minecraft_logo.png",
+        "position": {
+          "x": "screen.width * 32 / 100 / 2 - this.width / 2",
+          "y": "screen.height * 12 / 100"
+        },
+        "size": { "width": 120, "height": 30 }
       },
       {
+        "comment": "侧边栏：游戏菜单标题",
+        "type": "text",
+        "text_key": "menu.game",
+        "position": {
+          "x": "screen.width * 32 / 100 / 2 - this.width / 2",
+          "y": "screen.height * 20 / 100"
+        },
+        "color": "0xFFFFFFFF",
+        "shadow": true,
+        "scale": 1.4
+      },
+      {
+        "comment": "侧边栏：副标题（已暂停）",
+        "type": "text",
+        "text": "Paused",
+        "position": {
+          "x": "screen.width * 32 / 100 / 2 - this.width / 2",
+          "y": "screen.height * 28 / 100 + 6"
+        },
+        "color": "0xFF888888",
+        "shadow": true
+      },
+
+      {
+        "comment": "侧边栏：主操作 - 返回游戏",
         "ref": "sirius_ui:elements/buttons/default.json",
         "variables": { "button_label": "menu.returnToGame" },
-        "position": { "x": "screen.width/2 - 75", "y": "screen.height/2 - 40" },
-        "size": { "width": 150, "height": 20 },
+        "position": {
+          "x": "screen.width * 32 / 100 / 2 - (screen.width * 32 / 100 - 40) / 2",
+          "y": "screen.height * 36 / 100"
+        },
+        "size": {
+          "width": "screen.width * 32 / 100 - 40",
+          "height": 20
+        },
         "action": { "type": "resume_game" }
       },
+
       {
+        "comment": "侧边栏：选项",
         "ref": "sirius_ui:elements/buttons/default.json",
         "variables": { "button_label": "menu.options" },
-        "position": { "x": "screen.width/2 - 75", "y": "screen.height/2 - 12" },
-        "size": { "width": 150, "height": 20 },
+        "position": {
+          "x": "screen.width * 32 / 100 / 2 - (screen.width * 32 / 100 - 40) / 2",
+          "y": "screen.height * 36 / 100 + 28"
+        },
+        "size": {
+          "width": "screen.width * 32 / 100 - 40",
+          "height": 20
+        },
         "action": { "type": "open_screen", "screenId": "settings" }
       },
+
       {
+        "comment": "侧边栏：危险操作 - 断开连接（红色文字）",
         "ref": "sirius_ui:elements/buttons/default.json",
-        "variables": { "button_label": "menu.other" },
-        "position": { "x": "screen.width/2 - 75", "y": "screen.height/2 + 16" },
-        "size": { "width": 150, "height": 20 },
-        "action": { "type": "open_screen", "screenId": "pause_other" }
+        "variables": {
+          "button_label": "menu.disconnect",
+          "text_color": "0xFFFF5555"
+        },
+        "position": {
+          "x": "screen.width * 32 / 100 / 2 - (screen.width * 32 / 100 - 40) / 2",
+          "y": "screen.height * 36 / 100 + 56"
+        },
+        "size": {
+          "width": "screen.width * 32 / 100 - 40",
+          "height": 20
+        },
+        "action": { "type": "disconnect" }
+      },
+
+      {
+        "comment": "侧边栏底部：SIRIUS Ui 版本",
+        "type": "text",
+        "text": "SIRIUS Ui",
+        "color": "0x40FFFFFF",
+        "shadow": true,
+        "position": {
+          "x": "screen.width * 32 / 100 / 2 - this.width / 2",
+          "y": "screen.height - 30 - this.height"
+        }
+      },
+
+      {
+        "comment": "右侧区域标题",
+        "type": "text",
+        "text_key": "menu.other",
+        "position": {
+          "x": "screen.width * 32 / 100 + 20",
+          "y": "screen.height * 12 / 100"
+        },
+        "color": "0xFFAAAAAA",
+        "shadow": true
+      },
+
+      {
+        "comment": "右侧：进度",
+        "ref": "sirius_ui:elements/buttons/default.json",
+        "variables": { "button_label": "gui.advancements" },
+        "position": {
+          "x": "screen.width * 32 / 100 + 20",
+          "y": "screen.height * 16 / 100"
+        },
+        "size": {
+          "width": "(screen.width - screen.width * 32 / 100 - 48) / 2",
+          "height": 20
+        },
+        "action": { "type": "open_screen", "screenId": "advancements" }
       },
       {
+        "comment": "右侧：统计",
         "ref": "sirius_ui:elements/buttons/default.json",
-        "variables": { "button_label": "menu.disconnect" },
-        "position": { "x": "screen.width/2 - 75", "y": "screen.height/2 + 44" },
-        "size": { "width": 150, "height": 20 },
-        "action": { "type": "disconnect" }
+        "variables": { "button_label": "gui.stats" },
+        "position": {
+          "x": "screen.width * 32 / 100 + 20 + (screen.width - screen.width * 32 / 100 - 48) / 2 + 8",
+          "y": "screen.height * 16 / 100"
+        },
+        "size": {
+          "width": "(screen.width - screen.width * 32 / 100 - 48) / 2",
+          "height": 20
+        },
+        "action": { "type": "open_screen", "screenId": "stats" }
+      },
+
+      {
+        "comment": "右侧：局域网开放",
+        "ref": "sirius_ui:elements/buttons/default.json",
+        "variables": { "button_label": "menu.shareToLan" },
+        "position": {
+          "x": "screen.width * 32 / 100 + 20",
+          "y": "screen.height * 16 / 100 + 28"
+        },
+        "size": {
+          "width": "(screen.width - screen.width * 32 / 100 - 48) / 2",
+          "height": 20
+        },
+        "action": { "type": "open_screen", "screenId": "share_to_lan" }
+      },
+      {
+        "comment": "右侧：反馈",
+        "ref": "sirius_ui:elements/buttons/default.json",
+        "variables": { "button_label": "menu.sendFeedback" },
+        "position": {
+          "x": "screen.width * 32 / 100 + 20 + (screen.width - screen.width * 32 / 100 - 48) / 2 + 8",
+          "y": "screen.height * 16 / 100 + 28"
+        },
+        "size": {
+          "width": "(screen.width - screen.width * 32 / 100 - 48) / 2",
+          "height": 20
+        },
+        "action": { "type": "open_link", "url": "https://aka.ms/javafeedback?ref=game" }
+      },
+
+      {
+        "comment": "右侧：报告错误",
+        "ref": "sirius_ui:elements/buttons/default.json",
+        "variables": { "button_label": "menu.reportBugs" },
+        "position": {
+          "x": "screen.width * 32 / 100 + 20",
+          "y": "screen.height * 16 / 100 + 56"
+        },
+        "size": {
+          "width": "(screen.width - screen.width * 32 / 100 - 48) / 2",
+          "height": 20
+        },
+        "action": { "type": "open_link", "url": "https://aka.ms/snapshotbugs?ref=game" }
+      },
+
+      {
+        "comment": "底部栏：版权标识",
+        "type": "text",
+        "text": "©MOJANG AB | Minecraft",
+        "color": "0x30FFFFFF",
+        "shadow": true,
+        "position": {
+          "x": "screen.width - this.width - 8",
+          "y": "screen.height - 24 + 12 - this.height / 2"
+        }
       }
     ]
   }

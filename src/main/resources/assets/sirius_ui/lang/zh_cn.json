@@ -12,5 +12,7 @@
   "menu.other": "其他",
   "menu.return": "返回",
 
-  "options.general": "常规"
+  "options.general": "常规",
+
+  "sirius_ui.enableCustomUi": "启用自定义 Ui 引擎。启用，将使用 SIRIUS Ui 的 Json Ui 引擎；禁用，将使用 vanilla screens。"
 }

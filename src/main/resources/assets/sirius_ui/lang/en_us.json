@@ -12,5 +12,7 @@
   "menu.other": "Other",
   "menu.return": "Return",
 
-  "options.general": "General"
+  "options.general": "General",
+
+  "sirius_ui.enableCustomUi": "Enable Custom Ui"
 }

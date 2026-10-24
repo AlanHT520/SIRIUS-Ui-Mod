@@ -4,7 +4,7 @@
     "button_label": "sirius_ui.menu.play",
     "text_color": "0xFFFFFFFF"
   },
-  "ing_duration": 5,
+  "ing_duration": 2,
   "texture": {
     "normal": "sirius_ui:buttons/titlemenu/play_button",
     "highlighted": "sirius_ui:buttons/titlemenu/play_button_highlighted",

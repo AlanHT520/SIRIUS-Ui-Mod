@@ -93,7 +93,9 @@ public abstract class TitleScreenMixin extends Screen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (sirius$isActive()) {
-            return sirius$uiRenderer.keyPressed(keyCode, scanCode, modifiers);
+            if (sirius$uiRenderer.keyPressed(keyCode, scanCode, modifiers)) {
+                return true;
+            }
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
     }

@@ -1,4 +1,4 @@
-﻿{
+{
   "type": "container",
   "position": { "x": "0", "y": "0" },
   "size": { "width": "parent.width", "height": "parent.height" },

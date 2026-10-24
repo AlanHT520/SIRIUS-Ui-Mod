@@ -1,4 +1,4 @@
-﻿{
+{
   "type": "slider",
   "option_key": "maxFps",
   "slider_min": 10.0,

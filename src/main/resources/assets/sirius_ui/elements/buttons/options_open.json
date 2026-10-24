@@ -3,7 +3,7 @@
   "variables": {
     "button_label": ""
   },
-  "ing_duration": 5,
+  "ing_duration": 2,
   "texture": {
     "normal": "sirius_ui:buttons/options/button_option",
     "highlighted": "sirius_ui:buttons/options/button_option_highlighted",

@@ -104,7 +104,9 @@ public abstract class PauseScreenMixin extends Screen {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (alan$isActive()) {
-            return alan$uiRenderer.keyPressed(keyCode, scanCode, modifiers);
+            if (alan$uiRenderer.keyPressed(keyCode, scanCode, modifiers)) {
+                return true;
+            }
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
     }

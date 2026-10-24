@@ -43,13 +43,31 @@
             },
             "text": {
               "text_key": "options.general",
-              "color": "0xFFAAAAAA",
+              "color": "0x00000000",
               "shadow": true
             },
-            "state_variables": {
-              "selected": { "text_color": "0xFFFFFFFF" },
-              "highlighted": { "text_color": "0xFFFFFFFF" }
-            }
+            "children": [
+              {
+                "type": "text",
+                "text_key": "options.general",
+                "color": "0xFFAAAAAA",
+                "shadow": true,
+                "position": {
+                  "x": "parent.width / 2 - this.width / 2",
+                  "y": "parent.height / 2 - this.height / 2"
+                },
+                "state_v": {
+                  "selected": {
+                    "color": "0xFFFFFFFF",
+                    "position": {
+                      "x": "parent.width / 2 - this.width / 2",
+                      "y": "parent.height / 2 - this.height / 2 + 1"
+                    }
+                  },
+                  "highlighted": { "color": "0xFFFFFFFF" }
+                }
+              }
+            ]
           },
           {
             "type": "button_content",
@@ -63,13 +81,31 @@
             },
             "text": {
               "text_key": "options.video",
-              "color": "0xFFAAAAAA",
+              "color": "0x00000000",
               "shadow": true
             },
-            "state_variables": {
-              "selected": { "text_color": "0xFFFFFFFF" },
-              "highlighted": { "text_color": "0xFFFFFFFF" }
-            }
+            "children": [
+              {
+                "type": "text",
+                "text_key": "options.video",
+                "color": "0xFFAAAAAA",
+                "shadow": true,
+                "position": {
+                  "x": "parent.width / 2 - this.width / 2",
+                  "y": "parent.height / 2 - this.height / 2"
+                },
+                "state_v": {
+                  "selected": {
+                    "color": "0xFFFFFFFF",
+                    "position": {
+                      "x": "parent.width / 2 - this.width / 2",
+                      "y": "parent.height / 2 - this.height / 2 + 1"
+                    }
+                  },
+                  "highlighted": { "color": "0xFFFFFFFF" }
+                }
+              }
+            ]
           },
           {
             "type": "button_content",
@@ -83,13 +119,31 @@
             },
             "text": {
               "text_key": "options.sounds",
-              "color": "0xFFAAAAAA",
+              "color": "0x00000000",
               "shadow": true
             },
-            "state_variables": {
-              "selected": { "text_color": "0xFFFFFFFF" },
-              "highlighted": { "text_color": "0xFFFFFFFF" }
-            }
+            "children": [
+              {
+                "type": "text",
+                "text_key": "options.sounds",
+                "color": "0xFFAAAAAA",
+                "shadow": true,
+                "position": {
+                  "x": "parent.width / 2 - this.width / 2",
+                  "y": "parent.height / 2 - this.height / 2"
+                },
+                "state_v": {
+                  "selected": {
+                    "color": "0xFFFFFFFF",
+                    "position": {
+                      "x": "parent.width / 2 - this.width / 2",
+                      "y": "parent.height / 2 - this.height / 2 + 1"
+                    }
+                  },
+                  "highlighted": { "color": "0xFFFFFFFF" }
+                }
+              }
+            ]
           },
           {
             "type": "button_content",
@@ -103,13 +157,31 @@
             },
             "text": {
               "text_key": "options.controls",
-              "color": "0xFFAAAAAA",
+              "color": "0x00000000",
               "shadow": true
             },
-            "state_variables": {
-              "selected": { "text_color": "0xFFFFFFFF" },
-              "highlighted": { "text_color": "0xFFFFFFFF" }
-            }
+            "children": [
+              {
+                "type": "text",
+                "text_key": "options.controls",
+                "color": "0xFFAAAAAA",
+                "shadow": true,
+                "position": {
+                  "x": "parent.width / 2 - this.width / 2",
+                  "y": "parent.height / 2 - this.height / 2"
+                },
+                "state_v": {
+                  "selected": {
+                    "color": "0xFFFFFFFF",
+                    "position": {
+                      "x": "parent.width / 2 - this.width / 2",
+                      "y": "parent.height / 2 - this.height / 2 + 1"
+                    }
+                  },
+                  "highlighted": { "color": "0xFFFFFFFF" }
+                }
+              }
+            ]
           },
           {
             "type": "button_content",
@@ -123,13 +195,31 @@
             },
             "text": {
               "text_key": "options.chat",
-              "color": "0xFFAAAAAA",
+              "color": "0x00000000",
               "shadow": true
             },
-            "state_variables": {
-              "selected": { "text_color": "0xFFFFFFFF" },
-              "highlighted": { "text_color": "0xFFFFFFFF" }
-            }
+            "children": [
+              {
+                "type": "text",
+                "text_key": "options.chat",
+                "color": "0xFFAAAAAA",
+                "shadow": true,
+                "position": {
+                  "x": "parent.width / 2 - this.width / 2",
+                  "y": "parent.height / 2 - this.height / 2"
+                },
+                "state_v": {
+                  "selected": {
+                    "color": "0xFFFFFFFF",
+                    "position": {
+                      "x": "parent.width / 2 - this.width / 2",
+                      "y": "parent.height / 2 - this.height / 2 + 1"
+                    }
+                  },
+                  "highlighted": { "color": "0xFFFFFFFF" }
+                }
+              }
+            ]
           },
           {
             "type": "button_content",
@@ -143,13 +233,31 @@
             },
             "text": {
               "text_key": "options.accessibility",
-              "color": "0xFFAAAAAA",
+              "color": "0x00000000",
               "shadow": true
             },
-            "state_variables": {
-              "selected": { "text_color": "0xFFFFFFFF" },
-              "highlighted": { "text_color": "0xFFFFFFFF" }
-            }
+            "children": [
+              {
+                "type": "text",
+                "text_key": "options.accessibility",
+                "color": "0xFFAAAAAA",
+                "shadow": true,
+                "position": {
+                  "x": "parent.width / 2 - this.width / 2",
+                  "y": "parent.height / 2 - this.height / 2"
+                },
+                "state_v": {
+                  "selected": {
+                    "color": "0xFFFFFFFF",
+                    "position": {
+                      "x": "parent.width / 2 - this.width / 2",
+                      "y": "parent.height / 2 - this.height / 2 + 1"
+                    }
+                  },
+                  "highlighted": { "color": "0xFFFFFFFF" }
+                }
+              }
+            ]
           },
           {
             "type": "button_content",
@@ -163,13 +271,31 @@
             },
             "text": {
               "text_key": "options.skinCustomisation",
-              "color": "0xFFAAAAAA",
+              "color": "0x00000000",
               "shadow": true
             },
-            "state_variables": {
-              "selected": { "text_color": "0xFFFFFFFF" },
-              "highlighted": { "text_color": "0xFFFFFFFF" }
-            }
+            "children": [
+              {
+                "type": "text",
+                "text_key": "options.skinCustomisation",
+                "color": "0xFFAAAAAA",
+                "shadow": true,
+                "position": {
+                  "x": "parent.width / 2 - this.width / 2",
+                  "y": "parent.height / 2 - this.height / 2"
+                },
+                "state_v": {
+                  "selected": {
+                    "color": "0xFFFFFFFF",
+                    "position": {
+                      "x": "parent.width / 2 - this.width / 2",
+                      "y": "parent.height / 2 - this.height / 2 + 1"
+                    }
+                  },
+                  "highlighted": { "color": "0xFFFFFFFF" }
+                }
+              }
+            ]
           },
           {
             "type": "button_content",
@@ -183,13 +309,31 @@
             },
             "text": {
               "text_key": "options.resourcepack",
-              "color": "0xFFAAAAAA",
+              "color": "0x00000000",
               "shadow": true
             },
-            "state_variables": {
-              "selected": { "text_color": "0xFFFFFFFF" },
-              "highlighted": { "text_color": "0xFFFFFFFF" }
-            }
+            "children": [
+              {
+                "type": "text",
+                "text_key": "options.resourcepack",
+                "color": "0xFFAAAAAA",
+                "shadow": true,
+                "position": {
+                  "x": "parent.width / 2 - this.width / 2",
+                  "y": "parent.height / 2 - this.height / 2"
+                },
+                "state_v": {
+                  "selected": {
+                    "color": "0xFFFFFFFF",
+                    "position": {
+                      "x": "parent.width / 2 - this.width / 2",
+                      "y": "parent.height / 2 - this.height / 2 + 1"
+                    }
+                  },
+                  "highlighted": { "color": "0xFFFFFFFF" }
+                }
+              }
+            ]
           }
         ]
       },

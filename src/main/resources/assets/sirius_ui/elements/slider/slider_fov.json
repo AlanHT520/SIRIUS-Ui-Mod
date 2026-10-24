@@ -1,4 +1,4 @@
-﻿{
+{
   "type": "slider",
   "option_key": "fov",
   "slider_min": 30.0,

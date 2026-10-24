@@ -7,7 +7,7 @@ public class Config {
 
     public static final ModConfigSpec.BooleanValue ENABLE_CUSTOM_UI = BUILDER
             .comment("Enable SIRIUS Ui's Json Ui Engine. Set to false to use vanilla screens.")
-            .define("enableCustomUi", true);
+            .define("sirius_ui.enableCustomUi", true);
 
     static final ModConfigSpec SPEC = BUILDER.build();
 }
