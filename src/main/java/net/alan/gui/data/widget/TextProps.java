@@ -1,7 +1,7 @@
+
+
 package net.alan.gui.data.widget;
-
 import java.util.List;
-
 public record TextProps(
         String text,
         String textKey,

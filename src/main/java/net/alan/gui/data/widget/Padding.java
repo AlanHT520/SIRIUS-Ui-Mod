@@ -1,10 +1,9 @@
-package net.alan.gui.data.widget;
 
+
+package net.alan.gui.data.widget;
 public class Padding {
     private int top, bottom, left, right;
-
     public Padding() {}
-
     public int getTop() { return top; }
     public void setTop(int top) { this.top = top; }
     public int getBottom() { return bottom; }

@@ -1,8 +1,11 @@
-package net.alan.gui.data;
 
+
+package net.alan.gui.data;
 public record CycleValue(
         String key,
         String textKey
 ) {
-    public CycleValue() { this(null, null); }
+    public CycleValue() {
+        this(null, null);
+    }
 }

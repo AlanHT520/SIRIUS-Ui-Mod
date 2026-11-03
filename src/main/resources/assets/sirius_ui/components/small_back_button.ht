@@ -1,0 +1,34 @@
+// SIRIUS Ui - 小型返回按钮组件 (HT DSL v0.5.0)
+//
+// 小号返回按钮（15×15），默认位置(5,5)。
+// 用于子设置界面（如字体设置、鼠标设置）。
+//
+// 用法：
+//   import "sirius_ui:components/small_back_button.ht"
+//   button xxx = small_back_button { ... }
+
+widget button small_back_button {
+    variables {
+        button_label = " ";
+        text_color = "0xFFFFFFFF";
+    }
+    textures {
+        normal = "sirius_ui:buttons/options/back";
+        highlighted = "sirius_ui:buttons/options/back_highlighted";
+        disabled = "sirius_ui:buttons/options/back";
+    }
+    children = [
+        {
+            type = "text",
+            text_key = "${button_label}",
+            color = "${text_color}",
+            position = { x = "parent.width / 2 - this.width / 2", y = "parent.height / 2 - this.height / 2" },
+            shadow = true,
+        }
+    ];
+    this.position(5, 5);
+    this.size(15, 15);
+    on clicked {
+        close_screen();
+    }
+}

@@ -1,0 +1,205 @@
+﻿// SIRIUS Ui - Pause Screen (HT DSL v0.5.0)
+// NOTE: panorama 保留动态三元表达式，因为暂停界面在游戏中显示时
+// 需要切换到原版全景图（game.in_level == true）。
+
+import "sirius_ui:components/large_text_button.ht";
+
+screen pause_screen {
+
+    panorama = { type = "game.in_level ? vanilla : image", texture = "sirius_ui:textures/gui/images/backgrounds/background.png" };
+
+    graphicsDraw(rect, 0, 0, screen.width, screen.height, 0xB8000000);
+    graphicsDraw(rect, 0, 0, screen.width, 28, 0xDD111111);
+    graphicsDraw(rect, 0, 27, screen.width, 1, 0x30FFFFFF);
+    graphicsDraw(rect, 0, screen.height - 24, screen.width, 24, 0xDD111111);
+    graphicsDraw(rect, 0, screen.height - 25, screen.width, 1, 0x30FFFFFF);
+    graphicsDraw(rect, 0, 28, screen.width * 32 / 100, screen.height - 52, 0xCC1A1A1A);
+    graphicsDraw(rect, screen.width * 32 / 100 - 1, 28, 1, screen.height - 52, 0x40FFFFFF);
+    graphicsDraw(rect, screen.width * 32 / 100, 28, 1, screen.height - 52, 0x80000000);
+    graphicsDraw(rect, screen.width * 32 / 100 / 2 - 50, screen.height * 28 / 100, 100, 1, 0x30FFFFFF);
+    graphicsDraw(rect, screen.width * 32 / 100 + 20, screen.height * 14 / 100, screen.width - screen.width * 32 / 100 - 40, 1, 0x18FFFFFF);
+
+    // =================================================================
+    // 顶部栏
+    // =================================================================
+
+    // 暂停标题（居中）
+    text title_text {
+        this.text("menu.game", true);
+        this.position(screen.width / 2 - this.width / 2, 14);
+        color = "0xFFFFFFFF";
+        shadow = true;
+    }
+    title_text.use();
+
+    // =================================================================
+    // 左侧栏
+    // =================================================================
+
+    // MINECRAFT Logo（缩小）
+    image sidebar_logo {
+        image_texture = "sirius_ui:textures/gui/images/title/minecraft_logo.png";
+        this.position(screen.width * 32 / 100 / 2 - this.width / 2, screen.height * 12 / 100);
+        this.size(120, 30);
+    }
+    sidebar_logo.use();
+
+    // 游戏菜单标题
+    text sidebar_title {
+        this.text("menu.game", true);
+        this.position(screen.width * 32 / 100 / 2 - this.width / 2, screen.height * 20 / 100);
+        color = "0xFFFFFFFF";
+        shadow = true;
+        scale = 1.4;
+    }
+    sidebar_title.use();
+
+    // 副标题：已暂停
+    text paused_text {
+        this.text("Paused");
+        this.position(screen.width * 32 / 100 / 2 - this.width / 2, screen.height * 28 / 100 + 6);
+        color = "0xFF888888";
+        shadow = true;
+    }
+    paused_text.use();
+
+    // 侧边栏：返回游戏
+    button resume_button = large_text_button {
+        variables {
+            button_label = "menu.returnToGame";
+        }
+        this.position(screen.width * 32 / 100 / 2 - (screen.width * 32 / 100 - 40) / 2, screen.height * 36 / 100);
+        this.size(screen.width * 32 / 100 - 40, 20);
+        on clicked {
+            resume_game();
+        }
+    }
+    resume_button.use();
+
+    // 侧边栏：选项
+    button options_button = large_text_button {
+        variables {
+            button_label = "menu.options";
+        }
+        this.position(screen.width * 32 / 100 / 2 - (screen.width * 32 / 100 - 40) / 2, screen.height * 36 / 100 + 28);
+        this.size(screen.width * 32 / 100 - 40, 20);
+        on clicked {
+            open_screen("settings");
+        }
+    }
+    options_button.use();
+
+    // 侧边栏：断开连接（红色文字）
+    button disconnect_button = large_text_button {
+        variables {
+            button_label = "menu.disconnect";
+            text_color = "0xFFFF5555";
+        }
+        this.position(screen.width * 32 / 100 / 2 - (screen.width * 32 / 100 - 40) / 2, screen.height * 36 / 100 + 56);
+        this.size(screen.width * 32 / 100 - 40, 20);
+        on clicked {
+            disconnect();
+        }
+    }
+    disconnect_button.use();
+
+    // 侧边栏底部：SIRIUS Ui 版本
+    text sidebar_version_text {
+        this.text("SIRIUS Ui");
+        color = "0x40FFFFFF";
+        shadow = true;
+        this.position(screen.width * 32 / 100 / 2 - this.width / 2, screen.height - 30 - this.height);
+    }
+    sidebar_version_text.use();
+
+    // =================================================================
+    // 右侧区域
+    // =================================================================
+
+    // 右侧区域标题
+    text right_title {
+        this.text("menu.other", true);
+        this.position(screen.width * 32 / 100 + 20, screen.height * 12 / 100);
+        color = "0xFFAAAAAA";
+        shadow = true;
+    }
+    right_title.use();
+
+    // 进度按钮
+    button advancements_button = large_text_button {
+        variables {
+            button_label = "gui.advancements";
+        }
+        this.position(screen.width * 32 / 100 + 20, screen.height * 16 / 100);
+        this.size((screen.width - screen.width * 32 / 100 - 48) / 2, 20);
+        on clicked {
+            open_screen("advancements");
+        }
+    }
+    advancements_button.use();
+
+    // 统计按钮
+    button stats_button = large_text_button {
+        variables {
+            button_label = "gui.stats";
+        }
+        this.position(screen.width * 32 / 100 + 20 + (screen.width - screen.width * 32 / 100 - 48) / 2 + 8, screen.height * 16 / 100);
+        this.size((screen.width - screen.width * 32 / 100 - 48) / 2, 20);
+        on clicked {
+            open_screen("stats");
+        }
+    }
+    stats_button.use();
+
+    // 局域网开放按钮
+    button lan_button = large_text_button {
+        variables {
+            button_label = "menu.shareToLan";
+        }
+        this.position(screen.width * 32 / 100 + 20, screen.height * 16 / 100 + 28);
+        this.size((screen.width - screen.width * 32 / 100 - 48) / 2, 20);
+        on clicked {
+            open_screen("share_to_lan");
+        }
+    }
+    lan_button.use();
+
+    // 反馈按钮
+    button feedback_button = large_text_button {
+        variables {
+            button_label = "menu.sendFeedback";
+        }
+        this.position(screen.width * 32 / 100 + 20 + (screen.width - screen.width * 32 / 100 - 48) / 2 + 8, screen.height * 16 / 100 + 28);
+        this.size((screen.width - screen.width * 32 / 100 - 48) / 2, 20);
+        on clicked {
+            open_link("https://aka.ms/javafeedback?ref=game");
+        }
+    }
+    feedback_button.use();
+
+    // 报告错误按钮
+    button report_bugs_button = large_text_button {
+        variables {
+            button_label = "menu.reportBugs";
+        }
+        this.position(screen.width * 32 / 100 + 20, screen.height * 16 / 100 + 56);
+        this.size((screen.width - screen.width * 32 / 100 - 48) / 2, 20);
+        on clicked {
+            open_link("https://aka.ms/snapshotbugs?ref=game");
+        }
+    }
+    report_bugs_button.use();
+
+    // =================================================================
+    // 底部栏
+    // =================================================================
+
+    // 版权标识
+    text copyright_text {
+        this.text("©MOJANG AB | Minecraft");
+        color = "0x30FFFFFF";
+        shadow = true;
+        this.position(screen.width - this.width - 8, screen.height - 24 + 12 - this.height / 2);
+    }
+    copyright_text.use();
+}

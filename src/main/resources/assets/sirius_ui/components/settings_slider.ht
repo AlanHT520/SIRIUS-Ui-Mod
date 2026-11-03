@@ -1,0 +1,28 @@
+// SIRIUS Ui - 设置滑块组件 (HT DSL v0.5.0)
+//
+// 标准设置滑块，含默认轨道纹理、手柄纹理和声音反馈。
+// 用于鼠标灵敏度等数值型设置项。
+//
+// 用法：
+//   import "sirius_ui:components/settings_slider.ht"
+//   slider xxx = settings_slider { ... }
+
+widget slider settings_slider {
+    track_texture {
+        normal = "sirius_ui:buttons/options/sliders/slider";
+        highlighted = "sirius_ui:buttons/options/sliders/slider_highlighted";
+        disabled = "sirius_ui:buttons/options/sliders/slider";
+        filled = "sirius_ui:buttons/options/sliders/slider_filled";
+    }
+    handle_texture {
+        normal = "sirius_ui:buttons/options/sliders/slider_handle";
+        highlighted = "sirius_ui:buttons/options/sliders/slider_handle_highlighted";
+        disabled = "sirius_ui:buttons/options/sliders/slider_handle";
+    }
+    sound {
+        value_change {
+            id = "slider_value_change";
+            throttle_ticks = 2;
+        }
+    }
+}

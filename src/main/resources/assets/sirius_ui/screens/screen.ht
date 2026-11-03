@@ -1,0 +1,9 @@
+// SIRIUS Ui - Base Screen Template (HT DSL v0.5.0)
+// 所有屏幕的父模板；子屏幕通过 extends 继承这里的默认设置。
+
+screen ui_screen {
+
+    background(image) {
+        texture = "sirius_ui:textures/gui/images/backgrounds/background.png";
+    }
+}

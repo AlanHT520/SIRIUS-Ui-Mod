@@ -1,0 +1,77 @@
+﻿// SIRIUS Ui - Death Screen (HT DSL v0.5.0)
+// NOTE: panorama 保留动态三元表达式，因为死亡界面在游戏中显示时需要切换到原版全景图。
+
+import "sirius_ui:components/death_button.ht";
+
+screen death_screen {
+
+    panorama = { type = "game.in_level ? vanilla : image", texture = "sirius_ui:textures/gui/images/backgrounds/background.png" };
+
+    graphicsDraw(rect, 0, 0, screen.width, screen.height, 0x88000000);
+    graphicsDraw(rect, screen.width / 2 - 140, screen.height / 2, 280, 1, 0x88FF0000);
+
+    // 死亡标题
+    text title_text {
+        this.text("deathScreen.title", true);
+        this.position(screen.width / 2 - this.width / 2, screen.height / 5);
+        color = "0x99FF0000";
+        shadow = true;
+        scale = 2.5;
+    }
+    title_text.use();
+
+    // 死因描述（动态类型）
+    text death_cause_text {
+        dynamicType = "death_cause";
+        this.position(screen.width / 2 - 140, screen.height / 2 - 30);
+        color = "0xFFFFFFFF";
+        shadow = true;
+        scale = 1.0;
+    }
+    death_cause_text.use();
+
+    // 分数
+    text score_text {
+        this.text("deathScreen.score.value", true);
+        this.position(screen.width / 2 + 120, screen.height / 2 - 30);
+        color = "0xFFFFFFAA";
+        shadow = true;
+    }
+    score_text.use();
+
+    // 重生按钮
+    button respawn_button = death_button {
+        variables {
+            button_label = "deathScreen.respawn";
+        }
+        textures {
+            normal = "sirius_ui:buttons/death/button_re";
+            highlighted = "sirius_ui:buttons/death/button_re_highlighted";
+            disabled = "sirius_ui:buttons/death/button_re_disabled";
+        }
+        this.position(screen.width / 2 - 130, screen.height * 3 / 4);
+        this.size(120, 20);
+        on clicked {
+            respawn();
+        }
+    }
+    respawn_button.use();
+
+    // 退出到标题界面按钮
+    button title_screen_button = death_button {
+        variables {
+            button_label = "deathScreen.titleScreen";
+        }
+        textures {
+            normal = "sirius_ui:buttons/death/button_quit";
+            highlighted = "sirius_ui:buttons/death/button_quit_highlighted";
+            disabled = "sirius_ui:buttons/death/button_quit_disabled";
+        }
+        this.position(screen.width / 2 + 10, screen.height * 3 / 4);
+        this.size(120, 20);
+        on clicked {
+            exit_to_title();
+        }
+    }
+    title_screen_button.use();
+}

@@ -1,8 +1,10 @@
-package net.alan.gui.registry;
 
+
+package net.alan.gui.registry;
 import com.mojang.realmsclient.RealmsMainScreen;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
-import net.alan.gui.screen.JsonScreen;
+import net.alan.gui.ht.HtRegistry;
+import net.alan.gui.screen.HtScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.*;
 import net.minecraft.client.gui.screens.achievement.StatsScreen;
@@ -17,29 +19,24 @@ import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-
 public class ScreenRegistry {
     private static final Logger LOGGER = LoggerFactory.getLogger(ScreenRegistry.class);
     private static final Map<String, Function<Screen, Screen>> REGISTRY = new HashMap<>();
     private static boolean eventPosted = false;
-
     static {
-        //register.json
-        register("titleScreen", parent -> new JsonScreen(parent,
-                JsonScreenRegistry.getLayoutId("titleScreen")
-                        .orElse(ResourceLocation.fromNamespaceAndPath("sirius_ui", "screens/title_screen.json"))));
-        register("pauseScreen", parent -> new JsonScreen(parent,
-                JsonScreenRegistry.getLayoutId("pauseScreen")
-                        .orElse(ResourceLocation.fromNamespaceAndPath("sirius_ui", "screens/pause_screen.json"))));
-        register("deathScreen", parent -> new JsonScreen(parent,
-                JsonScreenRegistry.getLayoutId("deathScreen")
-                        .orElse(ResourceLocation.fromNamespaceAndPath("sirius_ui", "screens/death_screen.json"))));
-
+        register("titleScreen", parent -> new HtScreen(parent,
+                HtRegistry.getScreenPath("titleScreen")
+                        .orElse(ResourceLocation.fromNamespaceAndPath("sirius_ui", "screens/title_screen.ht"))));
+        register("pauseScreen", parent -> new HtScreen(parent,
+                HtRegistry.getScreenPath("pauseScreen")
+                        .orElse(ResourceLocation.fromNamespaceAndPath("sirius_ui", "screens/pause_screen.ht"))));
+        register("deathScreen", parent -> new HtScreen(parent,
+                HtRegistry.getScreenPath("deathScreen")
+                        .orElse(ResourceLocation.fromNamespaceAndPath("sirius_ui", "screens/death_screen.ht"))));
         register("world_select", parent -> new SelectWorldScreen(parent));
         register("multiplayer", parent -> new JoinMultiplayerScreen(parent));
         register("realms", parent -> new RealmsMainScreen(parent));
@@ -62,7 +59,6 @@ public class ScreenRegistry {
         register("advancements", parent -> new AdvancementsScreen(Minecraft.getInstance().player.connection.getAdvancements(), parent));
         register("stats", parent -> new StatsScreen(parent, Minecraft.getInstance().player.getStats()));
         register("share_to_lan", parent -> new ShareToLanScreen(parent));
-
         register("mods_list", parent -> {
             try {
                 Class<?> modListScreenClass = Class.forName("net.neoforged.neoforge.client.gui.ModListScreen");
@@ -73,12 +69,10 @@ public class ScreenRegistry {
             }
         });
     }
-
     public static void register(String id, Function<Screen, Screen> factory) {
         if (REGISTRY.containsKey(id)) LOGGER.warn("Overriding existing screen registration for id: {}", id);
         REGISTRY.put(id, factory);
     }
-
     private static void triggerRegisterEvent() {
         if (eventPosted) return;
         eventPosted = true;
@@ -87,19 +81,11 @@ public class ScreenRegistry {
             REGISTRY.put(id, factory);
         });
     }
-
     public static Screen openScreen(String id, Screen parent) {
         triggerRegisterEvent();
-        if (!JsonScreenRegistry.isLoaded()) {
-            try {
-                JsonScreenRegistry.load(Minecraft.getInstance().getResourceManager());
-            } catch (Exception e) {
-                LOGGER.error("Failed to lazy load JSON screen registry", e);
-            }
-        }
-        Optional<ResourceLocation> jsonLayout = JsonScreenRegistry.getLayoutId(id);
-        if (jsonLayout.isPresent()) {
-            return new JsonScreen(parent, jsonLayout.get());
+        Optional<ResourceLocation> htLayout = HtRegistry.getScreenPath(id);
+        if (htLayout.isPresent()) {
+            return new HtScreen(parent, htLayout.get());
         }
         Function<Screen, Screen> factory = REGISTRY.get(id);
         if (factory == null) {

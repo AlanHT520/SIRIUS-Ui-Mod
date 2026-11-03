@@ -1,0 +1,22 @@
+// SIRIUS Ui - 开关选择器组件 (HT DSL v0.5.0)
+//
+// 标准的 on/off 二元选择器，用于设置界面中的布尔选项。
+//
+// 用法：
+//   import "sirius_ui:components/on_off_selector.ht"
+//   selector xxx = on_off_selector { ... }
+
+widget selector on_off_selector {
+    values = [
+        {
+            key = "true";
+            text_key = "options.on";
+            width = 50;
+        },
+        {
+            key = "false";
+            text_key = "options.off";
+            width = 50;
+        }
+    ];
+}

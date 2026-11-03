@@ -1,13 +1,12 @@
-package net.alan.gui.data.screen;
 
+
+package net.alan.gui.data.screen;
 public class Slide {
     private String texture;
     private int time;
     private String transition;
     private int transitionDuration;
-
     public Slide() {}
-
     public String getTexture() { return texture; }
     public void setTexture(String texture) { this.texture = texture; }
     public int getTime() { return time; }

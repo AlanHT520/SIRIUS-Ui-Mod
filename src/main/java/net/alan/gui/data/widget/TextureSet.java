@@ -1,5 +1,6 @@
-package net.alan.gui.data.widget;
 
+
+package net.alan.gui.data.widget;
 public class TextureSet {
     private String normal;
     private String highlighted;
@@ -7,14 +8,12 @@ public class TextureSet {
     private String ing;
     private String selected;
     private String filled;
-
     public TextureSet() {}
     public TextureSet(String normal, String highlighted, String disabled) {
         this.normal = normal;
         this.highlighted = highlighted;
         this.disabled = disabled;
     }
-
     public String getNormal() { return normal; }
     public void setNormal(String normal) { this.normal = normal; }
     public String getHighlighted() { return highlighted; }

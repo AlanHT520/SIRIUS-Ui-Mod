@@ -1,0 +1,452 @@
+// 由 tools/ht/JsonToHt 自动迁移：screens/play_selection_screen.json → .ht
+// 迁移方式：ref 已内联、parent 已合并，因此本文件是自包含的；
+// 想改回「模板 + 继承」写法可以随时手动重构。
+
+screen play_selection_screen {
+
+    panorama = { type = "image", texture = "sirius_ui:textures/gui/images/backgrounds/background.png" };
+
+    graphicsDraw = [
+        {
+            x = "0",
+            y = "0",
+            width = "screen.width",
+            height = "screen.height",
+            color = "0xCC1A1A1A",
+        },
+        {
+            x = "0",
+            y = "32",
+            width = "screen.width",
+            height = "1",
+            color = "0x30FFFFFF",
+        },
+        {
+            x = "10",
+            y = "42",
+            width = "screen.width - 20",
+            height = "screen.height - 46",
+            color = "0x992A2A2A",
+        },
+        {
+            x = "10",
+            y = "42",
+            width = "screen.width - 20",
+            height = "1",
+            color = "0xFFFFFFFF",
+        }
+    ];
+
+    // ---- 元素 ----
+
+    // 返回按钮
+    button back_button_btn {
+        position = { x = "8", y = "6" };
+        size = { width = "20", height = "20" };
+        text = { text = " ", color = "0xFFEEEEEE", shadow = true };
+        action = { type = "close_screen" };
+        texture = { normal = "sirius_ui:buttons/options/back", highlighted = "sirius_ui:buttons/options/back_highlighted" };
+    }
+    back_button_btn.use();
+
+    container tab_bar {
+        position = { x = "0", y = "0" };
+        size = { width = "screen.width", height = "32" };
+        children = [
+            {
+                type = "button_content",
+                id = "singleplayer",
+                box_id = "play_tv",
+                position = { x = "screen.width / 2 - 150", y = "0" },
+                size = { width = "100", height = "20" },
+                texture = { normal = "sirius_ui:buttons/select/game_button", highlighted = "sirius_ui:buttons/select/game_button_highlighted", selected = "sirius_ui:buttons/select/game_button_selected" },
+                text = { text_key = "menu.singleplayer", color = "0x00000000", shadow = true },
+                children = [
+                    {
+                        type = "text",
+                        text_key = "menu.singleplayer",
+                        color = "0xFFAAAAAA",
+                        shadow = true,
+                        position = { x = "parent.width / 2 - this.width / 2", y = "parent.height / 2 - this.height / 2" },
+                        state_v = {
+                            selected = {
+                                color = "0xFFFFFFFF",
+                                position = { x = "parent.width / 2 - this.width / 2", y = "parent.height / 2 - this.height / 2 + 1" },
+                            },
+                            highlighted = { color = "0xFFFFFFFF" },
+                        },
+                    }
+                ],
+            },
+            {
+                type = "button_content",
+                id = "multiplayer",
+                box_id = "play_tv",
+                position = { x = "screen.width / 2 - 50", y = "0" },
+                size = { width = "100", height = "20" },
+                texture = { normal = "sirius_ui:buttons/select/game_button", highlighted = "sirius_ui:buttons/select/game_button_highlighted", selected = "sirius_ui:buttons/select/game_button_selected" },
+                text = { text_key = "menu.multiplayer", color = "0x00000000", shadow = true },
+                children = [
+                    {
+                        type = "text",
+                        text_key = "menu.multiplayer",
+                        color = "0xFFAAAAAA",
+                        shadow = true,
+                        position = { x = "parent.width / 2 - this.width / 2", y = "parent.height / 2 - this.height / 2" },
+                        state_v = {
+                            selected = {
+                                color = "0xFFFFFFFF",
+                                position = { x = "parent.width / 2 - this.width / 2", y = "parent.height / 2 - this.height / 2 + 1" },
+                            },
+                            highlighted = { color = "0xFFFFFFFF" },
+                        },
+                    }
+                ],
+            },
+            {
+                type = "button_content",
+                id = "realms",
+                box_id = "play_tv",
+                position = { x = "screen.width / 2 + 50", y = "0" },
+                size = { width = "100", height = "20" },
+                texture = { normal = "sirius_ui:buttons/select/game_button", highlighted = "sirius_ui:buttons/select/game_button_highlighted", selected = "sirius_ui:buttons/select/game_button_selected" },
+                text = { text_key = "menu.online", color = "0x00000000", shadow = true },
+                children = [
+                    {
+                        type = "text",
+                        text_key = "menu.online",
+                        color = "0xFFAAAAAA",
+                        shadow = true,
+                        position = { x = "parent.width / 2 - this.width / 2", y = "parent.height / 2 - this.height / 2" },
+                        state_v = {
+                            selected = {
+                                color = "0xFFFFFFFF",
+                                position = { x = "parent.width / 2 - this.width / 2", y = "parent.height / 2 - this.height / 2 + 1" },
+                            },
+                            highlighted = { color = "0xFFFFFFFF" },
+                        },
+                    }
+                ],
+            }
+        ];
+    }
+    tab_bar.use();
+
+    box play_tv {
+        position = { x = "10", y = "44" };
+        size = { width = "screen.width - 20", height = "screen.height - 48" };
+        background_color = "0x00000000";
+        default_id = "singleplayer";
+        padding_top = 10;
+        padding_left = 10;
+        padding_right = 10;
+        padding_bottom = 10;
+        elements = [
+            {
+                id = "singleplayer",
+                "widget" = {
+                    type = "container",
+                    children = [
+                        {
+                            type = "container",
+                            position = { x = "0", y = "0" },
+                            size = { width = "parent.width", height = "20" },
+                            children = [
+                                {
+                                    type = "button",
+                                    variables = { button_label = "selectWorld.create", text_color = "0xFFCCCCCC" },
+                                    ing_duration = 2,
+                                    texture = { normal = "sirius_ui:buttons/default_button", highlighted = "sirius_ui:buttons/default_button_highlighted", disabled = "sirius_ui:buttons/default_button_disabled", ing = "sirius_ui:buttons/default_button_ing" },
+                                    children = [
+                                        {
+                                            type = "text",
+                                            text_key = "${button_label}",
+                                            color = "${text_color}",
+                                            position = { x = "parent.width / 2 - this.width / 2", y = "parent.height / 2 - this.height / 2" },
+                                            shadow = true,
+                                            state_v = {
+                                                ing = {
+                                                    position = { x = "parent.width / 2 - this.width / 2", y = "parent.height / 2 - this.height / 2 + 1" },
+                                                },
+                                                highlighted = { scale = "1.0" },
+                                            },
+                                        }
+                                    ],
+                                    id = "btn_create_world",
+                                    position = { x = "0", y = "0" },
+                                    size = { width = "parent.width * 0.32", height = "20" },
+                                    action = { type = "open_screen", screenId = "create_world" },
+                                },
+                                {
+                                    type = "button",
+                                    variables = { button_label = "selectWorld.recreate", text_color = "0xFFAAAAAA" },
+                                    ing_duration = 2,
+                                    texture = { normal = "sirius_ui:buttons/default_button", highlighted = "sirius_ui:buttons/default_button_highlighted", disabled = "sirius_ui:buttons/default_button_disabled", ing = "sirius_ui:buttons/default_button_ing" },
+                                    children = [
+                                        {
+                                            type = "text",
+                                            text_key = "${button_label}",
+                                            color = "${text_color}",
+                                            position = { x = "parent.width / 2 - this.width / 2", y = "parent.height / 2 - this.height / 2" },
+                                            shadow = true,
+                                            state_v = {
+                                                ing = {
+                                                    position = { x = "parent.width / 2 - this.width / 2", y = "parent.height / 2 - this.height / 2 + 1" },
+                                                },
+                                                highlighted = { scale = "1.0" },
+                                            },
+                                        }
+                                    ],
+                                    id = "btn_recreate",
+                                    position = { x = "parent.width * 0.32 + 12", y = "0" },
+                                    size = { width = "parent.width * 0.32", height = "20" },
+                                    action = { type = "recreate_world" },
+                                }
+                            ],
+                        },
+                        {
+                            type = "dynamic_list",
+                            data_source = "world_saves",
+                            row_height = 52,
+                            gap = 4,
+                            background_color = "0x00000000",
+                            row_style = { background_color = "0x18FFFFFF", background_color_alt = "0x18FFFFFF", hover_background_color = "0x28FFFFFF", selected_background_color = "0x38FFFFFF" },
+                            scrollbar = { track_color = "0x00000000", thumb_color = "0x40FFFFFF", width = 4 },
+                            position = { x = "0", y = "28" },
+                            size = { width = "parent.width", height = "parent.height - 28" },
+                            row_template = {
+                                icon = {
+                                    x = 10,
+                                    y = 8,
+                                    w = 36,
+                                    h = 36,
+                                    placeholder_color = "0x60444444",
+                                },
+                                name = { x = 56, y = 8, color = "0xFFFFFFFF" },
+                                description = { x = 56, y = 28, color = "0xFFAAAAAA" },
+                                edit_button = {
+                                    type = "button",
+                                    size = { width = 16, height = 16 },
+                                    position = { x = "parent.width - join_button.width - delete_button.width - this.width - 60", y = "(parent.height - this.height) / 2" },
+                                    texture = { normal = "sirius_ui:buttons/world/edit", highlighted = "sirius_ui:buttons/world/edit_highlighted" },
+                                    text = { text = " ", color = "0xFFFFFFFF", shadow = true },
+                                    action = { type = "edit_world" },
+                                },
+                                join_button = {
+                                    type = "button",
+                                    size = { width = 16, height = 16 },
+                                    position = { x = "parent.width - this.width - 12", y = "(parent.height - this.height) / 2" },
+                                    texture = { normal = "sirius_ui:buttons/world/join", highlighted = "sirius_ui:buttons/world/join_highlighted", disabled = "sirius_ui:buttons/world/join_disabled" },
+                                    text = { text = " ", color = "0xFFFFFFFF", shadow = true },
+                                    action = { type = "join_world" },
+                                },
+                                delete_button = {
+                                    type = "button",
+                                    size = { width = 16, height = 16 },
+                                    position = { x = "parent.width - join_button.width - this.width - 36", y = "(parent.height - this.height) / 2" },
+                                    texture = { normal = "sirius_ui:buttons/world/delete", highlighted = "sirius_ui:buttons/world/delete_highlighted" },
+                                    text = { text = " ", color = "0xFFFFFFFF", shadow = true },
+                                    action = { type = "delete_world" },
+                                },
+                                recreate_button = {
+                                    type = "button",
+                                    size = { width = 16, height = 16 },
+                                    position = { x = "parent.width - join_button.width - delete_button.width - edit_button.width - this.width - 84", y = "(parent.height - this.height) / 2" },
+                                    texture = { normal = "sirius_ui:buttons/world/rebuild", highlighted = "sirius_ui:buttons/world/rebuild_highlighted" },
+                                    text = { text = " ", color = "0xFFFFFFFF", shadow = true },
+                                    action = { type = "recreate_world" },
+                                },
+                            },
+                        }
+                    ],
+                },
+            },
+            {
+                id = "multiplayer",
+                "widget" = {
+                    type = "container",
+                    children = [
+                        {
+                            type = "container",
+                            position = { x = "0", y = "0" },
+                            size = { width = "parent.width", height = "20" },
+                            children = [
+                                {
+                                    type = "button",
+                                    variables = { button_label = "selectServer.add", text_color = "0xFFCCCCCC" },
+                                    ing_duration = 2,
+                                    texture = { normal = "sirius_ui:buttons/default_button", highlighted = "sirius_ui:buttons/default_button_highlighted", disabled = "sirius_ui:buttons/default_button_disabled", ing = "sirius_ui:buttons/default_button_ing" },
+                                    children = [
+                                        {
+                                            type = "text",
+                                            text_key = "${button_label}",
+                                            color = "${text_color}",
+                                            position = { x = "parent.width / 2 - this.width / 2", y = "parent.height / 2 - this.height / 2" },
+                                            shadow = true,
+                                            state_v = {
+                                                ing = {
+                                                    position = { x = "parent.width / 2 - this.width / 2", y = "parent.height / 2 - this.height / 2 + 1" },
+                                                },
+                                                highlighted = { scale = "1.0" },
+                                            },
+                                        }
+                                    ],
+                                    id = "btn_add_server",
+                                    position = { x = "0", y = "0" },
+                                    size = { width = "parent.width * 0.32", height = "20" },
+                                    action = { type = "add_server" },
+                                },
+                                {
+                                    type = "button",
+                                    variables = { button_label = "selectServer.direct", text_color = "0xFFAAAAAA" },
+                                    ing_duration = 2,
+                                    texture = { normal = "sirius_ui:buttons/default_button", highlighted = "sirius_ui:buttons/default_button_highlighted", disabled = "sirius_ui:buttons/default_button_disabled", ing = "sirius_ui:buttons/default_button_ing" },
+                                    children = [
+                                        {
+                                            type = "text",
+                                            text_key = "${button_label}",
+                                            color = "${text_color}",
+                                            position = { x = "parent.width / 2 - this.width / 2", y = "parent.height / 2 - this.height / 2" },
+                                            shadow = true,
+                                            state_v = {
+                                                ing = {
+                                                    position = { x = "parent.width / 2 - this.width / 2", y = "parent.height / 2 - this.height / 2 + 1" },
+                                                },
+                                                highlighted = { scale = "1.0" },
+                                            },
+                                        }
+                                    ],
+                                    id = "btn_direct_connect",
+                                    position = { x = "parent.width * 0.32 + 12", y = "0" },
+                                    size = { width = "parent.width * 0.32", height = "20" },
+                                    action = { type = "direct_connect" },
+                                },
+                                {
+                                    type = "button",
+                                    variables = { button_label = "selectServer.refresh", text_color = "0xFFAAAAAA" },
+                                    ing_duration = 2,
+                                    texture = { normal = "sirius_ui:buttons/default_button", highlighted = "sirius_ui:buttons/default_button_highlighted", disabled = "sirius_ui:buttons/default_button_disabled", ing = "sirius_ui:buttons/default_button_ing" },
+                                    children = [
+                                        {
+                                            type = "text",
+                                            text_key = "${button_label}",
+                                            color = "${text_color}",
+                                            position = { x = "parent.width / 2 - this.width / 2", y = "parent.height / 2 - this.height / 2" },
+                                            shadow = true,
+                                            state_v = {
+                                                ing = {
+                                                    position = { x = "parent.width / 2 - this.width / 2", y = "parent.height / 2 - this.height / 2 + 1" },
+                                                },
+                                                highlighted = { scale = "1.0" },
+                                            },
+                                        }
+                                    ],
+                                    id = "btn_refresh_servers",
+                                    position = { x = "parent.width * 0.64 + 24", y = "0" },
+                                    size = { width = "parent.width * 0.32", height = "20" },
+                                    action = { type = "refresh_servers" },
+                                }
+                            ],
+                        },
+                        {
+                            type = "dynamic_list",
+                            data_source = "servers",
+                            row_height = 52,
+                            gap = 4,
+                            background_color = "0x00000000",
+                            row_style = { background_color = "0x18FFFFFF", background_color_alt = "0x18FFFFFF", hover_background_color = "0x28FFFFFF", selected_background_color = "0x38FFFFFF" },
+                            search = {
+                                x = 4,
+                                y = 0,
+                                width = -1,
+                                height = 18,
+                                hint = "selectServer.search",
+                                max_length = 32,
+                                bordered = true,
+                                text_color = "0xE0E0E0",
+                                hint_color = "0x808080",
+                            },
+                            scrollbar = { track_color = "0x00000000", thumb_color = "0x40FFFFFF", width = 4 },
+                            position = { x = "0", y = "28" },
+                            size = { width = "parent.width", height = "parent.height - 28" },
+                            row_template = {
+                                icon = {
+                                    x = 10,
+                                    y = 8,
+                                    w = 36,
+                                    h = 36,
+                                    placeholder_color = "0x60444444",
+                                },
+                                name = { x = 56, y = 8, color = "0xFFFFFFFF" },
+                                description = { x = 56, y = 28, color = "0xFFAAAAAA" },
+                                edit_button = {
+                                    type = "button",
+                                    size = { width = 16, height = 16 },
+                                    position = { x = "parent.width - join_button.width - delete_button.width - this.width - 60", y = "(parent.height - this.height) / 2" },
+                                    texture = { normal = "sirius_ui:buttons/world/edit", highlighted = "sirius_ui:buttons/world/edit_highlighted" },
+                                    text = { text = " ", color = "0xFFFFFFFF", shadow = true },
+                                    action = { type = "edit_world" },
+                                },
+                                join_button = {
+                                    type = "button",
+                                    size = { width = 16, height = 16 },
+                                    position = { x = "parent.width - this.width - 12", y = "(parent.height - this.height) / 2" },
+                                    texture = { normal = "sirius_ui:buttons/world/join", highlighted = "sirius_ui:buttons/world/join_highlighted", disabled = "sirius_ui:buttons/world/join_disabled" },
+                                    text = { text = " ", color = "0xFFFFFFFF", shadow = true },
+                                    action = { type = "join_world" },
+                                },
+                                delete_button = {
+                                    type = "button",
+                                    size = { width = 16, height = 16 },
+                                    position = { x = "parent.width - join_button.width - this.width - 36", y = "(parent.height - this.height) / 2" },
+                                    texture = { normal = "sirius_ui:buttons/world/delete", highlighted = "sirius_ui:buttons/world/delete_highlighted" },
+                                    text = { text = " ", color = "0xFFFFFFFF", shadow = true },
+                                    action = { type = "delete_world" },
+                                },
+                            },
+                        }
+                    ],
+                },
+            },
+            {
+                id = "realms",
+                "widget" = {
+                    type = "container",
+                    children = [
+                        {
+                            type = "dynamic_list",
+                            data_source = "realms",
+                            row_height = 52,
+                            gap = 4,
+                            background_color = "0x00000000",
+                            row_style = { background_color = "0x18FFFFFF", background_color_alt = "0x18FFFFFF", hover_background_color = "0x28FFFFFF", selected_background_color = "0x38FFFFFF" },
+                            scrollbar = { track_color = "0x00000000", thumb_color = "0x40FFFFFF", width = 4 },
+                            position = { x = "0", y = "0" },
+                            size = { width = "parent.width", height = "parent.height" },
+                            row_template = {
+                                icon = {
+                                    x = 10,
+                                    y = 8,
+                                    w = 36,
+                                    h = 36,
+                                    placeholder_color = "0x60444444",
+                                },
+                                name = { x = 56, y = 8, color = "0xFFFFFFFF" },
+                                description = { x = 56, y = 28, color = "0xFFAAAAAA" },
+                                join_button = {
+                                    type = "button",
+                                    size = { width = 16, height = 16 },
+                                    position = { x = "parent.width - this.width - 12", y = "(parent.height - this.height) / 2" },
+                                    texture = { normal = "sirius_ui:buttons/world/join", highlighted = "sirius_ui:buttons/world/join_highlighted", disabled = "sirius_ui:buttons/world/join_disabled" },
+                                    text = { text = " ", color = "0xFFFFFFFF", shadow = true },
+                                    action = { type = "join_world" },
+                                },
+                            },
+                        }
+                    ],
+                },
+            }
+        ];
+    }
+    play_tv.use();
+}

@@ -1,0 +1,228 @@
+﻿// SIRIUS Ui - Title Screen (HT DSL v0.5.0)
+
+import "sirius_ui:components/text_button.ht";
+import "sirius_ui:components/icon_button.ht";
+
+screen title_screen {
+
+    background(image) {
+        texture = "sirius_ui:textures/gui/images/backgrounds/background.png";
+    }
+
+    // =================================================================
+    // 主标题区域
+    // =================================================================
+
+    // 主标题 Logo
+    image minecraft_logo {
+        image_texture = "sirius_ui:textures/gui/images/title/minecraft_logo.png";
+        this.position(screen.width / 2 - this.width / 2, 30);
+        this.size(256, 64);
+    }
+    minecraft_logo.use();
+
+    // 闪烁标语
+    splash splash_text {
+        use_vanilla = false;
+        color = "0xFFFFFF00";
+        rotation = -20;
+        pulse {
+            base_scale = 1.8;
+            amplitude = 0.1;
+            speed = 1.0;
+        }
+        date_splashes = [
+            { month = 1, day = 1, text = "Happy New Year!", weight = 1 },
+            { month = 1, day = 1, text = "Happy birthday, AlanHT520", weight = 5 },
+            { month = 2, day = 10, text = "Creeper? Aww man!" },
+            { month = 2, day = 14, text = "Love is in the air!" },
+            { month = 2, day = 14, text = "<3" },
+            { month = 3, day = 14, text = "π = 3.1415926535..." },
+            { month = 3, day = 14, text = "Happy Pi Day!" },
+            { month = 4, day = 1, text = "April Fools!" },
+            { month = 4, day = 1, text = "This is not a bug!" },
+            { month = 4, day = 4, text = "Splash not found!" },
+            { month = 4, day = 8, text = "Happy birthday, OptiFine!" },
+            { month = 4, day = 8, text = "Happy birthday, sp614x" },
+            { month = 4, day = 22, text = "Save the dirt blocks!" },
+            { month = 5, day = 4, text = "May the 4th be with you!" },
+            { month = 5, day = 17, text = "Happy birthday, Minecraft!" },
+            { month = 5, day = 17, text = "Happy birthday, Mojang!" },
+            { month = 5, day = 18, text = "Happy birthday, Jeb_!" },
+            { month = 6, day = 1, text = "Happy birthday, Technoblade!" },
+            { month = 6, day = 1, text = "Forever young!" },
+            { month = 6, day = 30, text = "Technoblade never dies!" },
+            { month = 6, day = 30, text = "Fly high, King!", weight = 5 },
+            { month = 7, day = 20, text = "One small step..." },
+            { month = 7, day = 20, text = "The Eagle has landed!" },
+            { month = 10, day = 29, text = "Hello, World!" },
+            { month = 10, day = 31, text = "Trick or treat!" },
+            { month = 10, day = 31, text = "OOoooOOOoooo! Spooky!" },
+            { month = 11, day = 19, text = "Happy birthday, FrankHC" },
+            { month = 12, day = 24, text = "Ho ho ho!" },
+            { month = 12, day = 25, text = "Merry X-mas!" },
+            { month = 12, day = 31, text = "See you next year!" },
+            { month = 12, day = 31, text = "Happy New Year's Eve!" }
+        ];
+        splashes = [
+            "No pains, no gains",
+            "Kindness is a \n language all understand",
+            "Small kindness builds great warmth",
+            "Soft words warm cold hearts",
+            "You bring sunshine to my rainiest days",
+            "Every sunset is a promise that \n the sun will return, and so will we",
+            "The night is always \n darkest before the dawn",
+            "Your love is the softest place to fall",
+            "You make the ordinary \n feel like magic",
+            "Your smile is the \n best part of my view",
+            "With you, \n every place feels like home",
+            "You are the dream \n I never want to wake up from",
+            "The world feels warmer \nwhen you are near",
+            "With you, even the silence is beautiful",
+            "But without dark, \n there are no stars",
+            "Tomorrow \n everything will be fine",
+            "Removed Herobrine!",
+            "1000001000",
+            "Cinders and Ashes!",
+            "sqrt(-1) love u!",
+            "1MB≠1000KB",
+            "X=N*2^(-Q)",
+            "V = (-1)^s * f * 2^(1-bias)",
+            "Bugjump!",
+            "Made in Sweden",
+            "SIRIUS Ui"
+        ];
+        this.position(screen.width / 2 + 123, 69);
+        this.size(0, 0);
+    }
+    splash_text.use();
+
+    // =================================================================
+    // 右侧竖直按钮组
+    // =================================================================
+
+    // 开始游戏按钮
+    button play_button = text_button {
+        variables {
+            button_label = "sirius_ui.menu.play";
+        }
+        textures {
+            normal = "sirius_ui:buttons/titlemenu/play_button";
+            highlighted = "sirius_ui:buttons/titlemenu/play_button_highlighted";
+            disabled = "sirius_ui:buttons/titlemenu/play_button_disabled";
+            ing = "sirius_ui:buttons/titlemenu/play_button_ing";
+        }
+        this.position(screen.width - this.width - 20, screen.height - 20 - 20 - 5 - 20 - 5 - this.height);
+        this.size(80, 40);
+        on clicked {
+            open_screen("selectGame");
+        }
+    }
+    play_button.use();
+
+    // 设置按钮
+    button settings_button = text_button {
+        variables {
+            button_label = "sirius_ui.menu.settings";
+        }
+        this.position(screen.width - this.width - 20, screen.height - 20 - 20 - 5 - this.height);
+        this.size(80, 20);
+        on clicked {
+            open_screen("settings");
+        }
+    }
+    settings_button.use();
+
+    // 退出按钮
+    button quit_button = text_button {
+        variables {
+            button_label = "sirius_ui.menu.quit";
+        }
+        this.position(screen.width - this.width - 20, screen.height - 20 - this.height);
+        this.size(80, 20);
+        on clicked {
+            quit_game();
+        }
+    }
+    quit_button.use();
+
+    // =================================================================
+    // 左下角图标按钮组
+    // =================================================================
+
+    // 语言按钮
+    button language_button = icon_button {
+        textures {
+            normal = "sirius_ui:buttons/titlemenu/language_button";
+            highlighted = "sirius_ui:buttons/titlemenu/language_button_highlighted";
+            disabled = "sirius_ui:buttons/titlemenu/language_button_disabled";
+            ing = "sirius_ui:buttons/titlemenu/language_button_ing";
+        }
+        this.position(20, screen.height - 20 - this.height);
+        this.size(20, 20);
+        on clicked {
+            open_screen("language");
+        }
+    }
+    language_button.use();
+
+    // 辅助功能按钮
+    button accessibility_button = icon_button {
+        textures {
+            normal = "sirius_ui:buttons/titlemenu/accessibility_button";
+            highlighted = "sirius_ui:buttons/titlemenu/accessibility_button_highlighted";
+            disabled = "sirius_ui:buttons/titlemenu/accessibility_button_disabled";
+            ing = "sirius_ui:buttons/titlemenu/accessibility_button_ing";
+        }
+        this.position(20, screen.height - 20 - 5 - this.height - this.height);
+        this.size(20, 20);
+        on clicked {
+            open_screen("accessibility");
+        }
+    }
+    accessibility_button.use();
+
+    // NeoForge Mods 按钮
+    button mods_button = icon_button {
+        textures {
+            normal = "sirius_ui:buttons/titlemenu/neoforge_mods";
+            highlighted = "sirius_ui:buttons/titlemenu/neoforge_mods_highlighted";
+            disabled = "sirius_ui:buttons/titlemenu/neoforge_mods_disabled";
+            ing = "sirius_ui:buttons/titlemenu/neoforge_mods_ing";
+        }
+        this.position(20, screen.height - 40 - 10 - this.height - this.height);
+        this.size(20, 20);
+        on clicked {
+            open_screen("mods_list");
+        }
+    }
+    mods_button.use();
+
+    // =================================================================
+    // 底部信息
+    // =================================================================
+
+    // SIRIUS Ui 版本标识
+    text version_text {
+        this.text("SIRIUS Ui Dev.172");
+        animations = [
+            { type = "typewriter", speed = 5 },
+            { type = "hold", duration = 3000 }
+        ];
+        color = "0x30FFFFFF";
+        shadow = true;
+        this.position(0, screen.height - this.height);
+        this.size(this.width, this.height);
+    }
+    version_text.use();
+
+    // Minecraft 版权标识
+    text copyright_text {
+        this.text("©MOJANG AB | Minecraft");
+        color = "0x20FFFFFF";
+        shadow = true;
+        this.position(screen.width - this.width, screen.height - this.height);
+        this.size(this.width, this.height);
+    }
+    copyright_text.use();
+}

@@ -1,5 +1,6 @@
-package net.alan.gui.widget;
 
+
+package net.alan.gui.widget;
 import net.alan.gui.context.RenderContext;
 import net.alan.gui.data.widget.LayoutProps;
 import net.alan.gui.data.widget.ListProps;
@@ -9,12 +10,9 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.*;
-
 public class ContentWidget extends BaseWidget {
     private static final Logger LOGGER = LoggerFactory.getLogger(ContentWidget.class);
-
     private final List<Widget> buttons;
     private final int gap;
     private final ListProps.ScrollbarDef scrollbar;
@@ -26,7 +24,6 @@ public class ContentWidget extends BaseWidget {
     private boolean scrolling;
     private double lastMouseY;
     private double lastMouseX;
-
     public ContentWidget(String id, LayoutProps layout, Map<String, String> variables, Map<String, String> member,
                          List<Widget> buttons, int gap, ListProps.ScrollbarDef scrollbar,
                          String backgroundColor, String borderColor, TextureSet backgroundTexture,
@@ -42,28 +39,23 @@ public class ContentWidget extends BaseWidget {
         this.scrollAmount = 0;
         this.scrolling = false;
     }
-
     private boolean isHorizontal() {
         return "horizontal".equals(direction);
     }
-
     @Override
     public List<Widget> getChildren() {
         return buttons;
     }
-
     @Override
     public void render(GuiGraphics graphics, int x, int y, int width, int height,
                        RenderContext context, int mouseX, int mouseY, float delta) {
         if (!layout.visible()) return;
-
         RenderContext mergedCtx = mergeContext(context);
         WidgetDimension dim = computeLayout(mergedCtx, width, height);
         Map<String, Integer> vars = buildNumericVars(mergedCtx, width, height, dim.w, dim.h);
         if (!checkCondition(vars)) return;
         int cx = x + dim.x;
         int cy = y + dim.y;
-
         if (backgroundTexture != null && backgroundTexture.getNormal() != null) {
             var texId = ResourceLocation.tryParse(backgroundTexture.getNormal());
             if (texId != null) {
@@ -72,7 +64,6 @@ public class ContentWidget extends BaseWidget {
         } else if (backgroundColor != null && !backgroundColor.isEmpty()) {
             graphics.fill(cx, cy, cx + dim.w, cy + dim.h, BackgroundRenderer.parseColor(backgroundColor));
         }
-
         int maxScroll;
         if (isHorizontal()) {
             int totalW = calcTotalW(mergedCtx, dim.w, dim.h);
@@ -82,17 +73,13 @@ public class ContentWidget extends BaseWidget {
             maxScroll = Math.max(0, totalH - dim.h);
         }
         scrollAmount = Math.max(0, Math.min(scrollAmount, maxScroll));
-
         graphics.enableScissor(cx, cy, cx + dim.w, cy + dim.h);
-
         List<OverlayEntry> overlays = new ArrayList<>();
-
         if (isHorizontal()) {
             int currentX = cx - (int) scrollAmount;
             for (Widget child : buttons) {
                 WidgetDimension childDim = child.computeLayout(mergedCtx, dim.w, dim.h);
                 int childRight = currentX + childDim.w;
-
                 if (childRight > cx && currentX < cx + dim.w) {
                     child.render(graphics, currentX, cy, childDim.w, dim.h,
                             mergedCtx, mouseX, mouseY, delta);
@@ -107,7 +94,6 @@ public class ContentWidget extends BaseWidget {
             for (Widget child : buttons) {
                 WidgetDimension childDim = child.computeLayout(mergedCtx, dim.w, dim.h);
                 int childBottom = currentY + childDim.h;
-
                 if (childBottom > cy && currentY < cy + dim.h) {
                     child.render(graphics, cx, currentY, dim.w, childDim.h,
                             mergedCtx, mouseX, mouseY, delta);
@@ -118,14 +104,11 @@ public class ContentWidget extends BaseWidget {
                 currentY += childDim.h + gap;
             }
         }
-
         graphics.disableScissor();
-
         for (OverlayEntry entry : overlays) {
             entry.widget.renderOverlay(graphics, entry.x, entry.y, entry.w, entry.h,
                     mergedCtx, mouseX, mouseY, delta);
         }
-
         if (borderColor != null && !borderColor.isEmpty()) {
             int bc = BackgroundRenderer.parseColor(borderColor);
             graphics.fill(cx - 1, cy - 1, cx + dim.w + 1, cy, bc);
@@ -133,7 +116,6 @@ public class ContentWidget extends BaseWidget {
             graphics.fill(cx - 1, cy - 1, cx, cy + dim.h + 1, bc);
             graphics.fill(cx + dim.w, cy - 1, cx + dim.w + 1, cy + dim.h + 1, bc);
         }
-
         if (maxScroll > 0 && scrollbar != null) {
             if (isHorizontal()) {
                 renderScrollbarH(graphics, cx, cy, dim.w, dim.h, maxScroll);
@@ -142,12 +124,10 @@ public class ContentWidget extends BaseWidget {
             }
         }
     }
-
     private void renderScrollbarV(GuiGraphics graphics, int cx, int cy, int cw, int ch, int maxScroll) {
         int sbW = scrollbar.width();
         int sbX = computeScrollbarX(cx, cw, sbW);
         int sbY = computeScrollbarY(cy, ch);
-
         ListProps.TrackDef track = scrollbar.track();
         if (track.texture() != null && track.texture().getNormal() != null) {
             var texId = ResourceLocation.tryParse(track.texture().getNormal());
@@ -159,11 +139,9 @@ public class ContentWidget extends BaseWidget {
         } else {
             graphics.fill(sbX, sbY, sbX + sbW, sbY + ch, 0x33000000);
         }
-
         ListProps.ThumbDef thumb = scrollbar.thumb();
         int thumbH = Math.max(16, ch * ch / (ch + maxScroll));
         int thumbY = cy + (int) ((scrollAmount / maxScroll) * (ch - thumbH));
-
         if (thumb.texture() != null && thumb.texture().getNormal() != null) {
             var texId = ResourceLocation.tryParse(thumb.texture().getNormal());
             if (texId != null) {
@@ -175,12 +153,10 @@ public class ContentWidget extends BaseWidget {
             renderScrollPart(graphics, sbX, thumbY, sbW, thumbH, null, null, 0xAAFFFFFF);
         }
     }
-
     private void renderScrollbarH(GuiGraphics graphics, int cx, int cy, int cw, int ch, int maxScroll) {
         int sbH = scrollbar.width();
         int sbX = cx;
         int sbY = cy + ch - sbH;
-
         ListProps.TrackDef track = scrollbar.track();
         if (track.texture() != null && track.texture().getNormal() != null) {
             var texId = ResourceLocation.tryParse(track.texture().getNormal());
@@ -192,11 +168,9 @@ public class ContentWidget extends BaseWidget {
         } else {
             graphics.fill(sbX, sbY, sbX + cw, sbY + sbH, 0x33000000);
         }
-
         ListProps.ThumbDef thumb = scrollbar.thumb();
         int thumbW = Math.max(16, cw * cw / (cw + maxScroll));
         int thumbX = cx + (int) ((scrollAmount / maxScroll) * (cw - thumbW));
-
         if (thumb.texture() != null && thumb.texture().getNormal() != null) {
             var texId = ResourceLocation.tryParse(thumb.texture().getNormal());
             if (texId != null) {
@@ -208,7 +182,6 @@ public class ContentWidget extends BaseWidget {
             renderScrollPart(graphics, thumbX, sbY, thumbW, sbH, null, null, 0xAAFFFFFF);
         }
     }
-
     private int computeScrollbarX(int cx, int cw, int sbW) {
         if (scrollbar.x() == null || scrollbar.x().isEmpty()) {
             return cx + cw - sbW;
@@ -218,7 +191,6 @@ public class ContentWidget extends BaseWidget {
         vars.put("this.width", sbW);
         return cx + eval(scrollbar.x(), vars);
     }
-
     private int computeScrollbarY(int cy, int ch) {
         if (scrollbar.y() == null || scrollbar.y().isEmpty()) {
             return cy;
@@ -227,7 +199,6 @@ public class ContentWidget extends BaseWidget {
         vars.put("parent.height", ch);
         return cy + eval(scrollbar.y(), vars);
     }
-
     private void renderScrollPart(GuiGraphics graphics, int x, int y, int w, int h, TextureSet tex, String color, int defaultColor) {
         if (tex != null && tex.getNormal() != null) {
             ResourceLocation rl = ResourceLocation.tryParse(tex.getNormal());
@@ -242,23 +213,19 @@ public class ContentWidget extends BaseWidget {
         }
         graphics.fill(x, y, x + w, y + h, c);
     }
-
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button,
                                 RenderContext context, int x, int y, int width, int height) {
         if (!layout.visible() || !layout.enabled()) return false;
-
         RenderContext mergedCtx = mergeContext(context);
         WidgetDimension dim = computeLayout(mergedCtx, width, height);
         Map<String, Integer> vars = buildNumericVars(mergedCtx, width, height, dim.w, dim.h);
         if (!checkCondition(vars)) return false;
         int cx = x + dim.x;
         int cy = y + dim.y;
-
         if (mouseX < cx || mouseX > cx + dim.w || mouseY < cy || mouseY > cy + dim.h) {
             return false;
         }
-
         int maxScroll;
         if (isHorizontal()) {
             int totalW = calcTotalW(mergedCtx, dim.w, dim.h);
@@ -267,7 +234,6 @@ public class ContentWidget extends BaseWidget {
             int totalH = calcTotalH(mergedCtx, dim.w, dim.h);
             maxScroll = Math.max(0, totalH - dim.h);
         }
-
         if (maxScroll > 0 && scrollbar != null) {
             if (isHorizontal()) {
                 int sbH = scrollbar.width();
@@ -301,7 +267,6 @@ public class ContentWidget extends BaseWidget {
                 }
             }
         }
-
         if (isHorizontal()) {
             int currentX = cx - (int) scrollAmount;
             for (Widget child : buttons) {
@@ -323,7 +288,6 @@ public class ContentWidget extends BaseWidget {
         }
         return false;
     }
-
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button,
                                  RenderContext context, int x, int y, int width, int height) {
@@ -337,7 +301,6 @@ public class ContentWidget extends BaseWidget {
         if (!checkCondition(vars)) return false;
         int cx = x + dim.x;
         int cy = y + dim.y;
-
         if (isHorizontal()) {
             int currentX = cx - (int) scrollAmount;
             for (Widget child : buttons) {
@@ -355,7 +318,6 @@ public class ContentWidget extends BaseWidget {
         }
         return false;
     }
-
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button,
                                 double dragX, double dragY, RenderContext context,
@@ -365,7 +327,6 @@ public class ContentWidget extends BaseWidget {
             WidgetDimension dim = computeLayout(mergedCtx, width, height);
             Map<String, Integer> vars = buildNumericVars(mergedCtx, width, height, dim.w, dim.h);
             if (!checkCondition(vars)) return false;
-
             if (isHorizontal()) {
                 double deltaX = mouseX - lastMouseX;
                 lastMouseX = mouseX;
@@ -395,7 +356,6 @@ public class ContentWidget extends BaseWidget {
         if (!checkCondition(vars)) return false;
         int cx = x + dim.x;
         int cy = y + dim.y;
-
         if (isHorizontal()) {
             int currentX = cx - (int) scrollAmount;
             for (Widget child : buttons) {
@@ -419,7 +379,6 @@ public class ContentWidget extends BaseWidget {
         }
         return false;
     }
-
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY,
                                  RenderContext context, int x, int y, int width, int height) {
@@ -427,7 +386,6 @@ public class ContentWidget extends BaseWidget {
         WidgetDimension dim = computeLayout(mergedCtx, width, height);
         Map<String, Integer> vars = buildNumericVars(mergedCtx, width, height, dim.w, dim.h);
         if (!checkCondition(vars)) return false;
-
         if (isHorizontal()) {
             int totalW = calcTotalW(mergedCtx, dim.w, dim.h);
             int maxScroll = Math.max(0, totalW - dim.w);
@@ -439,7 +397,6 @@ public class ContentWidget extends BaseWidget {
         }
         return true;
     }
-
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers,
                               RenderContext context, int x, int y, int width, int height) {
@@ -450,7 +407,6 @@ public class ContentWidget extends BaseWidget {
         if (!checkCondition(vars)) return false;
         int cx = x + dim.x;
         int cy = y + dim.y;
-
         if (isHorizontal()) {
             int currentX = cx - (int) scrollAmount;
             for (Widget child : buttons) {
@@ -472,7 +428,6 @@ public class ContentWidget extends BaseWidget {
         }
         return false;
     }
-
     @Override
     public boolean charTyped(char codePoint, int modifiers, RenderContext context,
                              int x, int y, int width, int height) {
@@ -483,7 +438,6 @@ public class ContentWidget extends BaseWidget {
         if (!checkCondition(vars)) return false;
         int cx = x + dim.x;
         int cy = y + dim.y;
-
         if (isHorizontal()) {
             int currentX = cx - (int) scrollAmount;
             for (Widget child : buttons) {
@@ -505,7 +459,6 @@ public class ContentWidget extends BaseWidget {
         }
         return false;
     }
-
     @Override
     public void mouseMoved(double mouseX, double mouseY, RenderContext context,
                            int x, int y, int width, int height) {
@@ -516,7 +469,6 @@ public class ContentWidget extends BaseWidget {
         if (!checkCondition(vars)) return;
         int cx = x + dim.x;
         int cy = y + dim.y;
-
         if (isHorizontal()) {
             int currentX = cx - (int) scrollAmount;
             for (Widget child : buttons) {
@@ -533,7 +485,6 @@ public class ContentWidget extends BaseWidget {
             }
         }
     }
-
     private int calcTotalH(RenderContext ctx, int parentW, int parentH) {
         int total = 0;
         for (Widget child : buttons) {
@@ -543,7 +494,6 @@ public class ContentWidget extends BaseWidget {
         total += Math.max(0, buttons.size() - 1) * gap;
         return total;
     }
-
     private int calcTotalW(RenderContext ctx, int parentW, int parentH) {
         int total = 0;
         for (Widget child : buttons) {
@@ -553,6 +503,5 @@ public class ContentWidget extends BaseWidget {
         total += Math.max(0, buttons.size() - 1) * gap;
         return total;
     }
-
     private record OverlayEntry(Widget widget, int x, int y, int w, int h) {}
 }

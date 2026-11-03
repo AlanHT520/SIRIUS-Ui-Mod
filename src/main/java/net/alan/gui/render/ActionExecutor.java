@@ -1,5 +1,6 @@
-package net.alan.gui.render;
 
+
+package net.alan.gui.render;
 import net.alan.gui.data.Action;
 import net.alan.gui.data.source.PackDataSource;
 import net.alan.gui.data.source.GameRulesBridge;
@@ -38,7 +39,6 @@ import net.minecraft.world.level.levelgen.presets.WorldPreset;
 import net.minecraft.world.level.levelgen.presets.WorldPresets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -49,10 +49,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.OptionalLong;
 import java.util.function.Function;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
 public class ActionExecutor {
     private static final Logger LOGGER = LoggerFactory.getLogger(ActionExecutor.class);
     private final Minecraft minecraft;
@@ -61,54 +59,43 @@ public class ActionExecutor {
     private final Map<String, net.alan.gui.widget.BoxWidget> boxRegistry = new HashMap<>();
     private final List<Runnable> refreshCallbacks = new ArrayList<>();
     private CardManager cardManager;
-
     private static final Map<String, String> CONFIRM_CARDS = Map.of(
         "delete_server", "sirius_ui:cards/delete_confirm",
         "delete_world", "sirius_ui:cards/delete_confirm"
     );
-
     public ActionExecutor(Minecraft minecraft, Screen parentScreen) {
         this.minecraft = minecraft;
         this.parentScreen = parentScreen;
         this.sharedState = new HashMap<>();
         LOGGER.debug("ActionExecutor created with parentScreen: {}", parentScreen);
     }
-
     public void setCardManager(CardManager cardManager) {
         this.cardManager = cardManager;
     }
-
     public CardManager getCardManager() {
         return cardManager;
     }
-
     public void addRefreshCallback(Runnable callback) {
         refreshCallbacks.add(callback);
     }
-
     private void refreshAllDynamicLists() {
         for (Runnable cb : refreshCallbacks) {
             cb.run();
         }
     }
-
     public void registerBox(String boxId, net.alan.gui.widget.BoxWidget box) {
         boxRegistry.put(boxId, box);
         LOGGER.debug("Registered BoxWidget: {}", boxId);
     }
-
     public net.alan.gui.widget.BoxWidget getBox(String boxId) {
         return boxRegistry.get(boxId);
     }
-
     public void setSharedState(Map<String, String> sharedState) {
         this.sharedState = sharedState;
     }
-
     public Map<String, String> getSharedState() {
         return sharedState;
     }
-
     public void execute(Action action) {
         if (action == null) {
             LOGGER.warn("Action is null, cannot execute.");
@@ -116,7 +103,6 @@ public class ActionExecutor {
         }
         String type = action.getType();
         LOGGER.info("Executing action: type='{}', action={}", type, action);
-
         if (action.getConfirmWith() == null && CONFIRM_CARDS.containsKey(type)) {
             action.setConfirmWith(CONFIRM_CARDS.get(type));
         }
@@ -124,7 +110,6 @@ public class ActionExecutor {
             showConfirmCard(action);
             return;
         }
-
         switch (type) {
             case "open_screen" -> {
                 String screenId = action.getScreenId();
@@ -159,7 +144,7 @@ public class ActionExecutor {
                     if (cardId != null) {
                         cardManager.showCard(cardId, instanceId, params);
                     } else if (cardObj != null) {
-                        cardManager.showCardFromJson(cardObj, instanceId, params);
+                        cardManager.showCardFromData(cardObj, instanceId, params);
                     } else {
                         LOGGER.warn("show_card action has invalid card type");
                     }
@@ -207,16 +192,16 @@ public class ActionExecutor {
                 PackDataSource.commitAll();
                 if (parentScreen != null) {
                     Screen targetScreen = parentScreen;
-                    if (parentScreen instanceof net.alan.gui.screen.JsonScreen jsonScreen) {
+                    if (parentScreen instanceof net.alan.gui.screen.HtScreen htScreen) {
                         try {
-                            var field = net.alan.gui.screen.JsonScreen.class.getDeclaredField("lastScreen");
+                            var field = net.alan.gui.screen.HtScreen.class.getDeclaredField("lastScreen");
                             field.setAccessible(true);
-                            Screen lastScreen = (Screen) field.get(jsonScreen);
+                            Screen lastScreen = (Screen) field.get(htScreen);
                             if (lastScreen != null) {
                                 targetScreen = lastScreen;
                             }
                         } catch (Exception e) {
-                            LOGGER.error("Failed to get lastScreen from JsonScreen", e);
+                            LOGGER.error("Failed to get lastScreen from HtScreen", e);
                         }
                     } else {
                         Screen parent = getParentFromScreen(parentScreen);
@@ -247,11 +232,11 @@ public class ActionExecutor {
             }
             case "respawn" -> {
                 if (minecraft.player != null && minecraft.player.isDeadOrDying()) {
-                    LOGGER.info("Respawning player.json");
+                    LOGGER.info("Respawning player");
                     minecraft.player.respawn();
                     minecraft.setScreen(null);
                 } else {
-                    LOGGER.warn("Cannot respawn: player.json is null or not dead");
+                    LOGGER.warn("Cannot respawn: player is null or not dead");
                 }
             }
             case "set_var" -> {
@@ -557,29 +542,20 @@ public class ActionExecutor {
                 String generateStructuresStr = sharedState != null ? sharedState.getOrDefault("generate_structures", "true") : "true";
                 String bonusChestStr = sharedState != null ? sharedState.getOrDefault("bonus_chest", "false") : "false";
                 String allowExperimentsStr = sharedState != null ? sharedState.getOrDefault("allow_experiments", "false") : "false";
-
                 boolean hardcore = "hardcore".equals(gameModeStr);
                 GameType gameType = hardcore ? GameType.SURVIVAL : GameType.byName(gameModeStr);
                 if (gameType == null) gameType = GameType.SURVIVAL;
-
                 Difficulty difficulty = Difficulty.byName(difficultyStr);
                 if (difficulty == null) difficulty = Difficulty.NORMAL;
                 if (hardcore) difficulty = Difficulty.HARD;
-
                 boolean allowCommands = hardcore ? false : "true".equals(allowCheatsStr);
-
                 OptionalLong seedOpt = WorldOptions.parseSeed(seedStr);
                 long seed = seedOpt.isPresent() ? seedOpt.getAsLong() : WorldOptions.randomSeed();
-
                 boolean generateStructures = "true".equals(generateStructuresStr);
                 boolean bonusChest = "true".equals(bonusChestStr);
-
                 boolean allowExperiments = "true".equals(allowExperimentsStr);
-
                 GameRules gameRules = GameRulesBridge.getCurrentRules();
-
                 WorldDataConfiguration dataConfig = DataPackBridge.getDataConfiguration();
-
                 LevelSettings levelSettings = new LevelSettings(
                     worldName,
                     gameType,
@@ -589,9 +565,7 @@ public class ActionExecutor {
                     gameRules,
                     dataConfig
                 );
-
                 WorldOptions worldOptions = new WorldOptions(seed, generateStructures, bonusChest);
-
                 Function<RegistryAccess, WorldDimensions> dimensionGetter = registryAccess -> {
                     Registry<WorldPreset> presetRegistry = registryAccess.registryOrThrow(Registries.WORLD_PRESET);
                     ResourceKey<WorldPreset> presetKey = switch (worldTypeStr) {
@@ -607,16 +581,13 @@ public class ActionExecutor {
                     }
                     return presetRegistry.get(WorldPresets.NORMAL).createWorldDimensions();
                 };
-
                 LOGGER.info("Creating world: {} (mode={}, difficulty={}, hardcore={}, type={})",
                     worldName, gameModeStr, difficultyStr, hardcore, worldTypeStr);
-
                 Runnable doCreate = () -> {
                     DataPackBridge.cleanup();
                     minecraft.createWorldOpenFlows().createFreshLevel(
                         worldName, levelSettings, worldOptions, dimensionGetter, parentScreen);
                 };
-
                 if (allowExperiments) {
                     minecraft.setScreen(new ConfirmScreen(
                         confirmed -> {
@@ -684,17 +655,14 @@ public class ActionExecutor {
             default -> LOGGER.warn("Unknown action type: {}", type);
         }
     }
-
     private void showConfirmCard(Action action) {
         String cardId = action.getConfirmWith();
         String instanceId = "card_confirm_" + action.getType() + "_" + System.currentTimeMillis();
-
         Map<String, String> context = new LinkedHashMap<>();
         context.put("action_type", action.getType());
         if (action.getTarget() != null) context.put("target", action.getTarget());
         if (action.getContent() != null) context.put("content", action.getContent());
         if (action.getParams() != null) context.putAll(action.getParams());
-
         Action pendingAction = new Action();
         pendingAction.setType(action.getType());
         pendingAction.setTarget(action.getTarget());
@@ -706,12 +674,10 @@ public class ActionExecutor {
         pendingAction.setBoxId(action.getBoxId());
         pendingAction.setTargetId(action.getTargetId());
         pendingAction.setParams(action.getParams());
-
         if (cardManager != null) {
             cardManager.showCardWithConfirm(cardId, instanceId, context, pendingAction);
         }
     }
-
     private void disconnectAndGoToTitle() {
         boolean isLocal = minecraft.isLocalServer();
         ServerData serverData = minecraft.getCurrentServer();
@@ -733,7 +699,6 @@ public class ActionExecutor {
         }
         LOGGER.info("Disconnected: isLocal={}, isRealm={}", isLocal, serverData != null && serverData.isRealm());
     }
-
     private Screen getParentFromScreen(Screen screen) {
         for (String fieldName : new String[]{"parent", "lastScreen"}) {
             try {

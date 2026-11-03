@@ -1,70 +1,51 @@
-package net.alan.gui.render.card;
 
+
+package net.alan.gui.render.card;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-
 public class CardRegistry {
     private static final Logger LOGGER = LoggerFactory.getLogger(CardRegistry.class);
     private static final ConcurrentHashMap<String, CardDefinition> cache = new ConcurrentHashMap<>();
-
     public static CardDefinition get(ResourceManager manager, String cardId) {
         return cache.computeIfAbsent(cardId, id -> load(manager, id));
     }
-
     public static CardDefinition createFromJson(JsonObject cardObj) {
         return parseCardObject(cardObj);
     }
-
     public static void clearCache() {
         cache.clear();
     }
-
     private static CardDefinition load(ResourceManager manager, String cardId) {
         ResourceLocation location = ResourceLocation.parse(cardId);
-        if (!location.getPath().endsWith(".json")) {
-            location = location.withPath(location.getPath() + ".json");
+        if (!location.getPath().endsWith(".ht")) {
+            location = location.withPath(location.getPath() + ".ht");
         }
-        Optional<Resource> optional = manager.getResource(location);
-        if (optional.isEmpty()) {
-            LOGGER.error("Card definition not found: {}", cardId);
+        JsonObject cardObj = net.alan.gui.ht.HtLoader.loadCardObject(manager, location);
+        if (cardObj == null) {
+            LOGGER.error("Card definition not found or invalid: {}", cardId);
             return createDefault();
         }
-        try (Reader reader = new InputStreamReader(optional.get().open(), StandardCharsets.UTF_8)) {
-            JsonObject root = JsonParser.parseReader(reader).getAsJsonObject();
-            if (!root.has("card") || !root.get("card").isJsonObject()) {
-                LOGGER.error("Missing 'card' object in {}", cardId);
-                return createDefault();
-            }
-            JsonObject cardObj = root.getAsJsonObject("card");
+        try {
             CardDefinition def = parseCardObject(cardObj);
             LOGGER.info("Loaded card definition: {}", cardId);
             return def;
         } catch (Exception e) {
-            LOGGER.error("Failed to load card {}: {}", cardId, e.getMessage(), e);
+            LOGGER.error("Failed to parse card {}: {}", cardId, e.getMessage(), e);
             return createDefault();
         }
     }
-
     private static CardDefinition parseCardObject(JsonObject cardObj) {
         CardDefinition def = new CardDefinition();
-
         if (cardObj.has("type")) def.setType(cardObj.get("type").getAsString());
         if (cardObj.has("modal")) def.setModal(cardObj.get("modal").getAsBoolean());
         if (cardObj.has("width")) def.setWidth(cardObj.get("width").getAsInt());
@@ -79,24 +60,19 @@ public class CardRegistry {
         if (cardObj.has("shadow_alpha")) def.setShadowAlpha(cardObj.get("shadow_alpha").getAsInt());
         if (cardObj.has("z_index")) def.setZIndex(cardObj.get("z_index").getAsInt());
         if (cardObj.has("data_source")) def.setDataSource(cardObj.get("data_source").getAsString());
-
         if (cardObj.has("overlay")) {
             def.setOverlay(parseColorString(cardObj.get("overlay")));
         }
-
         if (cardObj.has("background")) {
             def.setBackground(parseBackground(cardObj.get("background")));
         }
-
         if (cardObj.has("border")) {
             def.setBorder(parseColorString(cardObj.get("border")));
         }
         if (cardObj.has("border_width")) def.setBorderWidth(cardObj.get("border_width").getAsInt());
-
         if (cardObj.has("title_bar") && !cardObj.get("title_bar").isJsonNull()) {
             def.setTitleBar(parseTitleBar(cardObj.getAsJsonObject("title_bar")));
         }
-
         if (cardObj.has("variables") && cardObj.get("variables").isJsonObject()) {
             Map<String, String> vars = new LinkedHashMap<>();
             JsonObject varsObj = cardObj.getAsJsonObject("variables");
@@ -105,7 +81,6 @@ public class CardRegistry {
             }
             def.setVariables(vars);
         }
-
         if (cardObj.has("elements") && cardObj.get("elements").isJsonArray()) {
             List<JsonElement> elements = new ArrayList<>();
             JsonArray elementsArr = cardObj.getAsJsonArray("elements");
@@ -114,10 +89,8 @@ public class CardRegistry {
             }
             def.setElements(elements);
         }
-
         return def;
     }
-
     private static String parseColorString(JsonElement element) {
         if (element == null || element.isJsonNull()) return null;
         if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isString()) {
@@ -131,7 +104,6 @@ public class CardRegistry {
         }
         return null;
     }
-
     private static BackgroundDef parseBackground(JsonElement element) {
         if (element == null || element.isJsonNull()) return new BackgroundDef();
         if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isString()) {
@@ -153,7 +125,6 @@ public class CardRegistry {
         }
         return new BackgroundDef();
     }
-
     private static TitleBarDef parseTitleBar(JsonObject obj) {
         TitleBarDef tb = new TitleBarDef();
         if (obj.has("height")) tb.setHeight(obj.get("height").getAsInt());
@@ -171,7 +142,6 @@ public class CardRegistry {
         }
         return tb;
     }
-
     private static CardDefinition createDefault() {
         return new CardDefinition();
     }

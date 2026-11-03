@@ -1,19 +1,16 @@
-package net.alan.gui.data.source;
 
+
+package net.alan.gui.data.source;
 import net.alan.gui.data.DynamicListData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.ServerList;
 import net.minecraft.client.multiplayer.ServerStatusPinger;
-import net.minecraft.network.chat.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.*;
-
 public class ServerListDataSource {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerListDataSource.class);
-
     public static List<DynamicListData> load() {
         List<DynamicListData> list = new ArrayList<>();
         try {
@@ -34,14 +31,12 @@ public class ServerListDataSource {
                         .isLan(false)
                         .ping(s.ping)
                         .isOnline(s.ping != -1L);
-
                 if (s.motd != null) {
                     builder.motd(s.motd.getString());
                 }
                 if (s.playerList != null) {
                     builder.onlinePlayers(s.playerList.size());
                 }
-
                 list.add(builder.build());
             }
         } catch (Exception e) {
@@ -49,7 +44,6 @@ public class ServerListDataSource {
         }
         return list;
     }
-
     private static String buildServerDescription(ServerData data) {
         StringBuilder sb = new StringBuilder();
         if (data.ping != -1L) {
@@ -68,7 +62,6 @@ public class ServerListDataSource {
         }
         return sb.toString();
     }
-
     public static void pingServers(Runnable onComplete) {
         Minecraft mc = Minecraft.getInstance();
         ServerList serverList = new ServerList(mc);

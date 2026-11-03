@@ -1,0 +1,20 @@
+// SIRIUS Ui - 返回按钮组件 (HT DSL v0.5.0)
+//
+// 标准返回按钮（20×20），默认位置(4,4)，点击关闭当前界面。
+// 用于游戏规则等有较大标题栏的屏幕。
+//
+// 用法：
+//   import "sirius_ui:components/back_button.ht"
+//   button xxx = back_button { ... }
+
+widget button back_button {
+    this.position(4, 4);
+    this.size(20, 20);
+    textures {
+        normal = "sirius_ui:buttons/options/back";
+        highlighted = "sirius_ui:buttons/options/back_highlighted";
+    }
+    on clicked {
+        close_screen();
+    }
+}

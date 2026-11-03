@@ -1,0 +1,23 @@
+// SIRIUS Ui - 死亡界面按钮组件 (HT DSL v0.5.0)
+//
+// 死亡界面专用按钮（120×20），红色主题，无 ing 动画。
+//
+// 用法：
+//   import "sirius_ui:components/death_button.ht"
+//   button xxx = death_button { ... }
+
+widget button death_button {
+    variables {
+        button_label = "";
+        text_color = "0xFFFFFFFF";
+    }
+    children = [
+        {
+            type = "text",
+            text_key = "${button_label}",
+            color = "${text_color}",
+            position = { x = "parent.width / 2 - this.width / 2", y = "parent.height / 2 - this.height / 2" },
+            shadow = true,
+        }
+    ];
+}

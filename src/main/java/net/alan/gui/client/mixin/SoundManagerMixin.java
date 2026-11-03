@@ -1,5 +1,6 @@
-package net.alan.gui.client.mixin;
 
+
+package net.alan.gui.client.mixin;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -17,36 +18,28 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import java.io.Reader;
 import java.util.Map;
-
 @Mixin(SoundManager.class)
 public abstract class SoundManagerMixin {
-
     @Unique
     private static final Gson sirius$GSON = new GsonBuilder()
             .registerTypeHierarchyAdapter(Component.class, new Component.SerializerAdapter(RegistryAccess.EMPTY))
             .registerTypeAdapter(SoundEventRegistration.class, new SoundEventRegistrationSerializer())
             .create();
-
     @Unique
     private static final TypeToken<Map<String, SoundEventRegistration>> sirius$SOUND_EVENT_REGISTRATION_TYPE =
             new TypeToken<Map<String, SoundEventRegistration>>() {};
-
     @Unique
     private static final ResourceLocation sirius$CUSTOM_SOUNDS_JSON =
             ResourceLocation.fromNamespaceAndPath("minecraft", "alanht/sounds.json");
-
     @Unique
     private static final String sirius$SOUND_NAMESPACE = "sirius_ui";
-
     @Inject(method = "prepare", at = @At("TAIL"))
     private void sirius$injectCustomSounds(ResourceManager resourceManager, ProfilerFiller profiler,
                                             CallbackInfoReturnable<Object> cir) {
         Object preparations = cir.getReturnValue();
         SoundManagerPreparationsAccessor accessor = (SoundManagerPreparationsAccessor) preparations;
-
         try {
             for (Resource resource : resourceManager.getResourceStack(sirius$CUSTOM_SOUNDS_JSON)) {
                 try (Reader reader = resource.openAsReader()) {
@@ -60,7 +53,6 @@ public abstract class SoundManagerMixin {
                 }
             }
         } catch (Exception ignored) {
-            // 忽略自定义音效加载错误
         }
     }
 }

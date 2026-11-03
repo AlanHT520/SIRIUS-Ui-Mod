@@ -1,8 +1,8 @@
-package net.alan.gui.data.widget;
 
+
+package net.alan.gui.data.widget;
 import net.alan.gui.data.CycleValue;
 import java.util.List;
-
 public record CycleButtonProps(
         String optionKey,
         List<CycleValue> values,

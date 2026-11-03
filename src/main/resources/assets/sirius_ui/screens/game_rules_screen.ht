@@ -1,0 +1,70 @@
+﻿// SIRIUS Ui - Game Rules Screen (HT DSL v0.5.0)
+
+import "sirius_ui:components/back_button.ht";
+
+screen game_rules_screen {
+
+    panorama = { type = "game.in_level ? vanilla : image", texture = "sirius_ui:textures/gui/images/backgrounds/background.png" };
+
+    graphicsDraw(rect, 0, 0, screen.width, screen.height, 0xDD0E1014);
+    graphicsDraw(rect, 0, 0, screen.width, 28, 0xEE111318);
+    graphicsDraw(rect, 0, 28, screen.width, 1, 0x18222830);
+    graphicsDraw(rect, 0, screen.height - 32, screen.width, 1, 0x18222830);
+    graphicsDraw(rect, 0, screen.height - 31, screen.width, 31, 0xEE111318);
+
+    // 返回按钮
+    button back_button_btn = back_button {
+    }
+    back_button_btn.use();
+
+    // 标题
+    text title_text {
+        this.position(screen.width / 2 - this.width / 2, 6);
+        this.text("selectWorld.gameRules", true);
+        color = "0xFFE0E4EA";
+        shadow = true;
+        scale = 1.0;
+    }
+    title_text.use();
+
+    // 游戏规则列表
+    dynamic_list rules_list {
+        data_source = "game_rules";
+        row_height = 28;
+        gap = 1;
+        this.position(14, 36);
+        this.size(screen.width - 28, screen.height - 74);
+        background_color = "0x00000000";
+        search = {
+            x = 4,
+            y = 0,
+            width = -1,
+            height = 18,
+            hint = "gui.search",
+            max_length = 32,
+            bordered = true,
+            text_color = "0xFFE0E4EA",
+            hint_color = "0xFF8A9BB5",
+        };
+        scrollbar = {
+            width = 3,
+            x = "parent.width - 3",
+            y = "0",
+            track_color = "0x00000000",
+            thumb_color = "0x18222830",
+        };
+        row_template = {
+            name = { x = 8, y = 6, color = "0xFFE0E4EA" },
+            description = { x = 200, y = 6, color = "0xFF8A9BB5" },
+            join_button = {
+                type = "button",
+                size = { width = 16, height = 16 },
+                position = { x = "parent.width - this.width - 12", y = "(parent.height - this.height) / 2" },
+                texture = { normal = "sirius_ui:buttons/world/join", highlighted = "sirius_ui:buttons/world/join_highlighted", disabled = "sirius_ui:buttons/world/join_disabled" },
+                text = { text = " ", color = "0xFFFFFFFF", shadow = true },
+                action = { type = "join_world" },
+            },
+        };
+    }
+    rules_list.use();
+}

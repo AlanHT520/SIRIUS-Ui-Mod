@@ -1,5 +1,6 @@
-package net.alan.gui.entity;
 
+
+package net.alan.gui.entity;
 import com.mojang.authlib.GameProfile;
 import com.mojang.serialization.Lifecycle;
 import net.minecraft.client.Minecraft;
@@ -31,17 +32,12 @@ import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.neoforged.neoforge.network.connection.ConnectionType;
-
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.OptionalLong;
-
 public class FakeLevel extends ClientLevel {
-
     private static FakeLevel INSTANCE;
     private static RegistryAccess lastRegistryAccess;
-
     private FakeLevel(RegistryAccess registryAccess) {
         super(
             createPacketListener(registryAccess),
@@ -54,7 +50,6 @@ public class FakeLevel extends ClientLevel {
             false, 0
         );
     }
-
     private static LevelRenderer getLevelRenderer() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.levelRenderer != null) {
@@ -65,7 +60,6 @@ public class FakeLevel extends ClientLevel {
                         mc.getBlockEntityRenderDispatcher(), mc.renderBuffers())
                 : null;
     }
-
     private static final Holder<DimensionType> OVERWORLD_DIMENSION_TYPE = Holder.direct(new DimensionType(
         OptionalLong.empty(),
         true,
@@ -83,13 +77,11 @@ public class FakeLevel extends ClientLevel {
         0.0f,
         new DimensionType.MonsterSettings(false, true, UniformInt.of(0, 7), 0)
     ));
-
     private static ClientPacketListener createPacketListener(RegistryAccess registryAccess) {
         Minecraft mc = Minecraft.getInstance();
         RegistryAccess.Frozen frozen = registryAccess instanceof RegistryAccess.Frozen
             ? (RegistryAccess.Frozen) registryAccess
             : RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
-
         return new ClientPacketListener(
             mc,
             new Connection(PacketFlow.CLIENTBOUND),
@@ -108,11 +100,9 @@ public class FakeLevel extends ClientLevel {
             )
         );
     }
-
     public static FakeLevel getInstance() {
         RegistryAccess currentRa = getRegistryAccess();
         if (currentRa == null) return null;
-
         if (INSTANCE == null || lastRegistryAccess == null
                 || !lastRegistryAccess.equals(currentRa)) {
             INSTANCE = new FakeLevel(currentRa);
@@ -120,7 +110,6 @@ public class FakeLevel extends ClientLevel {
         }
         return INSTANCE;
     }
-
     @Override
     public long getGameTime() {
         Minecraft mc = Minecraft.getInstance();
@@ -129,28 +118,23 @@ public class FakeLevel extends ClientLevel {
         }
         return (long) mc.getTimer().getGameTimeDeltaTicks();
     }
-
     @Override
     public long getDayTime() {
         return getGameTime();
     }
-
     private static RegistryAccess getRegistryAccess() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level != null) return mc.level.registryAccess();
         if (mc.getConnection() != null) return mc.getConnection().registryAccess();
         return createFakeRegistryAccess();
     }
-
     private static RegistryAccess.Frozen createFakeRegistryAccess() {
         MappedRegistry<DamageType> damageTypeRegistry = new MappedRegistry<>(
             Registries.DAMAGE_TYPE, Lifecycle.stable()
         );
-
         DamageType dummyType = new DamageType(
             "generic", DamageScaling.NEVER, 0.0F, DamageEffects.HURT, DeathMessageType.DEFAULT
         );
-
         registerDamageType(damageTypeRegistry, DamageTypes.IN_FIRE, dummyType);
         registerDamageType(damageTypeRegistry, DamageTypes.CAMPFIRE, dummyType);
         registerDamageType(damageTypeRegistry, DamageTypes.LIGHTNING_BOLT, dummyType);
@@ -198,13 +182,10 @@ public class FakeLevel extends ClientLevel {
         registerDamageType(damageTypeRegistry, DamageTypes.BAD_RESPAWN_POINT, dummyType);
         registerDamageType(damageTypeRegistry, DamageTypes.OUTSIDE_BORDER, dummyType);
         registerDamageType(damageTypeRegistry, DamageTypes.GENERIC_KILL, dummyType);
-
         damageTypeRegistry.freeze();
-
         MappedRegistry<Biome> biomeRegistry = new MappedRegistry<>(
             Registries.BIOME, Lifecycle.stable()
         );
-
         Biome plainBiome = new Biome.BiomeBuilder()
             .hasPrecipitation(true)
             .temperature(0.8F)
@@ -219,16 +200,13 @@ public class FakeLevel extends ClientLevel {
             .generationSettings(BiomeGenerationSettings.EMPTY)
             .temperatureAdjustment(Biome.TemperatureModifier.NONE)
             .build();
-
         Registry.register(biomeRegistry, Biomes.PLAINS.location(), plainBiome);
         biomeRegistry.freeze();
-
         MappedRegistry<DimensionType> dimensionTypeRegistry = new MappedRegistry<>(
             Registries.DIMENSION_TYPE, Lifecycle.stable()
         );
         Registry.register(dimensionTypeRegistry, Level.OVERWORLD.location(), OVERWORLD_DIMENSION_TYPE.value());
         dimensionTypeRegistry.freeze();
-
         Map<ResourceKey<? extends Registry<?>>, Registry<?>> registryMap = new HashMap<>();
         for (var entry : BuiltInRegistries.REGISTRY.entrySet()) {
             @SuppressWarnings("unchecked")
@@ -238,16 +216,13 @@ public class FakeLevel extends ClientLevel {
         registryMap.put(Registries.DAMAGE_TYPE, damageTypeRegistry);
         registryMap.put(Registries.BIOME, biomeRegistry);
         registryMap.put(Registries.DIMENSION_TYPE, dimensionTypeRegistry);
-
         return new RegistryAccess.ImmutableRegistryAccess(registryMap).freeze();
     }
-
     private static void registerDamageType(
         MappedRegistry<DamageType> registry, ResourceKey<DamageType> key, DamageType value
     ) {
         Registry.register(registry, key.location(), value);
     }
-
     public FakePlayer createPlayer() {
         GameProfile profile = Minecraft.getInstance().getGameProfile();
         if (profile == null) return null;

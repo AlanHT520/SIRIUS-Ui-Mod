@@ -1,5 +1,6 @@
-package net.alan.gui.data.source;
 
+
+package net.alan.gui.data.source;
 import com.google.common.hash.Hashing;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.Util;
@@ -11,24 +12,20 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.repository.Pack;
-import net.minecraft.server.packs.repository.PackCompatibility;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.IoSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.*;
 import java.util.*;
 import java.util.function.Consumer;
-
 public class PackDataSource {
     private static final Logger LOGGER = LoggerFactory.getLogger(PackDataSource.class);
     private static final ResourceLocation DEFAULT_ICON = ResourceLocation.withDefaultNamespace("textures/misc/unknown_pack.png");
     private static final Map<String, PackDataSource> INSTANCES = new HashMap<>();
-
     private final PackRepository repository;
     private PackSelectionModel model;
     private final Map<String, ResourceLocation> iconCache = new HashMap<>();
@@ -36,11 +33,9 @@ public class PackDataSource {
     private final String id;
     private Watcher watcher;
     private long ticksToReload;
-
     public static PackDataSource getOrCreate(String sourceId) {
         PackDataSource existing = INSTANCES.get(sourceId);
         if (existing != null) return existing;
-
         Minecraft minecraft = Minecraft.getInstance();
         PackRepository repository = minecraft.getResourcePackRepository();
         repository.reload();
@@ -50,20 +45,17 @@ public class PackDataSource {
         INSTANCES.put(sourceId, source);
         return source;
     }
-
     public static PackDataSource register(String sourceId, PackRepository repository, Consumer<PackRepository> output) {
         PackDataSource source = new PackDataSource(sourceId, repository, output);
         INSTANCES.put(sourceId, source);
         return source;
     }
-
     public static void unregister(String sourceId) {
         PackDataSource source = INSTANCES.remove(sourceId);
         if (source != null) {
             source.closeWatcher();
         }
     }
-
     public static void commitAll() {
         for (PackDataSource source : INSTANCES.values()) {
             try {
@@ -73,42 +65,34 @@ public class PackDataSource {
             }
         }
     }
-
     public static void clearAll() {
         for (PackDataSource source : INSTANCES.values()) {
             source.closeWatcher();
         }
         INSTANCES.clear();
     }
-
     private PackDataSource(String id, PackRepository repository, Consumer<PackRepository> output) {
         this.id = id;
         this.repository = repository;
         this.model = new PackSelectionModel(this::notifyListeners, this::getPackIcon, repository, output);
     }
-
     public String getId() {
         return id;
     }
-
     public PackSelectionModel getModel() {
         return model;
     }
-
     public PackRepository getRepository() {
         return repository;
     }
-
     public void reload() {
         model.findNewPacks();
         iconCache.clear();
         notifyListeners();
     }
-
     public void commit() {
         model.commit();
     }
-
     public void tick() {
         if (watcher != null) {
             try {
@@ -124,7 +108,6 @@ public class PackDataSource {
             reload();
         }
     }
-
     private void closeWatcher() {
         if (watcher != null) {
             try {
@@ -135,40 +118,33 @@ public class PackDataSource {
             watcher = null;
         }
     }
-
     public void addListener(Runnable listener) {
         listeners.add(listener);
     }
-
     public void removeListener(Runnable listener) {
         listeners.remove(listener);
     }
-
     private void notifyListeners() {
         for (Runnable listener : listeners) {
             listener.run();
         }
     }
-
     public List<PackEntryData> getActivePacks() {
         List<PackEntryData> result = new ArrayList<>();
         model.getSelected().forEach(entry -> result.add(new PackEntryData(entry)));
         return result;
     }
-
     public List<PackEntryData> getUnactivePacks() {
         List<PackEntryData> result = new ArrayList<>();
         model.getUnselected().forEach(entry -> result.add(new PackEntryData(entry)));
         return result;
     }
-
     public List<PackEntryData> getAllPacks() {
         List<PackEntryData> result = new ArrayList<>();
         model.getSelected().forEach(entry -> result.add(new PackEntryData(entry)));
         model.getUnselected().forEach(entry -> result.add(new PackEntryData(entry)));
         return result;
     }
-
     public PackSelectionModel.Entry getEntry(String packId) {
         for (PackSelectionModel.Entry entry : model.getSelected().toList()) {
             if (entry.getId().equals(packId)) return entry;
@@ -178,11 +154,9 @@ public class PackDataSource {
         }
         return null;
     }
-
     private ResourceLocation getPackIcon(Pack pack) {
         return iconCache.computeIfAbsent(pack.getId(), p -> loadPackIcon(Minecraft.getInstance().getTextureManager(), pack));
     }
-
     private ResourceLocation loadPackIcon(TextureManager textureManager, Pack pack) {
         try {
             try (PackResources packResources = pack.open()) {
@@ -205,7 +179,6 @@ public class PackDataSource {
             return DEFAULT_ICON;
         }
     }
-
     public static class PackEntryData {
         private final String id;
         private final String title;
@@ -223,7 +196,6 @@ public class PackDataSource {
         private final boolean canMoveUp;
         private final boolean canMoveDown;
         private final String sourceLabel;
-
         public PackEntryData(PackSelectionModel.Entry entry) {
             this.id = entry.getId();
             this.title = entry.getTitle().getString();
@@ -242,7 +214,6 @@ public class PackDataSource {
             this.canMoveDown = entry.canMoveDown();
             this.sourceLabel = getSourceLabel(entry.getPackSource());
         }
-
         private static String getSourceLabel(PackSource source) {
             if (source == PackSource.BUILT_IN) return Component.translatable("pack.source.builtin").getString();
             if (source == PackSource.WORLD) return Component.translatable("pack.source.world").getString();
@@ -250,7 +221,6 @@ public class PackDataSource {
             if (source == PackSource.FEATURE) return Component.translatable("pack.source.feature").getString();
             return "";
         }
-
         public String getId() { return id; }
         public String getTitle() { return title; }
         public String getDescription() { return description; }
@@ -268,11 +238,9 @@ public class PackDataSource {
         public boolean canMoveDown() { return canMoveDown; }
         public String getSourceLabel() { return sourceLabel; }
     }
-
     static class Watcher implements AutoCloseable {
         private final WatchService watchService;
         private final Path packPath;
-
         Watcher(Path packPath) throws IOException {
             this.packPath = packPath;
             this.watchService = packPath.getFileSystem().newWatchService();
@@ -290,7 +258,6 @@ public class PackDataSource {
                 throw e;
             }
         }
-
         @javax.annotation.Nullable
         static Watcher create(Path packPath) {
             try {
@@ -300,12 +267,10 @@ public class PackDataSource {
                 return null;
             }
         }
-
         private void watchDir(Path path) throws IOException {
             path.register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
                 StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
         }
-
         boolean pollForChanges() throws IOException {
             boolean changed = false;
             WatchKey key;
@@ -324,7 +289,6 @@ public class PackDataSource {
             }
             return changed;
         }
-
         @Override
         public void close() throws IOException {
             watchService.close();

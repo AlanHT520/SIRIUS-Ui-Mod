@@ -1,5 +1,6 @@
-package net.alan.gui.data.widget;
 
+
+package net.alan.gui.data.widget;
 public record SliderProps(
         String optionKey,
         double min,

@@ -1,0 +1,102 @@
+﻿// SIRIUS Ui - Font Options Screen (HT DSL v0.5.0)
+
+import "sirius_ui:components/small_back_button.ht";
+import "sirius_ui:components/on_off_selector.ht";
+
+screen font_options_screen {
+
+    panorama = { type = "game.in_level ? vanilla : image", texture = "sirius_ui:textures/gui/images/backgrounds/background.png" };
+
+    graphicsDraw(rect, 0, 0, screen.width, 22, 0xFFE6E8EB);
+    graphicsDraw(rect, 0, 22, screen.width, 1, 0xFFEBEDEF);
+    graphicsDraw(rect, 0, 23, screen.width, 2, 0xFFB1B2B5);
+    graphicsDraw(rect, 0, 25, screen.width, 1, 0xFF000000);
+
+    // 标题
+    text title_text {
+        this.text("options.font.title", true);
+        this.position(screen.width / 2 - this.width / 2, 9);
+        color = "0xFF000000";
+        shadow = false;
+    }
+    title_text.use();
+
+    // 返回按钮
+    button back_button_btn = small_back_button {
+    }
+    back_button_btn.use();
+
+    // 字体选项列表
+    list options_list {
+        gap = 5;
+        background_color = "0x50000000";
+        member = { elem_w = "parent.width * 7 / 9", elem_x = "parent.width / 9" };
+        scrollbar = {
+            width = 4,
+            x = "parent.width - 4",
+            track = { color = "0x00000000" },
+            thumb = { color = "0x44FFFFFF" },
+        };
+        rows = [
+            {
+                height = 5,
+                children = [],
+            },
+            {
+                height = 20,
+                children = [
+                    {
+                        type = "selector",
+                        option_key = "forceUnicodeFont",
+                        values = [
+                            {
+                                key = "true",
+                                text_key = "options.on",
+                                texture = { normal = "sirius_ui:buttons/default_button", highlighted = "sirius_ui:buttons/default_button_highlighted", disabled = "sirius_ui:buttons/default_button_disabled", selected = "sirius_ui:buttons/default_button_selected" },
+                                width = 50,
+                            },
+                            {
+                                key = "false",
+                                text_key = "options.off",
+                                texture = { normal = "sirius_ui:buttons/default_button", highlighted = "sirius_ui:buttons/default_button_highlighted", disabled = "sirius_ui:buttons/default_button_disabled", selected = "sirius_ui:buttons/default_button_selected" },
+                                width = 50,
+                            }
+                        ],
+                        text = { color = "0xCCFFFFFF", "text_key.option" = "options.forceUnicodeFont" },
+                        position = { x = "elem_x" },
+                        size = { width = "elem_w", height = 20 },
+                    }
+                ],
+            },
+            {
+                height = 20,
+                children = [
+                    {
+                        type = "selector",
+                        option_key = "japaneseGlyphVariants",
+                        values = [
+                            {
+                                key = "true",
+                                text_key = "options.on",
+                                texture = { normal = "sirius_ui:buttons/default_button", highlighted = "sirius_ui:buttons/default_button_highlighted", disabled = "sirius_ui:buttons/default_button_disabled", selected = "sirius_ui:buttons/default_button_selected" },
+                                width = 50,
+                            },
+                            {
+                                key = "false",
+                                text_key = "options.off",
+                                texture = { normal = "sirius_ui:buttons/default_button", highlighted = "sirius_ui:buttons/default_button_highlighted", disabled = "sirius_ui:buttons/default_button_disabled", selected = "sirius_ui:buttons/default_button_selected" },
+                                width = 50,
+                            }
+                        ],
+                        text = { color = "0xCCFFFFFF", "text_key.option" = "options.japaneseGlyphVariants" },
+                        position = { x = "elem_x" },
+                        size = { width = "elem_w", height = 20 },
+                    }
+                ],
+            }
+        ];
+        this.position(screen.width / 4, 30);
+        this.size(screen.width / 2, screen.height - 36);
+    }
+    options_list.use();
+}

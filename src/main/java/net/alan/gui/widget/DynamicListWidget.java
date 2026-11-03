@@ -2,14 +2,12 @@ package net.alan.gui.widget;
 
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.alan.gui.context.RenderContext;
 import net.alan.gui.context.WidgetDimensionRegistry;
 import net.alan.gui.data.DynamicListData;
 import net.alan.gui.data.Action;
 import net.alan.gui.data.widget.DynamicListStyleConfig;
 import net.alan.gui.data.widget.LayoutProps;
-import net.alan.gui.widget.WidgetFactory;
 import net.alan.gui.render.ActionExecutor;
 import net.alan.gui.render.screen.BackgroundRenderer;
 import net.minecraft.client.Minecraft;
@@ -21,11 +19,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
 public class DynamicListWidget extends BaseWidget {
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamicListWidget.class);
     private final Supplier<List<DynamicListData>> dataSource;
@@ -47,12 +43,10 @@ public class DynamicListWidget extends BaseWidget {
     private int hoveredRowIndex = -1;
     private int selectedIndex = -1;
     private final Map<String, ResourceLocation> iconCache = new HashMap<>();
-
     private final Map<Integer, ButtonWidget> joinButtons = new HashMap<>();
     private final Map<Integer, ButtonWidget> deleteButtons = new HashMap<>();
     private final Map<Integer, ButtonWidget> editButtons = new HashMap<>();
     private final Map<Integer, ButtonWidget> recreateButtons = new HashMap<>();
-
     private EditBox searchBox;
     private String filterText = "";
     private boolean searchEnabled = false;
@@ -60,7 +54,6 @@ public class DynamicListWidget extends BaseWidget {
     private int searchBoxY;
     private int searchBoxW;
     private int searchBoxH;
-
     public DynamicListWidget(String id, LayoutProps layout, Map<String, String> variables,
                              Map<String, String> member, Supplier<List<DynamicListData>> dataSource,
                              ActionExecutor executor, int rowHeight, int gap,
@@ -86,7 +79,6 @@ public class DynamicListWidget extends BaseWidget {
         executor.addRefreshCallback(this::reload);
         reload();
     }
-
     public void reload() {
         rows = dataSource.get();
         scrollAmount = 0;
@@ -94,7 +86,6 @@ public class DynamicListWidget extends BaseWidget {
         iconCache.clear();
         rebuildButtons();
     }
-
     public void enableSearch(int x, int y, int w, int h, String hint, String initialValue,
                               int maxLength, boolean bordered, String textColor, String hintColor) {
         this.searchEnabled = true;
@@ -118,7 +109,6 @@ public class DynamicListWidget extends BaseWidget {
             this.selectedIndex = -1;
         });
     }
-
     private List<DynamicListData> getVisibleRows() {
         if (filterText.isEmpty()) return rows;
         return rows.stream()
@@ -127,7 +117,6 @@ public class DynamicListWidget extends BaseWidget {
                         || (r.getMotd() != null && r.getMotd().toLowerCase().contains(filterText)))
                 .collect(Collectors.toList());
     }
-
     private void rebuildButtons() {
         joinButtons.clear();
         deleteButtons.clear();
@@ -153,22 +142,17 @@ public class DynamicListWidget extends BaseWidget {
             }
         }
     }
-
     private ButtonWidget createButtonForRow(JsonObject template, DynamicListData data, int rowIndex,
                                             String btnType) {
         try {
             com.google.gson.Gson gson = new com.google.gson.Gson();
-
             JsonObject btnJson = template.deepCopy();
-
             btnJson.addProperty("id", id + "_" + btnType + "_" + rowIndex);
-
             Action templateAction = template.has("action")
                     ? gson.fromJson(template.get("action"), Action.class)
                     : new Action();
             Action rowAction = buildAction(templateAction, data, btnType);
             btnJson.add("action", gson.toJsonTree(rowAction).getAsJsonObject());
-
             Widget widget = WidgetFactory.create(btnJson, null, executor);
             if (widget instanceof ButtonWidget btn) {
                 return btn;
@@ -181,14 +165,12 @@ public class DynamicListWidget extends BaseWidget {
             return null;
         }
     }
-
     private void registerButtonTemplateDimensions() {
         registerTemplateDim("join_button", joinBtnTemplate, 16, 16);
         registerTemplateDim("delete_button", deleteBtnTemplate, 16, 16);
         registerTemplateDim("edit_button", editBtnTemplate, 16, 16);
         registerTemplateDim("recreate_button", recreateBtnTemplate, 16, 16);
     }
-
     private void registerTemplateDim(String name, JsonObject template, int defaultW, int defaultH) {
         if (template == null) return;
         int w = defaultW;
@@ -204,11 +186,9 @@ public class DynamicListWidget extends BaseWidget {
         }
         WidgetDimensionRegistry.registerTemplate(name, new WidgetDimension(0, 0, w, h));
     }
-
     private Action buildAction(Action templateAction, DynamicListData data, String btnType) {
         Action action = new Action();
         action.setTarget(data.getId());
-
         switch (btnType) {
             case "join":
                 action.setType(data.getActionType());
@@ -227,7 +207,6 @@ public class DynamicListWidget extends BaseWidget {
                 action.setType(templateAction.getType());
                 break;
         }
-
         action.setScreenId(templateAction.getScreenId());
         action.setUrl(templateAction.getUrl());
         action.setVarName(templateAction.getVarName());
@@ -237,7 +216,6 @@ public class DynamicListWidget extends BaseWidget {
         action.setConfirmWith(templateAction.getConfirmWith());
         return action;
     }
-
     private int getTotalContentHeight() {
         List<DynamicListData> visible = getVisibleRows();
         if (visible.isEmpty()) return 0;
@@ -245,33 +223,28 @@ public class DynamicListWidget extends BaseWidget {
                 ? styleConfig.divider().height : 0;
         return visible.size() * rowHeight + (visible.size() - 1) * (gap + dividerH);
     }
-
     @Override
     public void render(GuiGraphics graphics, int x, int y, int width, int height,
                        RenderContext context, int mouseX, int mouseY, float delta) {
         if (!layout.visible()) return;
-
         RenderContext mergedCtx = mergeContext(context);
         WidgetDimension dim = computeLayout(mergedCtx, width, height);
         Map<String, Integer> vars = buildNumericVars(mergedCtx, width, height, dim.w, dim.h);
         if (!checkCondition(vars)) return;
         int listX = x + dim.x;
         int listY = y + dim.y;
-
         if (backgroundColor != null) {
             try {
                 int color = (int) Long.parseLong(backgroundColor.replace("0x", ""), 16);
                 graphics.fill(listX, listY, listX + dim.w, listY + dim.h, color);
             } catch (NumberFormatException ignored) {}
         }
-
         if (backgroundTexture != null) {
             ResourceLocation tex = ResourceLocation.tryParse(backgroundTexture);
             if (tex != null) {
                 graphics.blitSprite(tex, listX, listY, dim.w, dim.h);
             }
         }
-
         int searchOffset = 0;
         if (searchEnabled && searchBox != null) {
             int searchGap = styleConfig != null ? styleConfig.searchGap() : 4;
@@ -281,39 +254,30 @@ public class DynamicListWidget extends BaseWidget {
                     listX + searchBoxX, listY + searchBoxY);
             searchBox.render(graphics, mouseX, mouseY, delta);
         }
-
         int listContentY = listY + searchOffset;
         int listContentH = dim.h - searchOffset;
-
         List<DynamicListData> visibleRows = getVisibleRows();
         int totalH = getTotalContentHeight();
         double maxScroll = Math.max(0, totalH - listContentH);
         scrollAmount = Math.max(0, Math.min(scrollAmount, maxScroll));
-
         graphics.enableScissor(listX, listContentY, listX + dim.w, listContentY + listContentH);
-
         Minecraft mc = Minecraft.getInstance();
         int currentY = listContentY - (int) scrollAmount;
         hoveredRowIndex = -1;
-
         DynamicListStyleConfig.RowStyleConfig rowStyle = styleConfig != null
                 ? styleConfig.rowStyle() : null;
         DynamicListStyleConfig.DividerConfig dividerCfg = styleConfig != null
                 ? styleConfig.divider() : null;
         int dividerH = dividerCfg != null ? dividerCfg.height : 0;
         int dividerColor = dividerCfg != null ? parseColor(dividerCfg.color) : 0;
-
         for (int i = 0; i < visibleRows.size(); i++) {
             int rowTop = currentY;
             int rowBottom = currentY + rowHeight;
-
             if (rowBottom > listContentY && rowTop < listContentY + listContentH) {
                 DynamicListData data = visibleRows.get(i);
-
                 boolean mouseOnRow = mouseX >= listX && mouseX <= listX + dim.w
                         && mouseY >= rowTop && mouseY <= rowBottom;
                 if (mouseOnRow) hoveredRowIndex = i;
-
                 int rowBgColor;
                 if (mouseOnRow && rowStyle != null && rowStyle.hover_background_color != null) {
                     rowBgColor = parseColor(rowStyle.hover_background_color);
@@ -330,36 +294,29 @@ public class DynamicListWidget extends BaseWidget {
                 if (rowBgColor != 0) {
                     graphics.fill(listX, rowTop, listX + dim.w, rowBottom, rowBgColor);
                 }
-
                 if (rowStyle != null && rowStyle.background_texture != null) {
                     ResourceLocation tex = ResourceLocation.tryParse(rowStyle.background_texture);
                     if (tex != null) {
                         graphics.blitSprite(tex, listX, rowTop, dim.w, rowHeight);
                     }
                 }
-
                 if (dividerH > 0 && dividerColor != 0 && i < visibleRows.size() - 1) {
                     graphics.fill(listX, rowBottom, listX + dim.w, rowBottom + dividerH, dividerColor);
                 }
-
                 int iconX = getJsonInt(rowTemplate, "icon", "x", 4);
                 int iconY = getJsonInt(rowTemplate, "icon", "y", 4);
                 int iconW = getJsonInt(rowTemplate, "icon", "w", 32);
                 int iconH = getJsonInt(rowTemplate, "icon", "h", 32);
                 String iconPlaceholder = getJsonString(rowTemplate, "icon", "placeholder_color", "0xFF555555");
-
                 ResourceLocation iconTex = getIconTexture(data.getIconPath());
                 if (iconTex != null) {
-                    RenderSystem.enableBlend();
                     graphics.blit(iconTex, listX + iconX, rowTop + iconY,
                             0, 0, iconW, iconH, iconW, iconH);
-                    RenderSystem.disableBlend();
                 } else {
                     int pc = parseColor(iconPlaceholder);
                     graphics.fill(listX + iconX, rowTop + iconY,
                             listX + iconX + iconW, rowTop + iconY + iconH, pc);
                 }
-
                 int nameX = getJsonInt(rowTemplate, "name", "x", 40);
                 int nameY = getJsonInt(rowTemplate, "name", "y", 4);
                 String nameColorStr = getJsonString(rowTemplate, "name", "color", null);
@@ -375,7 +332,6 @@ public class DynamicListWidget extends BaseWidget {
                 }
                 graphics.drawString(mc.font, data.getName(),
                         listX + nameX, rowTop + nameY, nameColor);
-
                 if (data.getDescription() != null) {
                     int descX = getJsonInt(rowTemplate, "description", "x", 40);
                     int descY = getJsonInt(rowTemplate, "description", "y", 20);
@@ -393,7 +349,6 @@ public class DynamicListWidget extends BaseWidget {
                     graphics.drawString(mc.font, data.getDescription(),
                             listX + descX, rowTop + descY, descColor);
                 }
-
                 ButtonWidget joinBtn = joinButtons.get(i);
                 if (joinBtn != null) {
                     joinBtn.render(graphics, listX, rowTop, dim.w, rowHeight,
@@ -412,9 +367,7 @@ public class DynamicListWidget extends BaseWidget {
             }
             currentY += rowHeight + gap + dividerH;
         }
-
         graphics.disableScissor();
-
         if (maxScroll > 0) {
             DynamicListStyleConfig.ScrollbarConfig sb = styleConfig != null
                     ? styleConfig.scrollbar() : null;
@@ -431,7 +384,6 @@ public class DynamicListWidget extends BaseWidget {
             graphics.fill(sbX, barY, sbX + sbW, barY + barH, sbThumbColor);
         }
     }
-
     private static int parseColor(String colorStr) {
         try {
             return (int) Long.parseLong(colorStr.replace("0x", ""), 16);
@@ -439,7 +391,6 @@ public class DynamicListWidget extends BaseWidget {
             return 0xFFFFFFFF;
         }
     }
-
     private ResourceLocation getIconTexture(String iconPath) {
         if (iconPath == null || iconPath.isEmpty()) {
             return null;
@@ -463,7 +414,6 @@ public class DynamicListWidget extends BaseWidget {
             }
         });
     }
-
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button,
                                 RenderContext context, int x, int y, int width, int height) {
@@ -474,7 +424,6 @@ public class DynamicListWidget extends BaseWidget {
         if (!checkCondition(vars)) return false;
         int screenX = x + dim.x;
         int screenY = y + dim.y;
-
         if (searchEnabled && searchBox != null) {
             int effectiveW = searchBoxW > 0 ? searchBoxW : Math.max(1, dim.w - searchBoxX * 2);
             if (mouseX >= screenX + searchBoxX && mouseX <= screenX + searchBoxX + effectiveW
@@ -483,25 +432,20 @@ public class DynamicListWidget extends BaseWidget {
                 return true;
             }
         }
-
         int searchOffset = searchEnabled ? searchBoxH + 4 : 0;
         int listContentY = screenY + searchOffset;
-
         if (mouseX < screenX || mouseX > screenX + dim.w
                 || mouseY < listContentY || mouseY > screenY + dim.h) {
             selectedIndex = -1;
             return false;
         }
-
         List<DynamicListData> visibleRows = getVisibleRows();
         int currentY = listContentY - (int) scrollAmount;
         int dividerH = (styleConfig != null && styleConfig.divider() != null)
                 ? styleConfig.divider().height : 0;
-
         for (int i = 0; i < visibleRows.size(); i++) {
             int rowTop = currentY;
             int rowBottom = currentY + rowHeight;
-
             if (rowBottom > listContentY && rowTop < screenY + dim.h) {
                 ButtonWidget joinBtn = joinButtons.get(i);
                 if (joinBtn != null && joinBtn.mouseClicked(mouseX, mouseY, button,
@@ -523,7 +467,6 @@ public class DynamicListWidget extends BaseWidget {
                         mergedCtx, screenX, rowTop, dim.w, rowHeight)) {
                     return true;
                 }
-
                 if (button == 0 && mouseX >= screenX && mouseX <= screenX + dim.w
                         && mouseY >= rowTop && mouseY <= rowBottom) {
                     selectedIndex = i;
@@ -531,7 +474,6 @@ public class DynamicListWidget extends BaseWidget {
             }
             currentY += rowHeight + gap + dividerH;
         }
-
         if (button == 0) {
             scrolling = true;
             lastMouseY = mouseY;
@@ -539,14 +481,12 @@ public class DynamicListWidget extends BaseWidget {
         }
         return false;
     }
-
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button,
                                  RenderContext context, int x, int y, int width, int height) {
         scrolling = false;
         return false;
     }
-
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY,
                                  RenderContext context, int x, int y, int width, int height) {
@@ -555,7 +495,6 @@ public class DynamicListWidget extends BaseWidget {
         scrollAmount -= scrollY * scrollSpeed;
         return true;
     }
-
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button,
                                 double dragX, double dragY,
@@ -567,7 +506,6 @@ public class DynamicListWidget extends BaseWidget {
         }
         return false;
     }
-
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers,
                               RenderContext context, int x, int y, int width, int height) {
@@ -577,7 +515,6 @@ public class DynamicListWidget extends BaseWidget {
         }
         return false;
     }
-
     @Override
     public boolean charTyped(char codePoint, int modifiers,
                              RenderContext context, int x, int y, int width, int height) {
@@ -587,21 +524,18 @@ public class DynamicListWidget extends BaseWidget {
         }
         return false;
     }
-
     @Override
     public void setFocused(boolean focused) {
         if (!focused && searchBox != null) {
             searchBox.setFocused(false);
         }
     }
-
     private static int getJsonInt(JsonObject parent, String key, String subKey, int defaultValue) {
         if (parent == null || !parent.has(key)) return defaultValue;
         JsonObject obj = parent.getAsJsonObject(key);
         if (obj == null || !obj.has(subKey)) return defaultValue;
         return obj.get(subKey).getAsInt();
     }
-
     private static String getJsonString(JsonObject parent, String key, String subKey,
                                         String defaultValue) {
         if (parent == null || !parent.has(key)) return defaultValue;
@@ -609,7 +543,6 @@ public class DynamicListWidget extends BaseWidget {
         if (obj == null || !obj.has(subKey)) return defaultValue;
         return obj.get(subKey).getAsString();
     }
-
     private static boolean getJsonBool(JsonObject parent, String key, String subKey,
                                        boolean defaultValue) {
         if (parent == null || !parent.has(key)) return defaultValue;

@@ -1,14 +1,12 @@
+
+
 package net.alan.gui.data.screen;
-
 import java.util.List;
-
 public class SlideGroup {
     private String id;
     private int playCount = 1;
     private List<Slide> slides;
-
     public SlideGroup() {}
-
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
     public int getPlayCount() { return playCount; }

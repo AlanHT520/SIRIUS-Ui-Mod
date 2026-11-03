@@ -16,7 +16,19 @@ Json Ui Engine for Minecraft Java Edition
 
 ## What is this?
 
-SIRIUS Ui is a UI enhancement mod powered by a **JSON-driven Widget component system**. Define game interfaces by writing JSON files — no Java code required.
+SIRIUS Ui is a UI enhancement mod powered by a **DSL-driven Widget component system**. Game interfaces are written in **HT** (`.ht`) — a small, Minecraft-oriented UI language with templates, `extends`, typed variables, control flow and events. No Java code required.
+
+```ht
+screen title {
+    image logo { image_texture = "sirius_ui:...png"; position(screen.width / 2 - this.width / 2, 30); size(256, 64); }
+    logo.use();
+
+    button play = primary_button;
+    play.position(screen.width - this.width - 20, 100);
+    play.on clicked { open_screen("selectGame"); }
+    play.use();
+}
+```
 
 Starting from version 0.5.0, SIRIUS Ui is open source under the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html).
 

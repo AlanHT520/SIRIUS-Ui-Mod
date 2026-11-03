@@ -1,0 +1,93 @@
+﻿// SIRIUS Ui - Game Selection Screen (HT DSL v0.5.0)
+
+import "sirius_ui:components/large_text_button.ht";
+import "sirius_ui:components/text_button.ht";
+
+screen game_selection_screen {
+
+    panorama = { type = "image", texture = "sirius_ui:textures/gui/images/backgrounds/background.png" };
+
+    graphicsDraw(rect, 0, 0, screen.width, screen.height, 0xFF1A1A1A);
+    graphicsDraw(rect, 0, 0, screen.width, 33, 0xFF424242);
+    graphicsDraw(rect, 0, 33, screen.width, 1, 0xAAAAAAAA);
+    graphicsDraw(rect, 0, 34, screen.width, 1, 0x88000000);
+    graphicsDraw(rect, 0, screen.height - 35, screen.width, 1, 0x88000000);
+    graphicsDraw(rect, 0, screen.height - 34, screen.width, 1, 0xAAAAAAAA);
+    graphicsDraw(rect, 0, screen.height - 33, screen.width, 33, 0xCC424242);
+
+    // 标题
+    text title_text {
+        this.text("sirius_ui.select", true);
+        this.position(screen.width / 2 - this.width / 2, 16);
+        color = "0xFFFFFFFF";
+        shadow = true;
+    }
+    title_text.use();
+
+    // 单人游戏按钮（大号 100×100）
+    button singleplayer_button = large_text_button {
+        variables {
+            button_label = "menu.singleplayer";
+        }
+        textures {
+            normal = "sirius_ui:buttons/select/singleplayer_button";
+            highlighted = "sirius_ui:buttons/select/singleplayer_button_highlighted";
+            disabled = "sirius_ui:buttons/select/singleplayer_button_disabled";
+        }
+        this.position((screen.width - 320) / 2, screen.height / 2 - 50);
+        this.size(100, 100);
+        on clicked {
+            open_screen("world_select");
+        }
+    }
+    singleplayer_button.use();
+
+    // 多人游戏按钮
+    button multiplayer_button = large_text_button {
+        variables {
+            button_label = "menu.multiplayer";
+        }
+        textures {
+            normal = "sirius_ui:buttons/select/multiplayer_button";
+            highlighted = "sirius_ui:buttons/select/multiplayer_button_highlighted";
+            disabled = "sirius_ui:buttons/select/multiplayer_button_disabled";
+        }
+        this.position((screen.width - 320) / 2 + 110, screen.height / 2 - 50);
+        this.size(100, 100);
+        on clicked {
+            open_screen("multiplayer");
+        }
+    }
+    multiplayer_button.use();
+
+    // Realms 按钮
+    button realms_button = large_text_button {
+        variables {
+            button_label = "sirius_ui.play.realms";
+        }
+        textures {
+            normal = "sirius_ui:buttons/select/realms_button";
+            highlighted = "sirius_ui:buttons/select/realms_button_highlighted";
+            disabled = "sirius_ui:buttons/select/realms_button_disabled";
+        }
+        this.position((screen.width - 320) / 2 + 220, screen.height / 2 - 50);
+        this.size(100, 100);
+        on clicked {
+            open_screen("realms");
+        }
+    }
+    realms_button.use();
+
+    // 返回按钮
+    button back_button_btn = text_button {
+        variables {
+            button_label = "gui.back";
+        }
+        this.position((screen.width - 80) / 2, screen.height - 25);
+        this.size(80, 20);
+        on clicked {
+            close_screen();
+        }
+    }
+    back_button_btn.use();
+}

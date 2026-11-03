@@ -1,0 +1,28 @@
+// 由 tools/ht/JsonToHt 自动迁移：register.json → register.ht
+// 固定路径 minecraft:alanht/register.ht。删掉某一行即可让该屏幕回退到原版。
+
+import "sirius_ui:screens/title_screen.ht";
+import "sirius_ui:screens/pause_screen.ht";
+import "sirius_ui:screens/death_screen.ht";
+import "sirius_ui:screens/game_selection_screen.ht";
+import "sirius_ui:screens/options_screen.ht";
+import "sirius_ui:screens/mouse_settings_screen.ht";
+import "sirius_ui:screens/font_options_screen.ht";
+import "sirius_ui:screens/resource_packs_screen.ht";
+import "sirius_ui:screens/create_world_screen.ht";
+import "sirius_ui:screens/game_rules_screen.ht";
+import "sirius_ui:screens/data_packs_screen.ht";
+
+register {
+    screen_id titleScreen = title_screen;
+    screen_id pauseScreen = pause_screen;
+    screen_id deathScreen = death_screen;
+    screen_id selectGame = game_selection_screen;
+    screen_id settings = options_screen;
+    screen_id mouse_settings = mouse_settings_screen;
+    screen_id font_options = font_options_screen;
+    screen_id resource_packs = resource_packs_screen;
+    screen_id create_world = create_world_screen;
+    screen_id game_rules = game_rules_screen;
+    screen_id data_packs = data_packs_screen;
+}

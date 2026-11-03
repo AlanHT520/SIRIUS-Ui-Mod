@@ -1,12 +1,11 @@
-package net.alan.gui.data;
 
+
+package net.alan.gui.data;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.annotations.SerializedName;
-
 import java.util.Map;
-
 public class Action {
     private String type;
     private String screenId;
@@ -20,9 +19,7 @@ public class Action {
     private JsonElement card;
     @SerializedName("confirm_with") private String confirmWith;
     private Map<String, String> params;
-
     public Action() {}
-
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
     public String getScreenId() { return screenId; }
@@ -47,14 +44,12 @@ public class Action {
     public void setConfirmWith(String confirmWith) { this.confirmWith = confirmWith; }
     public Map<String, String> getParams() { return params; }
     public void setParams(Map<String, String> params) { this.params = params; }
-
     public String getCardId() {
         if (card instanceof JsonPrimitive prim && prim.isString()) {
             return prim.getAsString();
         }
         return null;
     }
-
     public JsonObject getCardObject() {
         if (card instanceof JsonObject obj) {
             return obj;

@@ -1,13 +1,12 @@
-package net.alan.gui.render.card;
 
+
+package net.alan.gui.render.card;
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
-
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 public class CardDefinition {
     public enum CardType {
         DIALOG,
@@ -15,7 +14,6 @@ public class CardDefinition {
         LOADING,
         TOOLTIP
     }
-
     private String type = "dialog";
     private boolean modal = true;
     private int width = 300;
@@ -37,9 +35,7 @@ public class CardDefinition {
     @SerializedName("data_source") private String dataSource;
     private Map<String, String> variables = new LinkedHashMap<>();
     private List<JsonElement> elements = new ArrayList<>();
-
     public CardDefinition() {}
-
     public CardType resolveType() {
         return switch (type) {
             case "toast" -> CardType.TOAST;
@@ -48,7 +44,6 @@ public class CardDefinition {
             default -> CardType.DIALOG;
         };
     }
-
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
     public boolean isModal() { return modal; }
@@ -61,24 +56,19 @@ public class CardDefinition {
     public void setMaxHeight(int maxHeight) { this.maxHeight = maxHeight; }
     public int getPadding() { return padding; }
     public void setPadding(int padding) { this.padding = padding; }
-
     public String getOverlay() { return overlay; }
     public void setOverlay(String overlay) { this.overlay = overlay; }
     public boolean hasOverlay() { return overlay != null && !overlay.isBlank(); }
-
     public BackgroundDef getBackground() { return background; }
     public void setBackground(BackgroundDef background) { this.background = background; }
-
     public String getBorder() { return border; }
     public void setBorder(String border) { this.border = border; }
     public boolean hasBorder() { return border != null && !border.isBlank(); }
     public int getBorderWidth() { return borderWidth > 0 ? borderWidth : 1; }
     public void setBorderWidth(int borderWidth) { this.borderWidth = borderWidth; }
-
     public TitleBarDef getTitleBar() { return titleBar; }
     public void setTitleBar(TitleBarDef titleBar) { this.titleBar = titleBar; }
     public boolean hasTitleBar() { return titleBar != null; }
-
     public int getDurationMs() { return durationMs; }
     public void setDurationMs(int durationMs) { this.durationMs = durationMs; }
     public int getFadeMs() { return fadeMs; }
@@ -99,7 +89,6 @@ public class CardDefinition {
     public void setVariables(Map<String, String> variables) { this.variables = variables; }
     public List<JsonElement> getElements() { return elements; }
     public void setElements(List<JsonElement> elements) { this.elements = elements; }
-
     public int parseColor(String hex) {
         if (hex == null) return 0xFFFFFFFF;
         hex = hex.replace("0x", "").replace("0X", "");

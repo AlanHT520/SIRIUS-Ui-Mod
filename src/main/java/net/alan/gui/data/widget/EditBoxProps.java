@@ -1,5 +1,6 @@
-package net.alan.gui.data.widget;
 
+
+package net.alan.gui.data.widget;
 public record EditBoxProps(
         int maxLength,
         boolean bordered,
@@ -10,7 +11,6 @@ public record EditBoxProps(
     public EditBoxProps {
         if (maxLength <= 0) maxLength = 32;
     }
-
     public static EditBoxProps defaults() {
         return new EditBoxProps(32, true, null, "", "0xE0E0E0");
     }

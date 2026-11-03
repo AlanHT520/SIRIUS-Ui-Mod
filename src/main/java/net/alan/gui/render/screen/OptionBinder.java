@@ -1,18 +1,15 @@
-package net.alan.gui.render.screen;
 
+
+package net.alan.gui.render.screen;
 import net.alan.gui.data.CycleValue;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.level.GameRules;
-
 import java.util.List;
 import java.util.Map;
-
 public class OptionBinder {
-
     public static void syncSlider(String optionKey, double ratio,
                                   double min, double max,
                                   Map<String, String> vars, Options opts) {
@@ -20,7 +17,6 @@ public class OptionBinder {
         setOptionValue(optionKey, value, opts);
         vars.put("display_value", formatValue(optionKey, value));
     }
-
     @Deprecated
     public static void syncSlider(String optionKey, double ratio,
                                   Map<String, String> vars, Options opts) {
@@ -28,7 +24,6 @@ public class OptionBinder {
         double max = Double.parseDouble(vars.getOrDefault("slider_max", getDefaultMax(optionKey)));
         syncSlider(optionKey, ratio, min, max, vars, opts);
     }
-
     public static double getOptionRawValue(String key, Options opts) {
         return switch (key) {
             case "fov" -> opts.fov().get().doubleValue();
@@ -70,7 +65,6 @@ public class OptionBinder {
             default -> 0.5;
         };
     }
-
     public static void setOptionValue(String key, double value, Options opts) {
         switch (key) {
             case "fov" -> opts.fov().set((int) Math.round(value));
@@ -114,11 +108,9 @@ public class OptionBinder {
             case "mouseWheelSensitivity" -> opts.mouseWheelSensitivity().set(value);
         }
     }
-
     public static void saveOptions(Options opts) {
         opts.save();
     }
-
     public static void applyVolume(String key, Options opts) {
         SoundSource source = getSoundSource(key);
         if (source != null) {
@@ -126,11 +118,9 @@ public class OptionBinder {
             Minecraft.getInstance().getSoundManager().updateSourceVolume(source, (float) volume);
         }
     }
-
     public static boolean isAudioOption(String key) {
         return key != null && key.endsWith("Volume");
     }
-
     private static SoundSource getSoundSource(String key) {
         return switch (key) {
             case "soundVolume" -> SoundSource.MASTER;
@@ -146,21 +136,18 @@ public class OptionBinder {
             default -> null;
         };
     }
-
     private static String getDefaultMin(String key) {
         return switch (key) {
             case "fov" -> "30";
             default -> "0";
         };
     }
-
     private static String getDefaultMax(String key) {
         return switch (key) {
             case "fov" -> "110";
             default -> "1";
         };
     }
-
     public static String formatValue(String key, double value) {
         return switch (key) {
             case "fov" -> {
@@ -208,11 +195,7 @@ public class OptionBinder {
             default -> String.format("%.2f", value);
         };
     }
-
     public static int getOptionIndex(String key, Options opts) { return 0; }
-
-    // ========== CycleButton 绑定 ==========
-
     private static String getCurrentOptionKey(String key, Options opts) {
         Minecraft mc = Minecraft.getInstance();
         return switch (key) {
@@ -277,7 +260,6 @@ public class OptionBinder {
             default -> "";
         };
     }
-
     public static int getCycleOptionIndex(String key, List<CycleValue> values, Options opts) {
         String currentKey = getCurrentOptionKey(key, opts);
         for (int i = 0; i < values.size(); i++) {
@@ -285,7 +267,6 @@ public class OptionBinder {
         }
         return 0;
     }
-
     public static void setCycleOptionValue(String key, String valueKey, Options opts) {
         Minecraft mc = Minecraft.getInstance();
         switch (key) {
@@ -409,7 +390,6 @@ public class OptionBinder {
             case "pauseOnLostFocus" -> opts.pauseOnLostFocus = Boolean.parseBoolean(valueKey);
         }
     }
-
     public static void resetOptionToDefault(String key, Options opts) {
         Minecraft mc = Minecraft.getInstance();
         switch (key) {

@@ -1,5 +1,6 @@
-package net.alan.gui.data.widget;
 
+
+package net.alan.gui.data.widget;
 public record AnimationStep(
         String type,
         int duration,
@@ -12,7 +13,6 @@ public record AnimationStep(
     public AnimationStep() {
         this(null, 0, 0, 0.0f, false, -1, -1);
     }
-
     public long totalDuration() {
         return (long) delay + duration;
     }

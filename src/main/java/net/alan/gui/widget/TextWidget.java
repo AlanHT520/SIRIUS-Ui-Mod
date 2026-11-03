@@ -1,5 +1,6 @@
-package net.alan.gui.widget;
 
+
+package net.alan.gui.widget;
 import net.alan.gui.context.RenderContext;
 import net.alan.gui.data.widget.AnimationStep;
 import net.alan.gui.data.widget.LayoutProps;
@@ -8,41 +9,32 @@ import net.alan.gui.render.screen.BackgroundRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 public class TextWidget extends BaseWidget {
     private final TextProps textProps;
     private final Minecraft minecraft;
     private long animStartMillis = -1;
     private long seqStartMillis = -1;
     private int lastVisibleChars = -1;
-
     public TextWidget(String id, LayoutProps layout, Map<String, String> variables, Map<String, String> member, TextProps textProps) {
         super(id, layout, variables, member);
         this.textProps = textProps;
         this.minecraft = Minecraft.getInstance();
     }
-
     @Override
     public void render(GuiGraphics graphics, int x, int y, int width, int height,
                        RenderContext context, int mouseX, int mouseY, float delta) {
         if (!layout.visible()) return;
-
         RenderContext mergedCtx = mergeContext(context);
         WidgetDimension dim = computeLayout(mergedCtx, width, height);
         Map<String, Integer> vars = buildNumericVars(mergedCtx, width, height, dim.w, dim.h);
         if (!checkCondition(vars)) return;
-
-        // 获取最终文??
         String finalText = null;
         Component finalComponent = null;
         String dynamic = textProps.dynamicType();
-
-        // 优先使用 text_key.d（动态翻译，Component 渲染??
         String dynKey = evalStringExpr(vars, textProps.textKeyDynamic());
         if (dynKey != null && !dynKey.isEmpty()) {
             String replacedKey = replaceVars(dynKey, mergedCtx.variables());
@@ -55,26 +47,22 @@ public class TextWidget extends BaseWidget {
                     replacedArgs.add(resolved);
                 }
             } else {
-                // 未提??translation_args，自动从上下文收集动态变量??
                 replacedArgs = collectTranslationArgs(mergedCtx);
             }
             finalComponent = Component.translatable(replacedKey, replacedArgs.toArray());
         } else if (textProps.textKey() != null && !textProps.textKey().isEmpty()
                 && textProps.textKeyOption() != null && !textProps.textKeyOption().isEmpty()) {
-            // text_key + text_key.option 同时存在 ??"FOV: 70" 格式（对标原??genericValueLabel??
             String replacedKey = replaceVars(evalStringExpr(vars, textProps.textKey()), mergedCtx.variables());
             Component caption = Component.translatable(replacedKey);
             String currentValue = mergedCtx.variables().get("current_value");
             Component value = currentValue != null ? Component.translatable(currentValue) : Component.literal("?");
             finalComponent = Component.translatable("options.generic_value", caption, value);
         } else if (textProps.textKeyOption() != null && !textProps.textKeyOption().isEmpty()) {
-            // text_key.option 单独使用：渲染选项当前值（??"70"??
             String currentValue = mergedCtx.variables().get("current_value");
             if (currentValue != null) {
                 finalComponent = Component.translatable(currentValue);
             }
         } else if (dynamic != null && !dynamic.isEmpty()) {
-            // ??text_key.d 时，dynamicType 直接输出??
             finalText = resolveDynamicValue(dynamic);
         } else {
             String rawKey = evalStringExpr(vars, textProps.textKey());
@@ -99,11 +87,8 @@ public class TextWidget extends BaseWidget {
                 }
             }
         }
-
         if (finalText == null && finalComponent == null) return;
         if (finalText != null && finalText.isEmpty()) return;
-
-        // 计算文本实际尺寸（考虑缩放，state_v 可覆??scale??
         float scale = textProps.scale();
         String scaleOverride = getStateProp(mergedCtx, "scale");
         if (scaleOverride != null) {
@@ -116,8 +101,6 @@ public class TextWidget extends BaseWidget {
             textWidth = (int) (minecraft.font.width(finalText) * scale);
         }
         int textHeight = (int) (minecraft.font.lineHeight * scale);
-
-        // 构建数值变量上下文
         Map<String, Integer> numVars = new HashMap<>();
         numVars.put("screen.width", mergedCtx.screenWidth());
         numVars.put("screen.height", mergedCtx.screenHeight());
@@ -125,38 +108,28 @@ public class TextWidget extends BaseWidget {
         numVars.put("parent.height", height);
         numVars.put("this.width", textWidth);
         numVars.put("this.height", textHeight);
-        // 合并上下文字符串变量中的数??
         for (Map.Entry<String, String> entry : mergedCtx.variables().entrySet()) {
             try {
                 numVars.put(entry.getKey(), Integer.parseInt(entry.getValue()));
             } catch (NumberFormatException ignored) {}
         }
-
-        // 解析位置（使??state_v 覆盖后的有效表达式）
         int posX = evalX(getEffectiveXExpr(mergedCtx), numVars);
         int posY = evalY(getEffectiveYExpr(mergedCtx), numVars);
         int screenX = x + posX;
         int screenY = y + posY;
-
-        // 解析颜色
         String colorStr = textProps.color();
         if (colorStr != null) colorStr = replaceVars(colorStr, mergedCtx.variables());
         int color = BackgroundRenderer.parseColor(colorStr);
-
-        // 文本动画 ??优先使用 animations 序列，其次兼容单??text_animation
         List<AnimationStep> steps = textProps.animations();
         String fullStr = finalComponent != null ? finalComponent.getString() : finalText;
-
         if (steps != null && !steps.isEmpty()) {
             if (seqStartMillis < 0) seqStartMillis = System.currentTimeMillis();
             long totalElapsed = System.currentTimeMillis() - seqStartMillis;
-
             long cursor = 0;
             AnimationStep currentStep = null;
             long stepLocalElapsed = 0;
             boolean allDone = true;
             int simVisibleChars = -1;
-
             for (AnimationStep step : steps) {
                 long stepDur = step.duration();
                 if ("typewriter".equals(step.type())) {
@@ -192,14 +165,12 @@ public class TextWidget extends BaseWidget {
                 }
                 cursor = stepEnd;
             }
-
             if (currentStep != null) {
                 String renderText = fullStr;
                 int renderColor = color;
                 int renderX = screenX;
                 int renderY = screenY;
                 boolean showCursor = false;
-
                 switch (currentStep.type()) {
                     case "typewriter" -> {
                         int startIdx = currentStep.start() >= 0 ? currentStep.start()
@@ -276,7 +247,6 @@ public class TextWidget extends BaseWidget {
                     }
                     default -> {}
                 }
-
                 graphics.pose().pushPose();
                 graphics.pose().translate(renderX, renderY, 0);
                 if (scale != 1.0f) {
@@ -290,13 +260,11 @@ public class TextWidget extends BaseWidget {
                 graphics.pose().popPose();
                 return;
             }
-
             if (allDone) {
                 seqStartMillis = -1;
                 lastVisibleChars = -1;
             }
         } else if (textProps.textAnimation() != null && !textProps.textAnimation().isEmpty()) {
-            // 兼容旧的单动画模??
             if (animStartMillis < 0) animStartMillis = System.currentTimeMillis();
             if (fullStr != null) {
                 long elapsed = System.currentTimeMillis() - animStartMillis;
@@ -309,7 +277,6 @@ public class TextWidget extends BaseWidget {
                         numVars.put("this.width", textWidth);
                         screenX = x + evalX(getEffectiveXExpr(mergedCtx), numVars);
                         screenY = y + evalY(getEffectiveYExpr(mergedCtx), numVars);
-
                         graphics.pose().pushPose();
                         graphics.pose().translate(screenX, screenY, 0);
                         if (scale != 1.0f) graphics.pose().scale(scale, scale, 1.0f);
@@ -324,8 +291,6 @@ public class TextWidget extends BaseWidget {
                 }
             }
         }
-
-        // 正常绘制
         graphics.pose().pushPose();
         graphics.pose().translate(screenX, screenY, 0);
         if (scale != 1.0f) {
@@ -338,27 +303,22 @@ public class TextWidget extends BaseWidget {
         }
         graphics.pose().popPose();
     }
-
     @Override
     public WidgetDimension computeLayout(RenderContext ctx, int parentW, int parentH) {
         String wExpr = layout.widthExpr();
         String hExpr = layout.heightExpr();
         boolean wAuto = wExpr == null || wExpr.equals("auto");
         boolean hAuto = hExpr == null || hExpr.equals("auto");
-
         if (!wAuto && !hAuto) {
             return super.computeLayout(ctx, parentW, parentH);
         }
-
         String fullText = resolveFullText(ctx);
         if (fullText == null || fullText.isEmpty()) {
             return super.computeLayout(ctx, parentW, parentH);
         }
-
         float scale = textProps.scale();
         int textW = (int) (minecraft.font.width(fullText) * scale);
         int textH = (int) (minecraft.font.lineHeight * scale);
-
         Map<String, Integer> numVars = buildNumericVars(ctx, parentW, parentH, parentW, parentH);
         int w = wAuto ? textW : eval(wExpr, numVars);
         int h = hAuto ? textH : eval(hExpr, numVars);
@@ -368,7 +328,6 @@ public class TextWidget extends BaseWidget {
         int y = evalY(layout.yExpr(), numVars);
         return new WidgetDimension(x, y, w, h);
     }
-
     private String resolveFullText(RenderContext ctx) {
         RenderContext mergedCtx = mergeContext(ctx);
         Map<String, Integer> vars = new HashMap<>();
@@ -381,69 +340,48 @@ public class TextWidget extends BaseWidget {
                 vars.put(entry.getKey(), Integer.parseInt(entry.getValue()));
             } catch (NumberFormatException ignored) {}
         }
-
         String dynamic = textProps.dynamicType();
-
         String dynKey = evalStringExpr(vars, textProps.textKeyDynamic());
         if (dynKey != null && !dynKey.isEmpty()) {
             String replacedKey = replaceVars(dynKey, mergedCtx.variables());
             return Component.translatable(replacedKey).getString();
         }
-
         if (textProps.textKey() != null && !textProps.textKey().isEmpty()
                 && textProps.textKeyOption() != null && !textProps.textKeyOption().isEmpty()) {
             String replacedKey = replaceVars(evalStringExpr(vars, textProps.textKey()), mergedCtx.variables());
             return Component.translatable(replacedKey).getString();
         }
-
         if (textProps.textKeyOption() != null && !textProps.textKeyOption().isEmpty()) {
             String currentValue = mergedCtx.variables().get("current_value");
             if (currentValue != null) {
                 return Component.translatable(currentValue).getString();
             }
         }
-
         if (dynamic != null && !dynamic.isEmpty()) {
             return resolveDynamicValue(dynamic);
         }
-
         String rawKey = evalStringExpr(vars, textProps.textKey());
         if (rawKey != null && !rawKey.isEmpty()) {
             String replacedKey = replaceVars(rawKey, mergedCtx.variables());
             return Component.translatable(replacedKey).getString();
         }
-
         String raw = evalStringExpr(vars, textProps.text());
         if (raw != null) {
             return replaceVars(raw, mergedCtx.variables());
         }
-
         return null;
     }
-
-    /**
-     * 如果 arg 是格式占位符??s, %d），尝试??dynamicType 或上下文动态变量解??
-     */
     private String resolvePlaceholder(String arg, String dynamicType, RenderContext ctx) {
         if (!arg.matches("%[sd]")) return arg;
-
-        // ??dynamicType 解析
         if (dynamicType != null && !dynamicType.isEmpty()) {
             String resolved = resolveDynamicValue(dynamicType);
             if (resolved != null) return resolved;
         }
-
-        // 从上下文变量中取第一个匹配的??
         for (String val : ctx.variables().values()) {
             if (val != null && !val.isEmpty()) return val;
         }
-
         return arg;
     }
-
-    /**
-     * 根据 dynamicType 获取实际??
-     */
     private String resolveDynamicValue(String dynamicType) {
         return switch (dynamicType) {
             case "score" -> String.valueOf(minecraft.player != null ? minecraft.player.getScore() : 0);

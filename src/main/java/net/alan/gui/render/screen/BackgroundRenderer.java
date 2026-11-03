@@ -1,5 +1,6 @@
-package net.alan.gui.render.screen;
 
+
+package net.alan.gui.render.screen;
 import net.alan.gui.data.screen.BackgroundLayer;
 import net.alan.gui.data.screen.PanoramaConfig;
 import net.alan.gui.data.screen.Slide;
@@ -13,11 +14,9 @@ import net.minecraft.client.renderer.PanoramaRenderer;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 public class BackgroundRenderer {
     private static final Logger LOGGER = LoggerFactory.getLogger(BackgroundRenderer.class);
     private static final int DEFAULT_BG_WIDTH = 1920;
@@ -26,7 +25,6 @@ public class BackgroundRenderer {
     private static PptBackgroundRenderer sharedPptRenderer;
     private static String sharedPptKey;
     private static final PanoramaRenderer PANORAMA;
-
     static {
         PanoramaRenderer panorama = null;
         try {
@@ -38,9 +36,7 @@ public class BackgroundRenderer {
         }
         PANORAMA = panorama;
     }
-
     public BackgroundRenderer(Minecraft minecraft) { this.minecraft = minecraft; }
-
     public void render(GuiGraphics graphics, int screenWidth, int screenHeight,
                        PanoramaConfig bgConfig, List<BackgroundLayer> layers, float delta) {
         if (bgConfig != null) {
@@ -74,7 +70,6 @@ public class BackgroundRenderer {
         } else {
             graphics.fill(0, 0, screenWidth, screenHeight, 0xFF000000);
         }
-
         if (layers != null) {
             Map<String, Integer> gameVars = injectGameStateVars();
             for (BackgroundLayer bg : layers) {
@@ -90,7 +85,6 @@ public class BackgroundRenderer {
             }
         }
     }
-
     private void renderPpt(GuiGraphics graphics, float delta, int sw, int sh, PanoramaConfig config) {
         String key = pptConfigKey(config);
         if (sharedPptRenderer == null || !key.equals(sharedPptKey)) {
@@ -100,7 +94,6 @@ public class BackgroundRenderer {
         }
         sharedPptRenderer.render(graphics, delta, sw, sh);
     }
-
     private static String pptConfigKey(PanoramaConfig config) {
         StringBuilder sb = new StringBuilder();
         sb.append(config.getType() != null ? config.getType() : "").append("|");
@@ -122,7 +115,6 @@ public class BackgroundRenderer {
         }
         return sb.toString();
     }
-
     private void renderScaled(GuiGraphics graphics, ResourceLocation texture, int sw, int sh) {
         float texAspect = (float) DEFAULT_BG_WIDTH / DEFAULT_BG_HEIGHT;
         float screenAspect = (float) sw / sh;
@@ -133,7 +125,6 @@ public class BackgroundRenderer {
         graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
         graphics.blit(texture, ox, oy, 0, 0.0F, 0.0F, rw, rh, rw, rh);
     }
-
     public static int parseColor(String colorStr) {
         if (colorStr == null || colorStr.isEmpty()) return 0xFFFFFFFF;
         String trimmed = colorStr.trim();
@@ -145,10 +136,8 @@ public class BackgroundRenderer {
             return (int) color;
         } catch (NumberFormatException e) { return 0xFFFFFFFF; }
     }
-
     public void close() {
     }
-
     public static void shutdown() {
         if (sharedPptRenderer != null) {
             sharedPptRenderer.close();
@@ -156,7 +145,6 @@ public class BackgroundRenderer {
             sharedPptKey = null;
         }
     }
-
     private static Map<String, Integer> injectGameStateVars() {
         Map<String, Integer> vars = new HashMap<>();
         String[] gameKeys = {
@@ -175,7 +163,6 @@ public class BackgroundRenderer {
         }
         return vars;
     }
-
     private static String evalStringExpr(String expr, int screenWidth, int screenHeight) {
         Map<String, Integer> vars = injectGameStateVars();
         return ExpressionEvaluator.evalString(expr, screenWidth, screenHeight, 0, 0, vars);

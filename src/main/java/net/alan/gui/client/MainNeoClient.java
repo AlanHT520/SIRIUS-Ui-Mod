@@ -1,5 +1,6 @@
-package net.alan.gui.client;
 
+
+package net.alan.gui.client;
 import net.alan.gui.Main;
 import net.alan.gui.MainNeo;
 import net.alan.gui.data.source.CardDataSourceRegistry;
@@ -14,10 +15,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
-
-// This class will not load on dedicated servers. Accessing client side code from here is safe.
 @Mod(value = Main.MOD_ID, dist = Dist.CLIENT)
-// You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
 @EventBusSubscriber(modid = Main.MOD_ID, value = Dist.CLIENT)
 public class MainNeoClient {
     public MainNeoClient(IEventBus modEventBus, ModContainer container) {
@@ -25,10 +23,8 @@ public class MainNeoClient {
         CardDataSourceRegistry.register("delete_confirm_info", new DeleteConfirmDataSource());
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
-
     @SubscribeEvent
     static void onClientSetup(FMLClientSetupEvent event) {
-        // Some client setup code
         MainNeo.LOGGER.info("HELLO FROM CLIENT SETUP");
         MainNeo.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
     }

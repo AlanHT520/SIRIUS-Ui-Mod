@@ -1,13 +1,12 @@
-package net.alan.gui.data.screen;
 
+
+package net.alan.gui.data.screen;
 import com.google.gson.JsonElement;
 import net.alan.gui.data.screen.BackgroundLayer;
 import net.alan.gui.data.screen.PanoramaConfig;
-
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 public class ScreenConfig {
     private String parent;
     private PanoramaConfig panorama;
@@ -16,9 +15,7 @@ public class ScreenConfig {
     private Map<String, String> variables = new LinkedHashMap<>();
     private Map<String, String> member = new LinkedHashMap<>();
     private Map<String, String> sharedState = new LinkedHashMap<>();
-
     public ScreenConfig() {}
-
     public String getParent() { return parent; }
     public void setParent(String parent) { this.parent = parent; }
     public PanoramaConfig getPanoramaConfig() { return panorama; }

@@ -1,0 +1,194 @@
+﻿// SIRIUS Ui - Resource Packs Screen (HT DSL v0.5.0)
+
+import "sirius_ui:components/done_button.ht";
+import "sirius_ui:components/back_button.ht";
+
+screen resource_packs_screen {
+
+    panorama = { type = "game.in_level ? vanilla : image", texture = "sirius_ui:textures/gui/images/backgrounds/background.png" };
+
+    graphicsDraw(rect, 0, 0, screen.width, screen.height, 0xAA000000);
+    graphicsDraw(rect, 0, 0, screen.width, 28, 0xFF2D2D2F);
+    graphicsDraw(rect, 0, 28, screen.width, 1, 0xFF555555);
+    graphicsDraw(rect, 0, screen.height - 28, screen.width, 28, 0xFF2D2D2F);
+    graphicsDraw(rect, 0, screen.height - 29, screen.width, 1, 0xFF555555);
+    graphicsDraw(rect, 8, 34, screen.width / 2 - 12, screen.height - 68, 0x883A3A3E);
+    graphicsDraw(rect, screen.width / 2 + 4, 34, screen.width / 2 - 12, screen.height - 68, 0x883E3E42);
+    graphicsDraw(rect, 8, 34, screen.width / 2 - 12, 18, 0xFF555557);
+    graphicsDraw(rect, screen.width / 2 + 4, 34, screen.width / 2 - 12, 18, 0xFF555557);
+
+    // 返回按钮
+    button back_button_btn = back_button {
+        this.size(16, 16);
+    }
+    back_button_btn.use();
+
+    // 标题
+    text title_text {
+        this.text("resourcePack.title", true);
+        this.position(24, 4);
+        this.size(screen.width - 28, 16);
+        color = "0xFFFFFFFF";
+        shadow = true;
+    }
+    title_text.use();
+
+    // 可用资源包标题
+    text available_title {
+        this.text("pack.available.title", true);
+        this.position(12, 35);
+        this.size(screen.width / 2 - 16, 16);
+        color = "0xFFCCCCCC";
+        shadow = true;
+    }
+    available_title.use();
+
+    // 已选资源包标题
+    text selected_title {
+        this.text("pack.selected.title", true);
+        this.position(screen.width / 2 + 8, 35);
+        this.size(screen.width / 2 - 16, 16);
+        color = "0xFFCCCCCC";
+        shadow = true;
+    }
+    selected_title.use();
+
+    // 可用资源包列表
+    pack_list available_pack_list {
+        source = "resource_packs";
+        mode = "unactive";
+        entry_height = 48;
+        entry_gap = 2;
+        background_color = "0x00000000";
+        this.position(8, 52);
+        this.size(screen.width / 2 - 12, screen.height - 86);
+        layout = {
+            icon = { x = 4, size = 32, placeholder_color = "0xFF555555" },
+            text = {
+                icon_gap = 6,
+                title_y = 4,
+                description_y = 16,
+                compatibility_y = 28,
+                title_max_length = 30,
+                description_max_length = 40,
+            },
+            incompatible = { background_color = "0x55897843", text_color = "0xFFFF5555", description_color = "0xCCFF8888" },
+            source_label = { color = "0xCCAAAAAA", right_padding = 24 },
+            toggle = {
+                right_padding = 20,
+                activate = {
+                    size = 16,
+                    show_when = ["hovered", "selected"],
+                    text = { text = "✓", color = "0xFFFFFFFF", highlighted_color = "0xCC55FF55" },
+                },
+                deactivate = {
+                    size = 16,
+                    show_when = ["hovered", "selected"],
+                    text = { text = "✕", color = "0xFFFFFFFF", highlighted_color = "0xCCFF5555" },
+                },
+                required = {
+                    size = 16,
+                    show_when = ["always"],
+                    text = { text = "!", color = "0xCCAAAAAA" },
+                },
+            },
+            move = {
+                gap = 20,
+                up = {
+                    size = { width = 16, height = 8 },
+                    show_when = ["hovered", "selected"],
+                    text = { text = "▲", color = "0xCC888888", highlighted_color = "0xCCFFFFFF" },
+                },
+                down = {
+                    size = { width = 16, height = 8 },
+                    show_when = ["hovered", "selected"],
+                    text = { text = "▼", color = "0xCC888888", highlighted_color = "0xCCFFFFFF" },
+                },
+            },
+            scrollbar = { width = 4, color = "0x44FFFFFF", min_height = 16, padding = 2 },
+            drag = { indicator_color = "0xCCFFFFFF", auto_scroll_speed = 4 },
+            scroll_speed = 20,
+        };
+    }
+    available_pack_list.use();
+
+    // 已激活资源包列表
+    pack_list active_pack_list {
+        source = "resource_packs";
+        mode = "active";
+        entry_height = 48;
+        entry_gap = 2;
+        background_color = "0x00000000";
+        this.position(screen.width / 2 + 4, 52);
+        this.size(screen.width / 2 - 12, screen.height - 86);
+        layout = {
+            icon = { x = 4, size = 32, placeholder_color = "0xFF555555" },
+            text = {
+                icon_gap = 6,
+                title_y = 4,
+                description_y = 16,
+                compatibility_y = 28,
+                title_max_length = 30,
+                description_max_length = 40,
+            },
+            incompatible = { background_color = "0x55897843", text_color = "0xFFFF5555", description_color = "0xCCFF8888" },
+            source_label = { color = "0xCCAAAAAA", right_padding = 24 },
+            toggle = {
+                right_padding = 20,
+                activate = {
+                    size = 16,
+                    show_when = ["hovered", "selected"],
+                    text = { text = "✓", color = "0xFFFFFFFF", highlighted_color = "0xCC55FF55" },
+                },
+                deactivate = {
+                    size = 16,
+                    show_when = ["hovered", "selected"],
+                    text = { text = "✕", color = "0xFFFFFFFF", highlighted_color = "0xCCFF5555" },
+                },
+                required = {
+                    size = 16,
+                    show_when = ["always"],
+                    text = { text = "!", color = "0xCCAAAAAA" },
+                },
+            },
+            move = {
+                gap = 20,
+                up = {
+                    size = { width = 16, height = 8 },
+                    show_when = ["hovered", "selected"],
+                    text = { text = "▲", color = "0xCC888888", highlighted_color = "0xCCFFFFFF" },
+                },
+                down = {
+                    size = { width = 16, height = 8 },
+                    show_when = ["hovered", "selected"],
+                    text = { text = "▼", color = "0xCC888888", highlighted_color = "0xCCFFFFFF" },
+                },
+            },
+            scrollbar = { width = 4, color = "0x44FFFFFF", min_height = 16, padding = 2 },
+            drag = { indicator_color = "0xCCFFFFFF", auto_scroll_speed = 4 },
+            scroll_speed = 20,
+        };
+    }
+    active_pack_list.use();
+
+    // 完成按钮
+    button done_button_btn = done_button {
+        this.position(screen.width - 54, screen.height - 24);
+    }
+    done_button_btn.use();
+
+    // 打开文件夹按钮
+    button open_folder_button {
+        this.position(4, screen.height - 24);
+        this.size(100, 20);
+        this.text("pack.openFolder", true);
+        textures {
+            normal = "sirius_ui:buttons/default_button";
+            highlighted = "sirius_ui:buttons/default_button_highlighted";
+        }
+        on clicked {
+            open_folder("resourcepacks");
+        }
+    }
+    open_folder_button.use();
+}

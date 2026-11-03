@@ -1,7 +1,7 @@
+
+
 package net.alan.gui.data;
-
 import javax.annotation.Nullable;
-
 public class DynamicListData {
     private final String id;
     private final String name;
@@ -29,7 +29,6 @@ public class DynamicListData {
     private final boolean isLan;
     private final String serverIconBase64;
     private final boolean isOnline;
-
     private DynamicListData(Builder builder) {
         this.id = builder.id;
         this.name = builder.name;
@@ -58,7 +57,6 @@ public class DynamicListData {
         this.serverIconBase64 = builder.serverIconBase64;
         this.isOnline = builder.isOnline;
     }
-
     public DynamicListData(String id, String name, String description,
                            String iconPath, String actionType, boolean joinable) {
         this.id = id;
@@ -88,7 +86,6 @@ public class DynamicListData {
         this.serverIconBase64 = null;
         this.isOnline = false;
     }
-
     public String getId() { return id; }
     public String getName() { return name; }
     public String getDescription() { return description; }
@@ -115,7 +112,6 @@ public class DynamicListData {
     public boolean isLan() { return isLan; }
     public String getServerIconBase64() { return serverIconBase64; }
     public boolean isOnline() { return isOnline; }
-
     public static class Builder {
         private final String id;
         private final String name;
@@ -143,12 +139,10 @@ public class DynamicListData {
         private boolean isLan = false;
         private String serverIconBase64 = null;
         private boolean isOnline = false;
-
         public Builder(String id, String name) {
             this.id = id;
             this.name = name;
         }
-
         public Builder description(String val) { this.description = val; return this; }
         public Builder iconPath(@Nullable String val) { this.iconPath = val; return this; }
         public Builder actionType(String val) { this.actionType = val; return this; }
@@ -173,7 +167,6 @@ public class DynamicListData {
         public Builder isLan(boolean val) { this.isLan = val; return this; }
         public Builder serverIconBase64(@Nullable String val) { this.serverIconBase64 = val; return this; }
         public Builder isOnline(boolean val) { this.isOnline = val; return this; }
-
         public DynamicListData build() {
             return new DynamicListData(this);
         }

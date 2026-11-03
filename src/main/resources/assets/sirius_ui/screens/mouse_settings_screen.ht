@@ -1,0 +1,202 @@
+﻿// SIRIUS Ui - Mouse Settings Screen (HT DSL v0.5.0)
+
+import "sirius_ui:components/small_back_button.ht";
+import "sirius_ui:components/settings_slider.ht";
+import "sirius_ui:components/on_off_selector.ht";
+
+screen mouse_settings_screen {
+
+    panorama = { type = "game.in_level ? vanilla : image", texture = "sirius_ui:textures/gui/images/backgrounds/background.png" };
+
+    graphicsDraw(rect, 0, 0, screen.width, 22, 0xFFE6E8EB);
+    graphicsDraw(rect, 0, 22, screen.width, 1, 0xFFEBEDEF);
+    graphicsDraw(rect, 0, 23, screen.width, 2, 0xFFB1B2B5);
+    graphicsDraw(rect, 0, 25, screen.width, 1, 0xFF000000);
+
+    // 标题
+    text title_text {
+        this.text("options.mouse_settings.title", true);
+        this.position(screen.width / 2 - this.width / 2, 9);
+        color = "0xFF000000";
+        shadow = false;
+    }
+    title_text.use();
+
+    // 返回按钮
+    button back_button_btn = small_back_button {
+    }
+    back_button_btn.use();
+
+    // 鼠标设置列表
+    list settings_list {
+        gap = 5;
+        background_color = "0xFF48494A";
+        member = { elem_w = "parent.width * 7 / 9", elem_x = "parent.width / 9" };
+        scrollbar = {
+            width = 6,
+            track = { color = "0x33000000" },
+            thumb = { color = "0xAAFFFFFF" },
+        };
+        rows = [
+            {
+                height = 5,
+                children = [],
+            },
+            {
+                height = 20,
+                children = [
+                    {
+                        type = "slider",
+                        option_key = "mouseSensitivity",
+                        slider_min = 0.0,
+                        slider_max = 1.0,
+                        slider_step = 0.005,
+                        text = {
+                            color = "0xCCFFFFFF",
+                            "text_key.option" = "options.sensitivity",
+                            position = { x = "-4 - this.width", y = "parent.height / 2 - this.height / 2" },
+                        },
+                        track_texture = { normal = "sirius_ui:buttons/options/sliders/slider", highlighted = "sirius_ui:buttons/options/sliders/slider_highlighted", disabled = "sirius_ui:buttons/options/sliders/slider", filled = "sirius_ui:buttons/options/sliders/slider_filled" },
+                        handle_texture = { normal = "sirius_ui:buttons/options/sliders/slider_handle", highlighted = "sirius_ui:buttons/options/sliders/slider_handle_highlighted", disabled = "sirius_ui:buttons/options/sliders/slider_handle" },
+                        position = { x = "elem_x" },
+                        size = { width = "elem_w", height = 20 },
+                        sound = {
+                            value_change = { id = "slider_value_change", throttle_ticks = 2 },
+                        },
+                    }
+                ],
+            },
+            {
+                height = 20,
+                children = [
+                    {
+                        type = "slider",
+                        option_key = "mouseWheelSensitivity",
+                        slider_min = 0.01,
+                        slider_max = 10.0,
+                        slider_step = 0.01,
+                        text = {
+                            color = "0xCCFFFFFF",
+                            "text_key.option" = "options.mouseWheelSensitivity",
+                            position = { x = "-4 - this.width", y = "parent.height / 2 - this.height / 2" },
+                        },
+                        track_texture = { normal = "sirius_ui:buttons/options/sliders/slider", highlighted = "sirius_ui:buttons/options/sliders/slider_highlighted", disabled = "sirius_ui:buttons/options/sliders/slider", filled = "sirius_ui:buttons/options/sliders/slider_filled" },
+                        handle_texture = { normal = "sirius_ui:buttons/options/sliders/slider_handle", highlighted = "sirius_ui:buttons/options/sliders/slider_handle_highlighted", disabled = "sirius_ui:buttons/options/sliders/slider_handle" },
+                        position = { x = "elem_x" },
+                        size = { width = "elem_w", height = 20 },
+                        sound = {
+                            value_change = { id = "slider_value_change", throttle_ticks = 2 },
+                        },
+                    }
+                ],
+            },
+            {
+                height = 20,
+                children = [
+                    {
+                        type = "selector",
+                        option_key = "invertYMouse",
+                        values = [
+                            {
+                                key = "true",
+                                text_key = "options.on",
+                                texture = { normal = "sirius_ui:buttons/default_button", highlighted = "sirius_ui:buttons/default_button_highlighted", disabled = "sirius_ui:buttons/default_button_disabled", selected = "sirius_ui:buttons/default_button_selected" },
+                                width = 50,
+                            },
+                            {
+                                key = "false",
+                                text_key = "options.off",
+                                texture = { normal = "sirius_ui:buttons/default_button", highlighted = "sirius_ui:buttons/default_button_highlighted", disabled = "sirius_ui:buttons/default_button_disabled", selected = "sirius_ui:buttons/default_button_selected" },
+                                width = 50,
+                            }
+                        ],
+                        text = { color = "0xCCFFFFFF", "text_key.option" = "options.invertMouse" },
+                        position = { x = "elem_x" },
+                        size = { width = "elem_w", height = 20 },
+                    }
+                ],
+            },
+            {
+                height = 20,
+                children = [
+                    {
+                        type = "selector",
+                        option_key = "discreteMouseScroll",
+                        values = [
+                            {
+                                key = "true",
+                                text_key = "options.on",
+                                texture = { normal = "sirius_ui:buttons/default_button", highlighted = "sirius_ui:buttons/default_button_highlighted", disabled = "sirius_ui:buttons/default_button_disabled", selected = "sirius_ui:buttons/default_button_selected" },
+                                width = 50,
+                            },
+                            {
+                                key = "false",
+                                text_key = "options.off",
+                                texture = { normal = "sirius_ui:buttons/default_button", highlighted = "sirius_ui:buttons/default_button_highlighted", disabled = "sirius_ui:buttons/default_button_disabled", selected = "sirius_ui:buttons/default_button_selected" },
+                                width = 50,
+                            }
+                        ],
+                        text = { color = "0xCCFFFFFF", "text_key.option" = "options.discrete_mouse_scroll" },
+                        position = { x = "elem_x" },
+                        size = { width = "elem_w", height = 20 },
+                    }
+                ],
+            },
+            {
+                height = 20,
+                children = [
+                    {
+                        type = "selector",
+                        option_key = "touchscreen",
+                        values = [
+                            {
+                                key = "true",
+                                text_key = "options.on",
+                                texture = { normal = "sirius_ui:buttons/default_button", highlighted = "sirius_ui:buttons/default_button_highlighted", disabled = "sirius_ui:buttons/default_button_disabled", selected = "sirius_ui:buttons/default_button_selected" },
+                                width = 50,
+                            },
+                            {
+                                key = "false",
+                                text_key = "options.off",
+                                texture = { normal = "sirius_ui:buttons/default_button", highlighted = "sirius_ui:buttons/default_button_highlighted", disabled = "sirius_ui:buttons/default_button_disabled", selected = "sirius_ui:buttons/default_button_selected" },
+                                width = 50,
+                            }
+                        ],
+                        text = { color = "0xCCFFFFFF", "text_key.option" = "options.touchscreen" },
+                        position = { x = "elem_x" },
+                        size = { width = "elem_w", height = 20 },
+                    }
+                ],
+            },
+            {
+                height = 20,
+                children = [
+                    {
+                        type = "selector",
+                        option_key = "rawMouseInput",
+                        values = [
+                            {
+                                key = "true",
+                                text_key = "options.on",
+                                texture = { normal = "sirius_ui:buttons/default_button", highlighted = "sirius_ui:buttons/default_button_highlighted", disabled = "sirius_ui:buttons/default_button_disabled", selected = "sirius_ui:buttons/default_button_selected" },
+                                width = 50,
+                            },
+                            {
+                                key = "false",
+                                text_key = "options.off",
+                                texture = { normal = "sirius_ui:buttons/default_button", highlighted = "sirius_ui:buttons/default_button_highlighted", disabled = "sirius_ui:buttons/default_button_disabled", selected = "sirius_ui:buttons/default_button_selected" },
+                                width = 50,
+                            }
+                        ],
+                        text = { color = "0xCCFFFFFF", "text_key.option" = "options.rawMouseInput" },
+                        position = { x = "elem_x" },
+                        size = { width = "elem_w", height = 20 },
+                    }
+                ],
+            }
+        ];
+        this.position(screen.width / 4, 30);
+        this.size(screen.width / 2, screen.height - 36);
+    }
+    settings_list.use();
+}

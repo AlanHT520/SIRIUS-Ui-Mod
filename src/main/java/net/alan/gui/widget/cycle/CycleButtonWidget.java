@@ -1,5 +1,6 @@
-package net.alan.gui.widget.cycle;
 
+
+package net.alan.gui.widget.cycle;
 import net.alan.gui.context.RenderContext;
 import net.alan.gui.data.CycleValue;
 import net.alan.gui.data.widget.CycleButtonProps;
@@ -13,15 +14,12 @@ import net.alan.gui.widget.TextWidget;
 import net.alan.gui.widget.Widget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 public class CycleButtonWidget extends BaseWidget {
     private final CycleButtonProps cycleProps;
     private final TextureSet texture;
@@ -33,19 +31,16 @@ public class CycleButtonWidget extends BaseWidget {
     private int currentIndex = 0;
     private boolean isHovered = false;
     private final Minecraft minecraft;
-
     public CycleButtonWidget(String id, LayoutProps layout, Map<String, String> variables, Map<String, String> member,
                              CycleButtonProps cycleProps, TextureSet texture,
                              TextProps textProps, List<Widget> children) {
         this(id, layout, variables, member, cycleProps, texture, textProps, children, null, 0xFF3A3A3C, 0xFF505052);
     }
-
     public CycleButtonWidget(String id, LayoutProps layout, Map<String, String> variables, Map<String, String> member,
                              CycleButtonProps cycleProps, TextureSet texture,
                              TextProps textProps, List<Widget> children, String stateKey) {
         this(id, layout, variables, member, cycleProps, texture, textProps, children, stateKey, 0xFF3A3A3C, 0xFF505052);
     }
-
     public CycleButtonWidget(String id, LayoutProps layout, Map<String, String> variables, Map<String, String> member,
                              CycleButtonProps cycleProps, TextureSet texture,
                              TextProps textProps, List<Widget> children, String stateKey,
@@ -59,7 +54,6 @@ public class CycleButtonWidget extends BaseWidget {
         this.stateKey = stateKey;
         this.backgroundColor = backgroundColor;
         this.highlightedBackgroundColor = highlightedBackgroundColor;
-
         if (cycleProps.values() != null && !cycleProps.values().isEmpty()) {
             if (cycleProps.optionKey() != null) {
                 int idx = OptionBinder.getCycleOptionIndex(cycleProps.optionKey(), cycleProps.values(), minecraft.options);
@@ -78,7 +72,6 @@ public class CycleButtonWidget extends BaseWidget {
             this.member.put("current_index", String.valueOf(currentIndex));
             this.member.put("current_key", cycleProps.values().get(currentIndex).key());
         }
-
         if (textProps != null && (hasTextContent(textProps))) {
             String xPos = textProps.offsetX() != null && !textProps.offsetX().equals("0")
                     ? textProps.offsetX() : "4";
@@ -89,13 +82,11 @@ public class CycleButtonWidget extends BaseWidget {
                     null, null, textProps));
         }
     }
-
     private String getCurrentDisplayText() {
         if (cycleProps.values() == null || cycleProps.values().isEmpty()) return "?";
         CycleValue cv = cycleProps.values().get(currentIndex);
         return cv.textKey();
     }
-
     private static boolean hasTextContent(TextProps tp) {
         if (tp.text() != null && !tp.text().isEmpty() && !tp.text().trim().isEmpty()) return true;
         if (tp.textKey() != null && !tp.textKey().isEmpty()) return true;
@@ -103,7 +94,6 @@ public class CycleButtonWidget extends BaseWidget {
         if (tp.textKeyOption() != null && !tp.textKeyOption().isEmpty()) return true;
         return false;
     }
-
     private void cycleValue(int delta, RenderContext ctx) {
         if (cycleProps.values() == null || cycleProps.values().isEmpty()) return;
         int size = cycleProps.values().size();
@@ -118,25 +108,21 @@ public class CycleButtonWidget extends BaseWidget {
         syncToOptions();
         playValueChangeSound();
     }
-
     private void syncToOptions() {
         if (cycleProps.optionKey() != null && !cycleProps.values().isEmpty()) {
             OptionBinder.setCycleOptionValue(cycleProps.optionKey(), cycleProps.values().get(currentIndex).key(), minecraft.options);
         }
     }
-
     @Override
     public void render(GuiGraphics graphics, int x, int y, int width, int height,
                        RenderContext context, int mouseX, int mouseY, float delta) {
         if (!layout.visible()) return;
-
         RenderContext mergedCtx = mergeContext(context);
         WidgetDimension dim = computeLayout(mergedCtx, width, height);
         Map<String, Integer> vars = buildNumericVars(mergedCtx, width, height, dim.w, dim.h);
         if (!checkCondition(vars)) return;
         int screenX = x + dim.x;
         int screenY = y + dim.y;
-
         String texPath = getSprite();
         if (texPath != null && !texPath.isEmpty()) {
             var id = ResourceLocation.tryParse(texPath);
@@ -148,7 +134,6 @@ public class CycleButtonWidget extends BaseWidget {
             int bgColor = isHovered ? highlightedBackgroundColor : backgroundColor;
             graphics.fill(screenX, screenY, screenX + dim.w, screenY + dim.h, bgColor);
         }
-
         RenderContext childCtx = mergedCtx;
         childCtx = childCtx.withVar("current_value", getCurrentDisplayText());
         childCtx = childCtx.withVar("current_index", String.valueOf(currentIndex));
@@ -156,7 +141,6 @@ public class CycleButtonWidget extends BaseWidget {
         for (Widget child : children) {
             child.render(graphics, screenX, screenY, dim.w, dim.h, childCtx, mouseX, mouseY, delta);
         }
-
         if (!cycleProps.values().isEmpty()) {
             CycleValue cv = cycleProps.values().get(currentIndex);
             Component text = Component.translatable(cv.textKey());
@@ -167,19 +151,16 @@ public class CycleButtonWidget extends BaseWidget {
             graphics.drawString(minecraft.font, text, textX, textY, textColor);
         }
     }
-
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button,
                                 RenderContext context, int x, int y, int width, int height) {
         if (!layout.visible() || !layout.enabled()) return false;
-
         RenderContext mergedCtx = mergeContext(context);
         WidgetDimension dim = computeLayout(mergedCtx, width, height);
         Map<String, Integer> vars = buildNumericVars(mergedCtx, width, height, dim.w, dim.h);
         if (!checkCondition(vars)) return false;
         int screenX = x + dim.x;
         int screenY = y + dim.y;
-
         if (mouseX >= screenX && mouseX <= screenX + dim.w && mouseY >= screenY && mouseY <= screenY + dim.h) {
             playClickSound();
             cycleValue(1, context);
@@ -187,7 +168,6 @@ public class CycleButtonWidget extends BaseWidget {
         }
         return false;
     }
-
     @Override
     public void mouseMoved(double mouseX, double mouseY, RenderContext context,
                              int x, int y, int width, int height) {
@@ -200,7 +180,6 @@ public class CycleButtonWidget extends BaseWidget {
             playHoverSound();
         }
     }
-
     private String getSprite() {
         if (texture == null) return null;
         if (!layout.enabled()) {

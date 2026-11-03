@@ -1,7 +1,7 @@
+
+
 package net.alan.gui.data.screen;
-
 import java.util.List;
-
 public class PanoramaConfig {
     private String type;
     private String texture;
@@ -9,9 +9,7 @@ public class PanoramaConfig {
     private List<String> playGroups;
     private String playAfter;
     private List<SlideGroup> groups;
-
     public PanoramaConfig() {}
-
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
     public String getTexture() { return texture; }
