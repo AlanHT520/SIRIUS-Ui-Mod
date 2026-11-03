@@ -1,10 +1,8 @@
-
-
 package net.alan.gui.widget;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.reflect.TypeToken;
+
+import net.alan.gui.ht.HtData;
+
+import net.alan.gui.ht.HtValue;
 import net.alan.gui.data.CycleValue;
 import net.alan.gui.data.DynamicListData;
 import net.alan.gui.data.Action;
@@ -31,44 +29,38 @@ import net.alan.gui.widget.cycle.ArrowSwitchWidget;
 import net.alan.gui.widget.cycle.CycleButtonWidget;
 import net.alan.gui.widget.cycle.DropdownWidget;
 import net.alan.gui.widget.cycle.SelectorWidget;
-import net.minecraft.server.packs.resources.ResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.function.Supplier;
 public class WidgetFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(WidgetFactory.class);
-    @Deprecated
-    public static Widget create(JsonObject json, ResourceManager manager) {
-        LOGGER.warn("Using deprecated WidgetFactory.create without ActionExecutor. Button actions may fail.");
-        return create(json, manager, null);
-    }
-    public static Widget create(JsonObject json, ResourceManager manager, ActionExecutor executor) {
+    public static Widget create(HtValue.Obj json, ActionExecutor executor) {
         if (!json.has("type") && json.has("widget") && json.get("widget").isJsonObject()) {
-            JsonObject innerJson = json.get("widget").getAsJsonObject();
+            HtValue.Obj innerJson = json.get("widget").getAsJsonObject();
             if (json.has("id") && !innerJson.has("id")) {
                 innerJson.addProperty("id", json.get("id").getAsString());
             }
-            return create(innerJson, manager, executor);
+            return create(innerJson, executor);
         }
         String type = json.get("type").getAsString();
         String id = json.has("id") ? json.get("id").getAsString() : null;
         LayoutProps layout = parseLayout(json);
         Map<String, String> variables = json.has("variables")
-                ? new com.google.gson.Gson().fromJson(json.get("variables"), new TypeToken<Map<String, String>>(){}.getType())
+                ? HtData.stringMap(json.get("variables"))
                 : new HashMap<>();
         Map<String, String> member = json.has("member")
-                ? new com.google.gson.Gson().fromJson(json.get("member"), new TypeToken<Map<String, String>>(){}.getType())
+                ? HtData.stringMap(json.get("member"))
                 : null;
         injectTextWidth(json, variables);
         Widget widget = switch (type) {
             case "container" -> {
                 List<Widget> children = new ArrayList<>();
                 if (json.has("children") && json.get("children").isJsonArray()) {
-                    JsonArray arr = json.get("children").getAsJsonArray();
-                    for (JsonElement elem : arr) {
+                    HtValue.Arr arr = json.get("children").getAsJsonArray();
+                    for (HtValue elem : arr) {
                         if (elem.isJsonObject()) {
-                            children.add(create(elem.getAsJsonObject(), manager, executor));
+                            children.add(create(elem.getAsJsonObject(), executor));
                         }
                     }
                 }
@@ -88,10 +80,10 @@ public class WidgetFactory {
                 StyleProps style = parseStyle(json);
                 TextProps textProps;
                 if (json.has("text") && json.get("text").isJsonObject()) {
-                    JsonObject textObj = json.get("text").getAsJsonObject();
+                    HtValue.Obj textObj = json.get("text").getAsJsonObject();
                     textProps = parseText(textObj);
                     if (textObj.has("position")) {
-                        Position pos = new com.google.gson.Gson().fromJson(textObj.get("position"), Position.class);
+                        Position pos = HtData.position(textObj.get("position"));
                         textProps = withOffset(textProps, pos.getX(), pos.getY());
                     }
                 } else {
@@ -99,15 +91,15 @@ public class WidgetFactory {
                 }
                 List<Widget> children = new ArrayList<>();
                 if (json.has("children") && json.get("children").isJsonArray()) {
-                    JsonArray arr = json.get("children").getAsJsonArray();
-                    for (JsonElement elem : arr) {
+                    HtValue.Arr arr = json.get("children").getAsJsonArray();
+                    for (HtValue elem : arr) {
                         if (elem.isJsonObject()) {
-                            children.add(create(elem.getAsJsonObject(), manager, executor));
+                            children.add(create(elem.getAsJsonObject(), executor));
                         }
                     }
                 }
                 Action action = json.has("action")
-                        ? new com.google.gson.Gson().fromJson(json.get("action"), Action.class)
+                        ? HtData.action(json.get("action"))
                         : null;
                 if (action == null && json.has("role")) {
                     String role = json.get("role").getAsString();
@@ -126,10 +118,10 @@ public class WidgetFactory {
                 StyleProps style = parseStyle(json);
                 TextProps textProps;
                 if (json.has("text") && json.get("text").isJsonObject()) {
-                    JsonObject textObj = json.get("text").getAsJsonObject();
+                    HtValue.Obj textObj = json.get("text").getAsJsonObject();
                     textProps = parseText(textObj);
                     if (textObj.has("position")) {
-                        Position pos = new com.google.gson.Gson().fromJson(textObj.get("position"), Position.class);
+                        Position pos = HtData.position(textObj.get("position"));
                         textProps = withOffset(textProps, pos.getX(), pos.getY());
                     }
                 } else {
@@ -137,17 +129,17 @@ public class WidgetFactory {
                 }
                 List<Widget> children = new ArrayList<>();
                 if (json.has("children") && json.get("children").isJsonArray()) {
-                    JsonArray arr = json.get("children").getAsJsonArray();
-                    for (JsonElement elem : arr) {
+                    HtValue.Arr arr = json.get("children").getAsJsonArray();
+                    for (HtValue elem : arr) {
                         if (elem.isJsonObject()) {
-                            children.add(create(elem.getAsJsonObject(), manager, executor));
+                            children.add(create(elem.getAsJsonObject(), executor));
                         }
                     }
                 }
                 String boxId = json.has("box_id") ? json.get("box_id").getAsString() : null;
                 String targetId = json.has("target_id") ? json.get("target_id").getAsString() : id;
                 Action action = json.has("action")
-                        ? new com.google.gson.Gson().fromJson(json.get("action"), Action.class)
+                        ? HtData.action(json.get("action"))
                         : null;
                 Map<String, Map<String, String>> stateVariables = parseStateVariables(json);
                 yield new ButtonContentWidget(id, layout, variables, member, style, textProps, executor, action, children, boxId, targetId, stateVariables);
@@ -155,17 +147,17 @@ public class WidgetFactory {
             case "slider" -> {
                 SliderProps sliderProps = parseSlider(json);
                 TextureSet trackTex = json.has("track_texture")
-                        ? new com.google.gson.Gson().fromJson(json.get("track_texture"), TextureSet.class)
+                        ? HtData.textureSet(json.get("track_texture"))
                         : null;
                 TextureSet handleTex = json.has("handle_texture")
-                        ? new com.google.gson.Gson().fromJson(json.get("handle_texture"), TextureSet.class)
+                        ? HtData.textureSet(json.get("handle_texture"))
                         : null;
                 TextProps textProps;
                 if (json.has("text") && json.get("text").isJsonObject()) {
-                    JsonObject textObj = json.get("text").getAsJsonObject();
+                    HtValue.Obj textObj = json.get("text").getAsJsonObject();
                     textProps = parseText(textObj);
                     if (textObj.has("position")) {
-                        Position pos = new com.google.gson.Gson().fromJson(textObj.get("position"), Position.class);
+                        Position pos = HtData.position(textObj.get("position"));
                         textProps = withOffset(textProps, pos.getX(), pos.getY());
                     }
                 } else {
@@ -173,10 +165,10 @@ public class WidgetFactory {
                 }
                 List<Widget> children = new ArrayList<>();
                 if (json.has("children") && json.get("children").isJsonArray()) {
-                    JsonArray arr = json.get("children").getAsJsonArray();
-                    for (JsonElement elem : arr) {
+                    HtValue.Arr arr = json.get("children").getAsJsonArray();
+                    for (HtValue elem : arr) {
                         if (elem.isJsonObject()) {
-                            children.add(create(elem.getAsJsonObject(), manager, executor));
+                            children.add(create(elem.getAsJsonObject(), executor));
                         }
                     }
                 }
@@ -185,14 +177,14 @@ public class WidgetFactory {
             case "cycle_button" -> {
                 CycleButtonProps cycleProps = parseCycleButton(json);
                 TextureSet tex = json.has("texture")
-                        ? new com.google.gson.Gson().fromJson(json.get("texture"), TextureSet.class)
+                        ? HtData.textureSet(json.get("texture"))
                         : null;
                 TextProps textProps;
                 if (json.has("text") && json.get("text").isJsonObject()) {
-                    JsonObject textObj = json.get("text").getAsJsonObject();
+                    HtValue.Obj textObj = json.get("text").getAsJsonObject();
                     textProps = parseText(textObj);
                     if (textObj.has("position")) {
-                        Position pos = new com.google.gson.Gson().fromJson(textObj.get("position"), Position.class);
+                        Position pos = HtData.position(textObj.get("position"));
                         textProps = withOffset(textProps, pos.getX(), pos.getY());
                     }
                 } else {
@@ -200,10 +192,10 @@ public class WidgetFactory {
                 }
                 List<Widget> children = new ArrayList<>();
                 if (json.has("children") && json.get("children").isJsonArray()) {
-                    JsonArray arr = json.get("children").getAsJsonArray();
-                    for (JsonElement elem : arr) {
+                    HtValue.Arr arr = json.get("children").getAsJsonArray();
+                    for (HtValue elem : arr) {
                         if (elem.isJsonObject()) {
-                            children.add(create(elem.getAsJsonObject(), manager, executor));
+                            children.add(create(elem.getAsJsonObject(), executor));
                         }
                     }
                 }
@@ -220,14 +212,14 @@ public class WidgetFactory {
                 String optionKey = json.has("option_key") ? json.get("option_key").getAsString() : null;
                 List<SelectorWidget.SegmentDef> segments = new ArrayList<>();
                 if (json.has("values") && json.get("values").isJsonArray()) {
-                    JsonArray arr = json.get("values").getAsJsonArray();
-                    for (JsonElement elem : arr) {
+                    HtValue.Arr arr = json.get("values").getAsJsonArray();
+                    for (HtValue elem : arr) {
                         if (elem.isJsonObject()) {
-                            JsonObject valObj = elem.getAsJsonObject();
+                            HtValue.Obj valObj = elem.getAsJsonObject();
                             String key = valObj.has("key") ? valObj.get("key").getAsString() : "";
                             String textKey = valObj.has("text_key") ? valObj.get("text_key").getAsString() : "";
                             TextureSet segTex = valObj.has("texture")
-                                    ? new com.google.gson.Gson().fromJson(valObj.get("texture"), TextureSet.class)
+                                    ? HtData.textureSet(valObj.get("texture"))
                                     : null;
                             int w = valObj.has("width") ? valObj.get("width").getAsInt() : 0;
                             segments.add(new SelectorWidget.SegmentDef(key, textKey, segTex, w));
@@ -235,14 +227,14 @@ public class WidgetFactory {
                     }
                 }
                 TextureSet tex = json.has("texture")
-                        ? new com.google.gson.Gson().fromJson(json.get("texture"), TextureSet.class)
+                        ? HtData.textureSet(json.get("texture"))
                         : null;
                 TextProps textProps;
                 if (json.has("text") && json.get("text").isJsonObject()) {
-                    JsonObject textObj = json.get("text").getAsJsonObject();
+                    HtValue.Obj textObj = json.get("text").getAsJsonObject();
                     textProps = parseText(textObj);
                     if (textObj.has("position")) {
-                        Position pos = new com.google.gson.Gson().fromJson(textObj.get("position"), Position.class);
+                        Position pos = HtData.position(textObj.get("position"));
                         textProps = withOffset(textProps, pos.getX(), pos.getY());
                     }
                 } else {
@@ -250,10 +242,10 @@ public class WidgetFactory {
                 }
                 List<Widget> children = new ArrayList<>();
                 if (json.has("children") && json.get("children").isJsonArray()) {
-                    JsonArray arr = json.get("children").getAsJsonArray();
-                    for (JsonElement elem : arr) {
+                    HtValue.Arr arr = json.get("children").getAsJsonArray();
+                    for (HtValue elem : arr) {
                         if (elem.isJsonObject()) {
-                            children.add(create(elem.getAsJsonObject(), manager, executor));
+                            children.add(create(elem.getAsJsonObject(), executor));
                         }
                     }
                 }
@@ -273,22 +265,22 @@ public class WidgetFactory {
                 String optionKey = json.has("option_key") ? json.get("option_key").getAsString() : null;
                 List<CycleValue> values = parseCycleValues(json);
                 TextureSet leftTex = json.has("left_button_texture")
-                        ? new com.google.gson.Gson().fromJson(json.get("left_button_texture"), TextureSet.class)
+                        ? HtData.textureSet(json.get("left_button_texture"))
                         : null;
                 TextureSet rightTex = json.has("right_button_texture")
-                        ? new com.google.gson.Gson().fromJson(json.get("right_button_texture"), TextureSet.class)
+                        ? HtData.textureSet(json.get("right_button_texture"))
                         : null;
                 TextureSet centerTex = json.has("center_texture")
-                        ? new com.google.gson.Gson().fromJson(json.get("center_texture"), TextureSet.class)
+                        ? HtData.textureSet(json.get("center_texture"))
                         : json.has("texture")
-                        ? new com.google.gson.Gson().fromJson(json.get("texture"), TextureSet.class)
+                        ? HtData.textureSet(json.get("texture"))
                         : null;
                 TextProps textProps;
                 if (json.has("text") && json.get("text").isJsonObject()) {
-                    JsonObject textObj = json.get("text").getAsJsonObject();
+                    HtValue.Obj textObj = json.get("text").getAsJsonObject();
                     textProps = parseText(textObj);
                     if (textObj.has("position")) {
-                        Position pos = new com.google.gson.Gson().fromJson(textObj.get("position"), Position.class);
+                        Position pos = HtData.position(textObj.get("position"));
                         textProps = withOffset(textProps, pos.getX(), pos.getY());
                     }
                 } else {
@@ -296,10 +288,10 @@ public class WidgetFactory {
                 }
                 List<Widget> children = new ArrayList<>();
                 if (json.has("children") && json.get("children").isJsonArray()) {
-                    JsonArray arr = json.get("children").getAsJsonArray();
-                    for (JsonElement elem : arr) {
+                    HtValue.Arr arr = json.get("children").getAsJsonArray();
+                    for (HtValue elem : arr) {
                         if (elem.isJsonObject()) {
-                            children.add(create(elem.getAsJsonObject(), manager, executor));
+                            children.add(create(elem.getAsJsonObject(), executor));
                         }
                     }
                 }
@@ -320,25 +312,25 @@ public class WidgetFactory {
                 String optionKey = json.has("option_key") ? json.get("option_key").getAsString() : null;
                 List<CycleValue> values = parseCycleValues(json);
                 TextureSet buttonTex = json.has("button_texture")
-                        ? new com.google.gson.Gson().fromJson(json.get("button_texture"), TextureSet.class)
+                        ? HtData.textureSet(json.get("button_texture"))
                         : json.has("texture")
-                        ? new com.google.gson.Gson().fromJson(json.get("texture"), TextureSet.class)
+                        ? HtData.textureSet(json.get("texture"))
                         : null;
                 TextureSet dropdownTex = json.has("dropdown_texture")
-                        ? new com.google.gson.Gson().fromJson(json.get("dropdown_texture"), TextureSet.class)
+                        ? HtData.textureSet(json.get("dropdown_texture"))
                         : null;
                 TextureSet itemNormalTex = json.has("item_normal_texture")
-                        ? new com.google.gson.Gson().fromJson(json.get("item_normal_texture"), TextureSet.class)
+                        ? HtData.textureSet(json.get("item_normal_texture"))
                         : null;
                 TextureSet itemHighlightedTex = json.has("item_highlighted_texture")
-                        ? new com.google.gson.Gson().fromJson(json.get("item_highlighted_texture"), TextureSet.class)
+                        ? HtData.textureSet(json.get("item_highlighted_texture"))
                         : null;
                 TextProps textProps;
                 if (json.has("text") && json.get("text").isJsonObject()) {
-                    JsonObject textObj = json.get("text").getAsJsonObject();
+                    HtValue.Obj textObj = json.get("text").getAsJsonObject();
                     textProps = parseText(textObj);
                     if (textObj.has("position")) {
-                        Position pos = new com.google.gson.Gson().fromJson(textObj.get("position"), Position.class);
+                        Position pos = HtData.position(textObj.get("position"));
                         textProps = withOffset(textProps, pos.getX(), pos.getY());
                     }
                 } else {
@@ -346,10 +338,10 @@ public class WidgetFactory {
                 }
                 List<Widget> children = new ArrayList<>();
                 if (json.has("children") && json.get("children").isJsonArray()) {
-                    JsonArray arr = json.get("children").getAsJsonArray();
-                    for (JsonElement elem : arr) {
+                    HtValue.Arr arr = json.get("children").getAsJsonArray();
+                    for (HtValue elem : arr) {
                         if (elem.isJsonObject()) {
-                            children.add(create(elem.getAsJsonObject(), manager, executor));
+                            children.add(create(elem.getAsJsonObject(), executor));
                         }
                     }
                 }
@@ -377,11 +369,11 @@ public class WidgetFactory {
                         txtColor, hntColor, lblColor);
             }
             case "list" -> {
-                ListProps listProps = parseList(json, manager, executor);
+                ListProps listProps = parseList(json, executor);
                 yield new ListWidget(id, layout, variables, member, listProps);
             }
             case "box" -> {
-                yield parseBox(json, layout, variables, member, id, manager, executor);
+                yield parseBox(json, layout, variables, member, id, executor);
             }
             case "dynamic_list" -> {
                 String dsType = json.has("data_source") ? json.get("data_source").getAsString() : "world_saves";
@@ -395,13 +387,13 @@ public class WidgetFactory {
                 int gap = json.has("gap") ? json.get("gap").getAsInt() : 2;
                 String bg = json.has("background_color") ? json.get("background_color").getAsString() : null;
                 String bgTex = json.has("background_texture") ? json.get("background_texture").getAsString() : null;
-                JsonObject rowTemplate = null;
-                JsonObject editBtnTemplate = null;
-                JsonObject joinBtnTemplate = null;
-                JsonObject deleteBtnTemplate = null;
-                JsonObject recreateBtnTemplate = null;
+                HtValue.Obj rowTemplate = null;
+                HtValue.Obj editBtnTemplate = null;
+                HtValue.Obj joinBtnTemplate = null;
+                HtValue.Obj deleteBtnTemplate = null;
+                HtValue.Obj recreateBtnTemplate = null;
                 if (json.has("row_template") && json.get("row_template").isJsonObject()) {
-                    JsonObject rowTemplateJson = json.get("row_template").getAsJsonObject();
+                    HtValue.Obj rowTemplateJson = json.get("row_template").getAsJsonObject();
                     rowTemplate = rowTemplateJson;
                     editBtnTemplate = resolveButtonTemplate(rowTemplateJson, "edit_button");
                     joinBtnTemplate = resolveButtonTemplate(rowTemplateJson, "join_button");
@@ -410,14 +402,13 @@ public class WidgetFactory {
                 }
                 DynamicListStyleConfig styleConfig = null;
                 if (json.has("row_style") || json.has("scrollbar") || json.has("divider")) {
-                    styleConfig = new com.google.gson.Gson().fromJson(
-                            json, DynamicListStyleConfig.class);
+                    styleConfig = HtData.dynamicListStyle(json);
                 }
                 DynamicListWidget dw = new DynamicListWidget(id, layout, variables, member, source, executor,
                         rowH, gap, bg, bgTex, rowTemplate, styleConfig,
                         editBtnTemplate, joinBtnTemplate, deleteBtnTemplate, recreateBtnTemplate);
                 if (json.has("search") && json.get("search").isJsonObject()) {
-                    JsonObject sch = json.get("search").getAsJsonObject();
+                    HtValue.Obj sch = json.get("search").getAsJsonObject();
                     int sx = sch.has("x") ? sch.get("x").getAsInt() : 0;
                     int sy = sch.has("y") ? sch.get("y").getAsInt() : 0;
                     int sw = sch.has("width") ? sch.get("width").getAsInt() : 160;
@@ -450,7 +441,7 @@ public class WidgetFactory {
                         entryH, entryGap, bg, activeRow, unactiveRow, divider, layoutCfg, ordering);
             }
             case "content" -> {
-                yield parseContent(json, layout, variables, member, id, manager, executor);
+                yield parseContent(json, layout, variables, member, id, executor);
             }
             case "entity_display" -> {
                 String entityType = json.has("entity_type") ? json.get("entity_type").getAsString() : "player";
@@ -465,12 +456,12 @@ public class WidgetFactory {
                 float walkAmplitude = 0.4F;
                 boolean attackEnabled = false;
                 if (json.has("animation")) {
-                    JsonObject anim = json.get("animation").getAsJsonObject();
+                    HtValue.Obj anim = json.get("animation").getAsJsonObject();
                     animState = anim.has("state") ? anim.get("state").getAsString() : "idle";
                     walkSpeed = anim.has("walk_speed") ? anim.get("walk_speed").getAsFloat() : 0.5F;
                     walkAmplitude = anim.has("walk_amplitude") ? anim.get("walk_amplitude").getAsFloat() : 0.4F;
                     if (anim.has("attack")) {
-                        JsonObject attack = anim.get("attack").getAsJsonObject();
+                        HtValue.Obj attack = anim.get("attack").getAsJsonObject();
                         attackEnabled = attack.has("enabled") && attack.get("enabled").getAsBoolean();
                     }
                 }
@@ -479,10 +470,10 @@ public class WidgetFactory {
                         offsetX, offsetY, lookSensitivityX, lookSensitivityY);
             }
             case "card" -> {
-                JsonObject cardObj = json.has("card") && json.get("card").isJsonObject()
+                HtValue.Obj cardObj = json.has("card") && json.get("card").isJsonObject()
                         ? json.get("card").getAsJsonObject()
                         : json;
-                CardDefinition def = CardRegistry.createFromJson(cardObj);
+                CardDefinition def = CardRegistry.createFromData(cardObj);
                 if (executor != null) {
                     CardManager cm = executor.getCardManager();
                     if (cm != null) {
@@ -498,7 +489,7 @@ public class WidgetFactory {
             default -> throw new IllegalArgumentException("Unknown widget type: " + type);
         };
         if (widget != null && json.has("state_v") && json.get("state_v").isJsonObject()) {
-            JsonObject sv = json.get("state_v").getAsJsonObject();
+            HtValue.Obj sv = json.get("state_v").getAsJsonObject();
             widget.setStateV(parseStateVNested(sv));
             widget.setStateVProps(parseStateVFlat(sv));
         }
@@ -510,12 +501,12 @@ public class WidgetFactory {
         }
         return widget;
     }
-    private static void injectTextWidth(JsonObject json, Map<String, String> variables) {
+    private static void injectTextWidth(HtValue.Obj json, Map<String, String> variables) {
         if (variables.containsKey("text_width")) return;
         String textKey = null;
         String rawText = null;
         if (json.has("text") && json.get("text").isJsonObject()) {
-            JsonObject textObj = json.get("text").getAsJsonObject();
+            HtValue.Obj textObj = json.get("text").getAsJsonObject();
             if (textObj.has("text_key")) {
                 textKey = textObj.get("text_key").getAsString();
             } else if (textObj.has("text")) {
@@ -565,17 +556,17 @@ public class WidgetFactory {
         }
         return result;
     }
-    private static LayoutProps parseLayout(JsonObject json) {
+    private static LayoutProps parseLayout(HtValue.Obj json) {
         String x = "0", y = "0", w = "auto", h = "auto";
         boolean enabled = true, visible = true;
         String condition = null;
         if (json.has("position")) {
-            Position pos = new com.google.gson.Gson().fromJson(json.get("position"), Position.class);
+            Position pos = HtData.position(json.get("position"));
             x = pos.getX() != null ? pos.getX() : "0";
             y = pos.getY() != null ? pos.getY() : "0";
         }
         if (json.has("size")) {
-            Size size = new com.google.gson.Gson().fromJson(json.get("size"), Size.class);
+            Size size = HtData.size(json.get("size"));
             w = size.getWidth() != null ? size.getWidth() : "auto";
             h = size.getHeight() != null ? size.getHeight() : "auto";
         }
@@ -584,13 +575,13 @@ public class WidgetFactory {
         if (json.has("condition")) condition = json.get("condition").getAsString();
         return new LayoutProps(x, y, w, h, enabled, visible, condition);
     }
-    private static TextProps parseText(JsonObject json) {
+    private static TextProps parseText(HtValue.Obj json) {
         String text = json.has("text") ? json.get("text").getAsString() : null;
         String key = json.has("text_key") ? json.get("text_key").getAsString() : null;
         String keyDyn = json.has("text_key.d") ? json.get("text_key.d").getAsString() : null;
         String keyOpt = json.has("text_key.option") ? json.get("text_key.option").getAsString() : null;
         List<String> args = json.has("translation_args")
-                ? new com.google.gson.Gson().fromJson(json.get("translation_args"), new TypeToken<List<String>>(){}.getType())
+                ? HtData.stringList(json.get("translation_args"))
                 : null;
         String color = json.has("color") ? json.get("color").getAsString() : "0xFFFFFF";
         String highlightedColor = json.has("highlighted_text_color") ? json.get("highlighted_text_color").getAsString() : "0xFFFFFF";
@@ -609,9 +600,9 @@ public class WidgetFactory {
         List<AnimationStep> animations = null;
         if (json.has("animations") && json.get("animations").isJsonArray()) {
             animations = new ArrayList<>();
-            for (JsonElement elem : json.getAsJsonArray("animations")) {
+            for (HtValue elem : json.getAsJsonArray("animations")) {
                 if (!elem.isJsonObject()) continue;
-                JsonObject stepObj = elem.getAsJsonObject();
+                HtValue.Obj stepObj = elem.getAsJsonObject();
                 String stepType = stepObj.has("type") ? stepObj.get("type").getAsString() : null;
                 int stepDuration = stepObj.has("duration") ? stepObj.get("duration").getAsInt() : 0;
                 int stepDelay = stepObj.has("delay") ? stepObj.get("delay").getAsInt() : 0;
@@ -625,14 +616,14 @@ public class WidgetFactory {
         return new TextProps(text, key, keyDyn, args, keyOpt, color, highlightedColor, disabledColor,
                 scale, shadow, dynamicType, ox, oy, hox, hoy, dox, doy, textAnimation, animationSpeed, animations);
     }
-    private static StyleProps parseStyle(JsonObject json) {
-        JsonObject source = json;
+    private static StyleProps parseStyle(HtValue.Obj json) {
+        HtValue.Obj source = json;
         if (json.has("style") && json.get("style").isJsonObject()) {
             source = json.getAsJsonObject("style");
         }
         TextureSet tex = null;
         if (source.has("texture")) {
-            tex = new com.google.gson.Gson().fromJson(source.get("texture"), TextureSet.class);
+            tex = HtData.textureSet(source.get("texture"));
         } else if (source.has("image_texture")) {
             String img = source.get("image_texture").getAsString();
             tex = new TextureSet(img, img, img);
@@ -643,7 +634,7 @@ public class WidgetFactory {
         String bg = source.has("background_color") ? source.get("background_color").getAsString() : null;
         return new StyleProps(tex, bg);
     }
-    private static SliderProps parseSlider(JsonObject json) {
+    private static SliderProps parseSlider(HtValue.Obj json) {
         String key = json.has("option_key") ? json.get("option_key").getAsString() : null;
         double min = json.has("slider_min") ? json.get("slider_min").getAsDouble() : 0.0;
         double max = json.has("slider_max") ? json.get("slider_max").getAsDouble() : 1.0;
@@ -660,15 +651,15 @@ public class WidgetFactory {
                 x, y, p.highlightedOffsetX(), p.highlightedOffsetY(),
                 p.disabledOffsetX(), p.disabledOffsetY(), p.textAnimation(), p.animationSpeed(), p.animations());
     }
-    private static CycleButtonProps parseCycleButton(JsonObject json) {
+    private static CycleButtonProps parseCycleButton(HtValue.Obj json) {
         String key = json.has("option_key") ? json.get("option_key").getAsString() : null;
         boolean displayOnly = json.has("display_only_value") && json.get("display_only_value").getAsBoolean();
         List<CycleValue> values = new ArrayList<>();
         if (json.has("values") && json.get("values").isJsonArray()) {
-            JsonArray arr = json.get("values").getAsJsonArray();
-            for (JsonElement elem : arr) {
+            HtValue.Arr arr = json.get("values").getAsJsonArray();
+            for (HtValue elem : arr) {
                 if (elem.isJsonObject()) {
-                    JsonObject obj = elem.getAsJsonObject();
+                    HtValue.Obj obj = elem.getAsJsonObject();
                     String vKey = obj.has("key") ? obj.get("key").getAsString() : "";
                     String vTextKey = obj.has("text_key") ? obj.get("text_key").getAsString() : "";
                     values.add(new CycleValue(vKey, vTextKey));
@@ -677,13 +668,13 @@ public class WidgetFactory {
         }
         return new CycleButtonProps(key, values, displayOnly);
     }
-    private static List<CycleValue> parseCycleValues(JsonObject json) {
+    private static List<CycleValue> parseCycleValues(HtValue.Obj json) {
         List<CycleValue> values = new ArrayList<>();
         if (json.has("values") && json.get("values").isJsonArray()) {
-            JsonArray arr = json.get("values").getAsJsonArray();
-            for (JsonElement elem : arr) {
+            HtValue.Arr arr = json.get("values").getAsJsonArray();
+            for (HtValue elem : arr) {
                 if (elem.isJsonObject()) {
-                    JsonObject obj = elem.getAsJsonObject();
+                    HtValue.Obj obj = elem.getAsJsonObject();
                     String vKey = obj.has("key") ? obj.get("key").getAsString() : "";
                     String vTextKey = obj.has("text_key") ? obj.get("text_key").getAsString() : "";
                     values.add(new CycleValue(vKey, vTextKey));
@@ -692,7 +683,7 @@ public class WidgetFactory {
         }
         return values;
     }
-    private static EditBoxProps parseEditBox(JsonObject json) {
+    private static EditBoxProps parseEditBox(HtValue.Obj json) {
         int maxLength = json.has("max_length") ? json.get("max_length").getAsInt() : 32;
         boolean bordered = !json.has("bordered") || json.get("bordered").getAsBoolean();
         String hint = json.has("hint") ? json.get("hint").getAsString() : null;
@@ -700,23 +691,23 @@ public class WidgetFactory {
         String textColor = json.has("text_color") ? json.get("text_color").getAsString() : "0xE0E0E0";
         return new EditBoxProps(maxLength, bordered, hint, initialValue, textColor);
     }
-    private static ListProps parseList(JsonObject json, ResourceManager manager, ActionExecutor executor) {
+    private static ListProps parseList(HtValue.Obj json, ActionExecutor executor) {
         int gap = json.has("gap") ? json.get("gap").getAsInt() : 0;
         List<RowDef> rows = new ArrayList<>();
         if (json.has("rows") && json.get("rows").isJsonArray()) {
-            JsonArray arr = json.get("rows").getAsJsonArray();
-            for (JsonElement elem : arr) {
+            HtValue.Arr arr = json.get("rows").getAsJsonArray();
+            for (HtValue elem : arr) {
                 if (elem.isJsonObject()) {
-                    JsonObject rowObj = elem.getAsJsonObject();
+                    HtValue.Obj rowObj = elem.getAsJsonObject();
                     int height = rowObj.has("height") ? rowObj.get("height").getAsInt() : 36;
                     String filterKey = rowObj.has("filter_key") ? rowObj.get("filter_key").getAsString() : null;
                     List<Widget> children = new ArrayList<>();
                     if (rowObj.has("children") && rowObj.get("children").isJsonArray()) {
-                        JsonArray childArr = rowObj.get("children").getAsJsonArray();
-                        for (JsonElement childElem : childArr) {
+                        HtValue.Arr childArr = rowObj.get("children").getAsJsonArray();
+                        for (HtValue childElem : childArr) {
                             if (childElem.isJsonObject()) {
-                                JsonObject childObj = childElem.getAsJsonObject();
-                                Widget w = create(childObj, manager, executor);
+                                HtValue.Obj childObj = childElem.getAsJsonObject();
+                                Widget w = create(childObj, executor);
                                 if (w != null) children.add(w);
                             }
                         }
@@ -725,11 +716,11 @@ public class WidgetFactory {
                 }
             }
         } else if (json.has("items") && json.get("items").isJsonArray()) {
-            JsonArray arr = json.get("items").getAsJsonArray();
-            for (JsonElement elem : arr) {
+            HtValue.Arr arr = json.get("items").getAsJsonArray();
+            for (HtValue elem : arr) {
                 if (elem.isJsonObject()) {
-                    JsonObject rowObj = elem.getAsJsonObject();
-                    Widget w = create(rowObj, manager, executor);
+                    HtValue.Obj rowObj = elem.getAsJsonObject();
+                    Widget w = create(rowObj, executor);
                     if (w != null) {
                         rows.add(new RowDef(36, null, List.of(w)));
                     }
@@ -738,22 +729,22 @@ public class WidgetFactory {
         }
         ListProps.ScrollbarDef scrollbar = null;
         if (json.has("scrollbar") && json.get("scrollbar").isJsonObject()) {
-            JsonObject sb = json.get("scrollbar").getAsJsonObject();
+            HtValue.Obj sb = json.get("scrollbar").getAsJsonObject();
             int sbWidth = sb.has("width") ? sb.get("width").getAsInt() : 6;
             ListProps.TrackDef track = new ListProps.TrackDef(null, null);
             if (sb.has("track") && sb.get("track").isJsonObject()) {
-                JsonObject trk = sb.get("track").getAsJsonObject();
+                HtValue.Obj trk = sb.get("track").getAsJsonObject();
                 TextureSet trackTex = trk.has("texture")
-                        ? new com.google.gson.Gson().fromJson(trk.get("texture"), TextureSet.class)
+                        ? HtData.textureSet(trk.get("texture"))
                         : null;
                 String trackColor = trk.has("color") ? trk.get("color").getAsString() : null;
                 track = new ListProps.TrackDef(trackTex, trackColor);
             }
             ListProps.ThumbDef thumb = new ListProps.ThumbDef(null, null);
             if (sb.has("thumb") && sb.get("thumb").isJsonObject()) {
-                JsonObject thb = sb.get("thumb").getAsJsonObject();
+                HtValue.Obj thb = sb.get("thumb").getAsJsonObject();
                 TextureSet thumbTex = thb.has("texture")
-                        ? new com.google.gson.Gson().fromJson(thb.get("texture"), TextureSet.class)
+                        ? HtData.textureSet(thb.get("texture"))
                         : null;
                 String thumbColor = thb.has("color") ? thb.get("color").getAsString() : null;
                 thumb = new ListProps.ThumbDef(thumbTex, thumbColor);
@@ -767,23 +758,23 @@ public class WidgetFactory {
         String backgroundColor = json.has("background_color")
                 ? json.get("background_color").getAsString() : null;
         TextureSet backgroundTexture = json.has("background_texture")
-                ? new com.google.gson.Gson().fromJson(json.get("background_texture"), TextureSet.class)
+                ? HtData.textureSet(json.get("background_texture"))
                 : null;
         int scrollSpeed = json.has("scroll_speed") ? json.get("scroll_speed").getAsInt() : 0;
         return new ListProps(gap, null, scrollbar, backgroundColor, backgroundTexture, rows, scrollSpeed);
     }
-    private static Widget parseBox(JsonObject json, LayoutProps layout, Map<String, String> variables, Map<String, String> member,
-                                   String id, ResourceManager manager, ActionExecutor executor) {
+    private static Widget parseBox(HtValue.Obj json, LayoutProps layout, Map<String, String> variables, Map<String, String> member,
+                                   String id, ActionExecutor executor) {
         String backgroundColor = json.has("background_color")
                 ? json.get("background_color").getAsString() : null;
         String borderColor = json.has("border_color")
                 ? json.get("border_color").getAsString() : null;
         TextureSet frameTexture = json.has("frame_texture")
-                ? new com.google.gson.Gson().fromJson(json.get("frame_texture"), TextureSet.class)
+                ? HtData.textureSet(json.get("frame_texture"))
                 : null;
         int padTop = 0, padBottom = 0, padLeft = 0, padRight = 0;
         if (json.has("screen_padding") && json.get("screen_padding").isJsonObject()) {
-            JsonObject sp = json.get("screen_padding").getAsJsonObject();
+            HtValue.Obj sp = json.get("screen_padding").getAsJsonObject();
             padTop = sp.has("top") ? sp.get("top").getAsInt() : 0;
             padBottom = sp.has("bottom") ? sp.get("bottom").getAsInt() : 0;
             padLeft = sp.has("left") ? sp.get("left").getAsInt() : 0;
@@ -795,16 +786,16 @@ public class WidgetFactory {
         if (json.has("padding_right")) padRight = json.get("padding_right").getAsInt();
         Map<String, Widget> elements = new LinkedHashMap<>();
         if (json.has("elements") && json.get("elements").isJsonArray()) {
-            JsonArray arr = json.get("elements").getAsJsonArray();
-            for (JsonElement elem : arr) {
+            HtValue.Arr arr = json.get("elements").getAsJsonArray();
+            for (HtValue elem : arr) {
                 if (elem.isJsonObject()) {
-                    JsonObject elObj = elem.getAsJsonObject();
+                    HtValue.Obj elObj = elem.getAsJsonObject();
                     String elId = elObj.has("id") ? elObj.get("id").getAsString() : null;
                     Widget widget;
                     if (elObj.has("widget") && elObj.get("widget").isJsonObject()) {
-                        widget = create(elObj.get("widget").getAsJsonObject(), manager, executor);
+                        widget = create(elObj.get("widget").getAsJsonObject(), executor);
                     } else {
-                        widget = create(elObj, manager, executor);
+                        widget = create(elObj, executor);
                     }
                     if (widget != null) {
                         elements.put(elId, widget);
@@ -824,8 +815,8 @@ public class WidgetFactory {
         }
         return box;
     }
-    private static Widget parseContent(JsonObject json, LayoutProps layout, Map<String, String> variables, Map<String, String> member,
-                                       String id, ResourceManager manager, ActionExecutor executor) {
+    private static Widget parseContent(HtValue.Obj json, LayoutProps layout, Map<String, String> variables, Map<String, String> member,
+                                       String id, ActionExecutor executor) {
         int gap = json.has("gap") ? json.get("gap").getAsInt() : 2;
         String backgroundColor = json.has("background_color")
                 ? json.get("background_color").getAsString() : null;
@@ -833,22 +824,22 @@ public class WidgetFactory {
                 ? json.get("border_color").getAsString() : null;
         ListProps.ScrollbarDef scrollbar = null;
         if (json.has("scrollbar") && json.get("scrollbar").isJsonObject()) {
-            JsonObject sb = json.get("scrollbar").getAsJsonObject();
+            HtValue.Obj sb = json.get("scrollbar").getAsJsonObject();
             int sbWidth = sb.has("width") ? sb.get("width").getAsInt() : 6;
             ListProps.TrackDef track = new ListProps.TrackDef(null, null);
             if (sb.has("track") && sb.get("track").isJsonObject()) {
-                JsonObject trk = sb.get("track").getAsJsonObject();
+                HtValue.Obj trk = sb.get("track").getAsJsonObject();
                 TextureSet trackTex = trk.has("texture")
-                        ? new com.google.gson.Gson().fromJson(trk.get("texture"), TextureSet.class)
+                        ? HtData.textureSet(trk.get("texture"))
                         : null;
                 String trackColor = trk.has("color") ? trk.get("color").getAsString() : null;
                 track = new ListProps.TrackDef(trackTex, trackColor);
             }
             ListProps.ThumbDef thumb = new ListProps.ThumbDef(null, null);
             if (sb.has("thumb") && sb.get("thumb").isJsonObject()) {
-                JsonObject thb = sb.get("thumb").getAsJsonObject();
+                HtValue.Obj thb = sb.get("thumb").getAsJsonObject();
                 TextureSet thumbTex = thb.has("texture")
-                        ? new com.google.gson.Gson().fromJson(thb.get("texture"), TextureSet.class)
+                        ? HtData.textureSet(thb.get("texture"))
                         : null;
                 String thumbColor = thb.has("color") ? thb.get("color").getAsString() : null;
                 thumb = new ListProps.ThumbDef(thumbTex, thumbColor);
@@ -861,26 +852,26 @@ public class WidgetFactory {
         }
         List<Widget> buttons = new ArrayList<>();
         if (json.has("buttons") && json.get("buttons").isJsonArray()) {
-            JsonArray arr = json.get("buttons").getAsJsonArray();
-            for (JsonElement elem : arr) {
+            HtValue.Arr arr = json.get("buttons").getAsJsonArray();
+            for (HtValue elem : arr) {
                 if (elem.isJsonObject()) {
-                    JsonObject btnObj = elem.getAsJsonObject();
-                    buttons.add(create(btnObj, manager, executor));
+                    HtValue.Obj btnObj = elem.getAsJsonObject();
+                    buttons.add(create(btnObj, executor));
                 }
             }
         }
         String direction = json.has("direction") ? json.get("direction").getAsString() : "vertical";
         TextureSet backgroundTexture = json.has("background_texture")
-                ? new com.google.gson.Gson().fromJson(json.get("background_texture"), TextureSet.class)
+                ? HtData.textureSet(json.get("background_texture"))
                 : null;
         return new ContentWidget(id, layout, variables, member, buttons, gap, scrollbar, backgroundColor, borderColor, backgroundTexture, direction);
     }
-    private static Map<String, Map<String, String>> parseStateVariables(JsonObject json) {
+    private static Map<String, Map<String, String>> parseStateVariables(HtValue.Obj json) {
         if (!json.has("state_variables") || !json.get("state_variables").isJsonObject()) return null;
-        JsonObject states = json.get("state_variables").getAsJsonObject();
+        HtValue.Obj states = json.get("state_variables").getAsJsonObject();
         Map<String, Map<String, String>> result = new HashMap<>();
         for (String state : states.keySet()) {
-            JsonObject vars = states.get(state).getAsJsonObject();
+            HtValue.Obj vars = states.get(state).getAsJsonObject();
             Map<String, String> map = new HashMap<>();
             for (String key : vars.keySet()) {
                 map.put(key, vars.get(key).getAsString());
@@ -889,14 +880,14 @@ public class WidgetFactory {
         }
         return result;
     }
-    private static Map<String, Map<String, Map<String, String>>> parseStateVNested(JsonObject stateV) {
+    private static Map<String, Map<String, Map<String, String>>> parseStateVNested(HtValue.Obj stateV) {
         Map<String, Map<String, Map<String, String>>> result = new HashMap<>();
         for (String state : stateV.keySet()) {
-            JsonObject stateObj = stateV.get(state).getAsJsonObject();
+            HtValue.Obj stateObj = stateV.get(state).getAsJsonObject();
             Map<String, Map<String, String>> sectionMap = new HashMap<>();
             for (String section : stateObj.keySet()) {
                 if (stateObj.get(section).isJsonObject()) {
-                    JsonObject props = stateObj.get(section).getAsJsonObject();
+                    HtValue.Obj props = stateObj.get(section).getAsJsonObject();
                     Map<String, String> propMap = new HashMap<>();
                     for (String prop : props.keySet()) {
                         propMap.put(prop, props.get(prop).getAsString());
@@ -908,10 +899,10 @@ public class WidgetFactory {
         }
         return result;
     }
-    private static Map<String, Map<String, String>> parseStateVFlat(JsonObject stateV) {
+    private static Map<String, Map<String, String>> parseStateVFlat(HtValue.Obj stateV) {
         Map<String, Map<String, String>> result = new HashMap<>();
         for (String state : stateV.keySet()) {
-            JsonObject stateObj = stateV.get(state).getAsJsonObject();
+            HtValue.Obj stateObj = stateV.get(state).getAsJsonObject();
             Map<String, String> flatMap = new HashMap<>();
             for (String key : stateObj.keySet()) {
                 if (stateObj.get(key).isJsonPrimitive()) {
@@ -922,10 +913,10 @@ public class WidgetFactory {
         }
         return result;
     }
-    private static PackListWidget.RowStyle parseRowStyle(JsonObject json, String key,
+    private static PackListWidget.RowStyle parseRowStyle(HtValue.Obj json, String key,
                                                           PackListWidget.RowStyle defaultStyle) {
         if (!json.has(key) || !json.get(key).isJsonObject()) return defaultStyle;
-        JsonObject obj = json.get(key).getAsJsonObject();
+        HtValue.Obj obj = json.get(key).getAsJsonObject();
         String bg = obj.has("background_color") ? obj.get("background_color").getAsString() : defaultStyle.backgroundColor;
         String tex = obj.has("background_texture") ? obj.get("background_texture").getAsString() : defaultStyle.backgroundTexture;
         String text = obj.has("text_color") ? obj.get("text_color").getAsString() : defaultStyle.textColor;
@@ -935,22 +926,22 @@ public class WidgetFactory {
         String toggleHover = obj.has("toggle_hover_color") ? obj.get("toggle_hover_color").getAsString() : defaultStyle.toggleHoverColor;
         return new PackListWidget.RowStyle(bg, tex, text, hover, selected, toggle, toggleHover);
     }
-    private static PackListWidget.DividerStyle parseDividerStyle(JsonObject json) {
+    private static PackListWidget.DividerStyle parseDividerStyle(HtValue.Obj json) {
         if (!json.has("divider") || !json.get("divider").isJsonObject())
             return PackListWidget.DividerStyle.DEFAULT;
-        JsonObject obj = json.get("divider").getAsJsonObject();
+        HtValue.Obj obj = json.get("divider").getAsJsonObject();
         int h = obj.has("height") ? obj.get("height").getAsInt() : PackListWidget.DividerStyle.DEFAULT.height;
         String color = obj.has("color") ? obj.get("color").getAsString() : PackListWidget.DividerStyle.DEFAULT.color;
         String texture = obj.has("texture") ? obj.get("texture").getAsString() : PackListWidget.DividerStyle.DEFAULT.texture;
         return new PackListWidget.DividerStyle(h, color, texture);
     }
-    private static PackListWidget.ListButtonConfig parseListButtonConfig(JsonObject json, String key,
+    private static PackListWidget.ListButtonConfig parseListButtonConfig(HtValue.Obj json, String key,
                                                                           PackListWidget.ListButtonConfig defaultCfg) {
         if (json == null || !json.has(key) || !json.get(key).isJsonObject()) return defaultCfg;
-        JsonObject obj = json.get(key).getAsJsonObject();
+        HtValue.Obj obj = json.get(key).getAsJsonObject();
         TextureSet texture = null;
         if (obj.has("texture") && obj.get("texture").isJsonObject()) {
-            texture = new com.google.gson.Gson().fromJson(obj.get("texture"), TextureSet.class);
+            texture = HtData.textureSet(obj.get("texture"));
         }
         String text = null;
         String textKey = null;
@@ -958,7 +949,7 @@ public class WidgetFactory {
         String highlightedTextColor = defaultCfg.highlightedTextColor;
         boolean textShadow = defaultCfg.textShadow;
         if (obj.has("text") && obj.get("text").isJsonObject()) {
-            JsonObject tObj = obj.get("text").getAsJsonObject();
+            HtValue.Obj tObj = obj.get("text").getAsJsonObject();
             if (tObj.has("text")) text = tObj.get("text").getAsString();
             if (tObj.has("text_key")) textKey = tObj.get("text_key").getAsString();
             if (tObj.has("color")) textColor = tObj.get("color").getAsString();
@@ -973,7 +964,7 @@ public class WidgetFactory {
         int width = defaultCfg.width;
         int height = defaultCfg.height;
         if (obj.has("size") && obj.get("size").isJsonObject()) {
-            JsonObject sz = obj.get("size").getAsJsonObject();
+            HtValue.Obj sz = obj.get("size").getAsJsonObject();
             if (sz.has("width")) width = sz.get("width").getAsInt();
             if (sz.has("height")) height = sz.get("height").getAsInt();
         } else if (obj.has("size")) {
@@ -983,53 +974,53 @@ public class WidgetFactory {
         Set<String> showWhen = defaultCfg.showWhen;
         if (obj.has("show_when") && obj.get("show_when").isJsonArray()) {
             showWhen = new HashSet<>();
-            for (JsonElement e : obj.get("show_when").getAsJsonArray()) {
+            for (HtValue e : obj.get("show_when").getAsJsonArray()) {
                 showWhen.add(e.getAsString());
             }
         }
         return new PackListWidget.ListButtonConfig(texture, text, textKey,
             textColor, highlightedTextColor, textShadow, width, height, showWhen);
     }
-    private static PackListWidget.LayoutConfig parseLayoutConfig(JsonObject json) {
+    private static PackListWidget.LayoutConfig parseLayoutConfig(HtValue.Obj json) {
         if (!json.has("layout") || !json.get("layout").isJsonObject())
             return PackListWidget.LayoutConfig.DEFAULT;
-        JsonObject lo = json.get("layout").getAsJsonObject();
+        HtValue.Obj lo = json.get("layout").getAsJsonObject();
         PackListWidget.LayoutConfig def = PackListWidget.LayoutConfig.DEFAULT;
-        JsonObject icon = lo.has("icon") && lo.get("icon").isJsonObject() ? lo.get("icon").getAsJsonObject() : null;
+        HtValue.Obj icon = lo.has("icon") && lo.get("icon").isJsonObject() ? lo.get("icon").getAsJsonObject() : null;
         int iconX = icon != null && icon.has("x") ? icon.get("x").getAsInt() : def.iconX;
         int iconSize = icon != null && icon.has("size") ? icon.get("size").getAsInt() : def.iconSize;
         String iconPlcColor = icon != null && icon.has("placeholder_color") ? icon.get("placeholder_color").getAsString() : def.iconPlaceholderColor;
-        JsonObject text = lo.has("text") && lo.get("text").isJsonObject() ? lo.get("text").getAsJsonObject() : null;
+        HtValue.Obj text = lo.has("text") && lo.get("text").isJsonObject() ? lo.get("text").getAsJsonObject() : null;
         int iconTextGap = text != null && text.has("icon_gap") ? text.get("icon_gap").getAsInt() : def.iconTextGap;
         int titleY = text != null && text.has("title_y") ? text.get("title_y").getAsInt() : def.titleY;
         int descY = text != null && text.has("description_y") ? text.get("description_y").getAsInt() : def.descriptionY;
         int compatY = text != null && text.has("compatibility_y") ? text.get("compatibility_y").getAsInt() : def.compatibilityY;
         int titleMaxLen = text != null && text.has("title_max_length") ? text.get("title_max_length").getAsInt() : def.titleMaxLength;
         int descMaxLen = text != null && text.has("description_max_length") ? text.get("description_max_length").getAsInt() : def.descriptionMaxLength;
-        JsonObject incompat = lo.has("incompatible") && lo.get("incompatible").isJsonObject() ? lo.get("incompatible").getAsJsonObject() : null;
+        HtValue.Obj incompat = lo.has("incompatible") && lo.get("incompatible").isJsonObject() ? lo.get("incompatible").getAsJsonObject() : null;
         String incompatBg = incompat != null && incompat.has("background_color") ? incompat.get("background_color").getAsString() : def.incompatibleBgColor;
         String incompatText = incompat != null && incompat.has("text_color") ? incompat.get("text_color").getAsString() : def.incompatibleTextColor;
         String incompatDesc = incompat != null && incompat.has("description_color") ? incompat.get("description_color").getAsString() : def.incompatibleDescColor;
-        JsonObject srcLabel = lo.has("source_label") && lo.get("source_label").isJsonObject() ? lo.get("source_label").getAsJsonObject() : null;
+        HtValue.Obj srcLabel = lo.has("source_label") && lo.get("source_label").isJsonObject() ? lo.get("source_label").getAsJsonObject() : null;
         String srcColor = srcLabel != null && srcLabel.has("color") ? srcLabel.get("color").getAsString() : def.sourceLabelColor;
         int srcPad = srcLabel != null && srcLabel.has("right_padding") ? srcLabel.get("right_padding").getAsInt() : def.sourceLabelRightPadding;
-        JsonObject toggleJson = lo.has("toggle") && lo.get("toggle").isJsonObject() ? lo.get("toggle").getAsJsonObject() : null;
+        HtValue.Obj toggleJson = lo.has("toggle") && lo.get("toggle").isJsonObject() ? lo.get("toggle").getAsJsonObject() : null;
         int tglRPad = toggleJson != null && toggleJson.has("right_padding") ? toggleJson.get("right_padding").getAsInt() : def.toggle.rightPadding;
         PackListWidget.ListButtonConfig actBtn = parseListButtonConfig(toggleJson, "activate", def.toggle.activate);
         PackListWidget.ListButtonConfig deactBtn = parseListButtonConfig(toggleJson, "deactivate", def.toggle.deactivate);
         PackListWidget.ListButtonConfig reqBtn = parseListButtonConfig(toggleJson, "required", def.toggle.required);
         PackListWidget.ToggleConfig toggleCfg = new PackListWidget.ToggleConfig(tglRPad, actBtn, deactBtn, reqBtn);
-        JsonObject moveJson = lo.has("move") && lo.get("move").isJsonObject() ? lo.get("move").getAsJsonObject() : null;
+        HtValue.Obj moveJson = lo.has("move") && lo.get("move").isJsonObject() ? lo.get("move").getAsJsonObject() : null;
         int mvGap = moveJson != null && moveJson.has("gap") ? moveJson.get("gap").getAsInt() : def.move.gap;
         PackListWidget.ListButtonConfig upBtn = parseListButtonConfig(moveJson, "up", def.move.up);
         PackListWidget.ListButtonConfig dnBtn = parseListButtonConfig(moveJson, "down", def.move.down);
         PackListWidget.MoveConfig moveCfg = new PackListWidget.MoveConfig(mvGap, upBtn, dnBtn);
-        JsonObject sb = lo.has("scrollbar") && lo.get("scrollbar").isJsonObject() ? lo.get("scrollbar").getAsJsonObject() : null;
+        HtValue.Obj sb = lo.has("scrollbar") && lo.get("scrollbar").isJsonObject() ? lo.get("scrollbar").getAsJsonObject() : null;
         int sbW = sb != null && sb.has("width") ? sb.get("width").getAsInt() : def.scrollbarWidth;
         String sbColor = sb != null && sb.has("color") ? sb.get("color").getAsString() : def.scrollbarColor;
         int sbMinH = sb != null && sb.has("min_height") ? sb.get("min_height").getAsInt() : def.scrollbarMinHeight;
         int sbPad = sb != null && sb.has("padding") ? sb.get("padding").getAsInt() : def.scrollbarPadding;
-        JsonObject drag = lo.has("drag") && lo.get("drag").isJsonObject() ? lo.get("drag").getAsJsonObject() : null;
+        HtValue.Obj drag = lo.has("drag") && lo.get("drag").isJsonObject() ? lo.get("drag").getAsJsonObject() : null;
         String dragColor = drag != null && drag.has("indicator_color") ? drag.get("indicator_color").getAsString() : def.dragIndicatorColor;
         int dragSpeed = drag != null && drag.has("auto_scroll_speed") ? drag.get("auto_scroll_speed").getAsInt() : def.dragAutoScrollSpeed;
         int scrSpeed = lo.has("scroll_speed") ? lo.get("scroll_speed").getAsInt() : def.scrollSpeed;
@@ -1044,17 +1035,17 @@ public class WidgetFactory {
             dragColor, dragSpeed, scrSpeed
         );
     }
-    private static JsonObject resolveButtonTemplate(JsonObject rowTemplateJson, String key) {
+    private static HtValue.Obj resolveButtonTemplate(HtValue.Obj rowTemplateJson, String key) {
         if (!rowTemplateJson.has(key)) return null;
-        JsonElement btnElem = rowTemplateJson.get(key);
+        HtValue btnElem = rowTemplateJson.get(key);
         if (!btnElem.isJsonObject()) return null;
         return btnElem.getAsJsonObject();
     }
-    private static WidgetSoundConfig parseSoundConfig(JsonObject json) {
+    private static WidgetSoundConfig parseSoundConfig(HtValue.Obj json) {
         if (!json.has("sound")) return null;
-        JsonElement soundElement = json.get("sound");
+        HtValue soundElement = json.get("sound");
         if (!soundElement.isJsonObject()) return null;
-        JsonObject soundObj = soundElement.getAsJsonObject();
+        HtValue.Obj soundObj = soundElement.getAsJsonObject();
         WidgetSoundConfig config = new WidgetSoundConfig();
         if (soundObj.has("click")) {
             config.setClick(parseSoundEvent(soundObj.get("click")));
@@ -1079,14 +1070,14 @@ public class WidgetFactory {
         }
         return config;
     }
-    private static SoundEventConfig parseSoundEvent(JsonElement element) {
+    private static SoundEventConfig parseSoundEvent(HtValue element) {
         SoundEventConfig config = new SoundEventConfig();
         if (element.isJsonPrimitive()) {
             config.setId(element.getAsString());
             config.setVolume(1.0f);
             config.setPitch(1.0f);
         } else if (element.isJsonObject()) {
-            JsonObject obj = element.getAsJsonObject();
+            HtValue.Obj obj = element.getAsJsonObject();
             if (obj.has("id")) {
                 config.setId(obj.get("id").getAsString());
             }
@@ -1100,7 +1091,7 @@ public class WidgetFactory {
         }
         return config;
     }
-    private static SplashWidget.SplashConfig parseSplashConfig(JsonObject json) {
+    private static SplashWidget.SplashConfig parseSplashConfig(HtValue.Obj json) {
         SplashWidget.SplashConfig config = new SplashWidget.SplashConfig();
         if (json.has("use_vanilla")) {
             config.useVanilla = json.get("use_vanilla").getAsBoolean();
@@ -1112,18 +1103,18 @@ public class WidgetFactory {
             config.rotation = json.get("rotation").getAsFloat();
         }
         if (json.has("pulse") && json.get("pulse").isJsonObject()) {
-            JsonObject pulse = json.get("pulse").getAsJsonObject();
+            HtValue.Obj pulse = json.get("pulse").getAsJsonObject();
             if (pulse.has("base_scale")) config.pulseBaseScale = pulse.get("base_scale").getAsFloat();
             if (pulse.has("amplitude")) config.pulseAmplitude = pulse.get("amplitude").getAsFloat();
             if (pulse.has("speed")) config.pulseSpeed = pulse.get("speed").getAsFloat();
         }
         if (json.has("splashes") && json.get("splashes").isJsonArray()) {
             config.splashes = new ArrayList<>();
-            for (JsonElement elem : json.get("splashes").getAsJsonArray()) {
+            for (HtValue elem : json.get("splashes").getAsJsonArray()) {
                 if (elem.isJsonPrimitive()) {
                     config.splashes.add(new SplashWidget.WeightedText(elem.getAsString(), 1));
                 } else if (elem.isJsonObject()) {
-                    JsonObject obj = elem.getAsJsonObject();
+                    HtValue.Obj obj = elem.getAsJsonObject();
                     String text = obj.has("text") ? obj.get("text").getAsString() : "";
                     int weight = obj.has("weight") ? obj.get("weight").getAsInt() : 1;
                     config.splashes.add(new SplashWidget.WeightedText(text, weight));
@@ -1132,9 +1123,9 @@ public class WidgetFactory {
         }
         if (json.has("date_splashes") && json.get("date_splashes").isJsonArray()) {
             config.dateSplashes = new ArrayList<>();
-            for (JsonElement elem : json.get("date_splashes").getAsJsonArray()) {
+            for (HtValue elem : json.get("date_splashes").getAsJsonArray()) {
                 if (elem.isJsonObject()) {
-                    JsonObject obj = elem.getAsJsonObject();
+                    HtValue.Obj obj = elem.getAsJsonObject();
                     SplashWidget.DateSplash ds = new SplashWidget.DateSplash();
                     ds.month = obj.has("month") ? obj.get("month").getAsInt() : 1;
                     ds.day = obj.has("day") ? obj.get("day").getAsInt() : 1;
@@ -1145,7 +1136,7 @@ public class WidgetFactory {
             }
         }
         if (json.has("easter_egg") && json.get("easter_egg").isJsonObject()) {
-            JsonObject ee = json.get("easter_egg").getAsJsonObject();
+            HtValue.Obj ee = json.get("easter_egg").getAsJsonObject();
             config.easterEgg = new SplashWidget.EasterEgg();
             if (ee.has("probability")) config.easterEgg.probability = ee.get("probability").getAsFloat();
             if (ee.has("text")) config.easterEgg.text = ee.get("text").getAsString();

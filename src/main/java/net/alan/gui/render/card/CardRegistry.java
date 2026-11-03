@@ -1,9 +1,9 @@
 
 
 package net.alan.gui.render.card;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import net.alan.gui.ht.HtValue;
+
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.slf4j.Logger;
@@ -19,7 +19,7 @@ public class CardRegistry {
     public static CardDefinition get(ResourceManager manager, String cardId) {
         return cache.computeIfAbsent(cardId, id -> load(manager, id));
     }
-    public static CardDefinition createFromJson(JsonObject cardObj) {
+    public static CardDefinition createFromData(HtValue.Obj cardObj) {
         return parseCardObject(cardObj);
     }
     public static void clearCache() {
@@ -30,7 +30,7 @@ public class CardRegistry {
         if (!location.getPath().endsWith(".ht")) {
             location = location.withPath(location.getPath() + ".ht");
         }
-        JsonObject cardObj = net.alan.gui.ht.HtLoader.loadCardObject(manager, location);
+        HtValue.Obj cardObj = net.alan.gui.ht.HtLoader.loadCardObject(manager, location);
         if (cardObj == null) {
             LOGGER.error("Card definition not found or invalid: {}", cardId);
             return createDefault();
@@ -44,7 +44,7 @@ public class CardRegistry {
             return createDefault();
         }
     }
-    private static CardDefinition parseCardObject(JsonObject cardObj) {
+    private static CardDefinition parseCardObject(HtValue.Obj cardObj) {
         CardDefinition def = new CardDefinition();
         if (cardObj.has("type")) def.setType(cardObj.get("type").getAsString());
         if (cardObj.has("modal")) def.setModal(cardObj.get("modal").getAsBoolean());
@@ -70,62 +70,62 @@ public class CardRegistry {
             def.setBorder(parseColorString(cardObj.get("border")));
         }
         if (cardObj.has("border_width")) def.setBorderWidth(cardObj.get("border_width").getAsInt());
-        if (cardObj.has("title_bar") && !cardObj.get("title_bar").isJsonNull()) {
+        if (cardObj.has("title_bar") && !((cardObj.get("title_bar")) instanceof HtValue.Null)) {
             def.setTitleBar(parseTitleBar(cardObj.getAsJsonObject("title_bar")));
         }
         if (cardObj.has("variables") && cardObj.get("variables").isJsonObject()) {
             Map<String, String> vars = new LinkedHashMap<>();
-            JsonObject varsObj = cardObj.getAsJsonObject("variables");
-            for (var entry : varsObj.entrySet()) {
+            HtValue.Obj varsObj = cardObj.getAsJsonObject("variables");
+            for (var entry : varsObj.fields().entrySet()) {
                 vars.put(entry.getKey(), entry.getValue().getAsString());
             }
             def.setVariables(vars);
         }
         if (cardObj.has("elements") && cardObj.get("elements").isJsonArray()) {
-            List<JsonElement> elements = new ArrayList<>();
-            JsonArray elementsArr = cardObj.getAsJsonArray("elements");
-            for (JsonElement elem : elementsArr) {
+            List<HtValue> elements = new ArrayList<>();
+            HtValue.Arr elementsArr = cardObj.getAsJsonArray("elements");
+            for (HtValue elem : elementsArr) {
                 elements.add(elem);
             }
             def.setElements(elements);
         }
         return def;
     }
-    private static String parseColorString(JsonElement element) {
-        if (element == null || element.isJsonNull()) return null;
+    private static String parseColorString(HtValue element) {
+        if (element == null || ((element) instanceof HtValue.Null)) return null;
         if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isString()) {
             return element.getAsString();
         }
         if (element.isJsonObject()) {
-            JsonObject obj = element.getAsJsonObject();
-            if (obj.has("color") && !obj.get("color").isJsonNull()) {
+            HtValue.Obj obj = element.getAsJsonObject();
+            if (obj.has("color") && !((obj.get("color")) instanceof HtValue.Null)) {
                 return obj.get("color").getAsString();
             }
         }
         return null;
     }
-    private static BackgroundDef parseBackground(JsonElement element) {
-        if (element == null || element.isJsonNull()) return new BackgroundDef();
+    private static BackgroundDef parseBackground(HtValue element) {
+        if (element == null || ((element) instanceof HtValue.Null)) return new BackgroundDef();
         if (element.isJsonPrimitive() && element.getAsJsonPrimitive().isString()) {
             return new BackgroundDef(element.getAsString());
         }
         if (element.isJsonObject()) {
-            JsonObject obj = element.getAsJsonObject();
+            HtValue.Obj obj = element.getAsJsonObject();
             BackgroundDef bg = new BackgroundDef();
-            if (obj.has("color") && !obj.get("color").isJsonNull()) {
+            if (obj.has("color") && !((obj.get("color")) instanceof HtValue.Null)) {
                 bg.setColor(obj.get("color").getAsString());
             }
-            if (obj.has("texture") && !obj.get("texture").isJsonNull()) {
+            if (obj.has("texture") && !((obj.get("texture")) instanceof HtValue.Null)) {
                 bg.setTexture(obj.get("texture").getAsString());
             }
-            if (obj.has("texture_mode") && !obj.get("texture_mode").isJsonNull()) {
+            if (obj.has("texture_mode") && !((obj.get("texture_mode")) instanceof HtValue.Null)) {
                 bg.setTextureMode(obj.get("texture_mode").getAsString());
             }
             return bg;
         }
         return new BackgroundDef();
     }
-    private static TitleBarDef parseTitleBar(JsonObject obj) {
+    private static TitleBarDef parseTitleBar(HtValue.Obj obj) {
         TitleBarDef tb = new TitleBarDef();
         if (obj.has("height")) tb.setHeight(obj.get("height").getAsInt());
         if (obj.has("draggable")) tb.setDraggable(obj.get("draggable").getAsBoolean());
@@ -133,9 +133,9 @@ public class CardRegistry {
             tb.setBackground(parseBackground(obj.get("background")));
         }
         if (obj.has("elements") && obj.get("elements").isJsonArray()) {
-            List<JsonElement> elements = new ArrayList<>();
-            JsonArray elementsArr = obj.getAsJsonArray("elements");
-            for (JsonElement elem : elementsArr) {
+            List<HtValue> elements = new ArrayList<>();
+            HtValue.Arr elementsArr = obj.getAsJsonArray("elements");
+            for (HtValue elem : elementsArr) {
                 elements.add(elem);
             }
             tb.setElements(elements);

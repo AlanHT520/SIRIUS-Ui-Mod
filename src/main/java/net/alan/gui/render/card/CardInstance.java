@@ -78,7 +78,7 @@ public class CardInstance {
         if (definition.getElements() != null) {
             for (var elem : definition.getElements()) {
                 if (elem.isJsonObject()) {
-                    Widget w = WidgetFactory.create(elem.getAsJsonObject(), resourceManager, executor);
+                    Widget w = WidgetFactory.create(elem.getAsJsonObject(), executor);
                     if (w != null) widgets.add(w);
                 }
             }
@@ -95,7 +95,7 @@ public class CardInstance {
             List<Widget> tbWidgets = new ArrayList<>();
             for (var elem : tbDef.getElements()) {
                 if (elem.isJsonObject()) {
-                    Widget w = WidgetFactory.create(elem.getAsJsonObject(), resourceManager, executor);
+                    Widget w = WidgetFactory.create(elem.getAsJsonObject(), executor);
                     if (w != null) tbWidgets.add(w);
                 }
             }

@@ -13,9 +13,150 @@ public sealed interface HtValue {
     record Real(double value) implements HtValue {}
     record Str(String value) implements HtValue {}
     record Color(int argb) implements HtValue {}
-    record Arr(List<HtValue> items) implements HtValue {}
-    record Obj(Map<String, HtValue> fields) implements HtValue {}
+    record Arr(List<HtValue> items) implements HtValue, Iterable<HtValue> {
+        @Override
+        public java.util.Iterator<HtValue> iterator() {
+            return items.iterator();
+        }
+
+        @Override
+        public HtValue deepCopy() {
+            List<HtValue> copy = new ArrayList<>(items.size());
+            for (HtValue item : items) {
+                copy.add(item.deepCopy());
+            }
+            return new Arr(copy);
+        }
+    }
+    record Obj(Map<String, HtValue> fields) implements HtValue {
+        public void add(String key, HtValue value) {
+            fields.put(key, value);
+        }
+
+        public void addProperty(String key, String value) {
+            fields.put(key, str(value));
+        }
+
+        public void addProperty(String key, int value) {
+            fields.put(key, num(value));
+        }
+
+        public void addProperty(String key, boolean value) {
+            fields.put(key, bool(value));
+        }
+
+        @Override
+        public HtValue deepCopy() {
+            Obj copy = obj();
+            for (Map.Entry<String, HtValue> entry : fields.entrySet()) {
+                copy.fields.put(entry.getKey(), entry.getValue().deepCopy());
+            }
+            return copy;
+        }
+    }
     HtValue NULL = new Null();
+
+    // ------------------------------------------------------------------
+    // 元素读取 API
+    //
+    // HT 解释结果直接以 HtValue 树交给控件层，不再序列化成 Gson 的 JsonObject。
+    // 这里的取值为「元素模型」服务：缺键返回 null / 默认值，类型不符抛 HtException。
+    // ------------------------------------------------------------------
+
+    default boolean has(String key) {
+        return this instanceof Obj o && o.fields().containsKey(key);
+    }
+
+    default HtValue get(String key) {
+        return this instanceof Obj o ? o.fields().get(key) : null;
+    }
+
+    default boolean isJsonObject() {
+        return this instanceof Obj;
+    }
+
+    default boolean isJsonArray() {
+        return this instanceof Arr;
+    }
+
+    default boolean isJsonPrimitive() {
+        return this instanceof Str || this instanceof Num || this instanceof Real
+                || this instanceof Bool || this instanceof Color;
+    }
+
+    default Obj getAsJsonObject() {
+        if (this instanceof Obj o) {
+            return o;
+        }
+        throw new HtException("期望对象，实际是 " + typeName());
+    }
+
+    default Obj getAsJsonObject(String key) {
+        HtValue value = get(key);
+        return value == null ? null : value.getAsJsonObject();
+    }
+
+    default Arr getAsJsonArray() {
+        if (this instanceof Arr a) {
+            return a;
+        }
+        throw new HtException("期望数组，实际是 " + typeName());
+    }
+
+    default Arr getAsJsonArray(String key) {
+        HtValue value = get(key);
+        return value == null ? null : value.getAsJsonArray();
+    }
+
+    /** 标量视图（兼容原先 Gson 的 JsonPrimitive 调用形状）。 */
+    default HtValue getAsJsonPrimitive() {
+        if (isJsonPrimitive()) {
+            return this;
+        }
+        throw new HtException("期望标量，实际是 " + typeName());
+    }
+
+    default boolean isString() {
+        return this instanceof Str;
+    }
+
+    default java.util.Set<String> keySet() {
+        if (this instanceof Obj o) {
+            return o.fields().keySet();
+        }
+        throw new HtException("期望对象，实际是 " + typeName());
+    }
+
+    default String getAsString() {
+        return asString();
+    }
+
+    default int getAsInt() {
+        return (int) asLong();
+    }
+
+    default float getAsFloat() {
+        return (float) asDouble();
+    }
+
+    default double getAsDouble() {
+        return asDouble();
+    }
+
+    default boolean getAsBoolean() {
+        return switch (this) {
+            case Bool b -> b.value();
+            case Str s -> Boolean.parseBoolean(s.value().trim());
+            case Num n -> n.value() != 0;
+            case Real r -> r.value() != 0;
+            default -> false;
+        };
+    }
+
+    /** 元素模型也需要不可变拷贝（动态列表的每行模板会复制一份再注入数据）。 */
+    default HtValue deepCopy() {
+        return this;
+    }
     HtValue TRUE = new Bool(true);
     HtValue FALSE = new Bool(false);
     static Bool bool(boolean v) {

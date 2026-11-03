@@ -35,4 +35,12 @@ public class DynamicListStyleConfig {
         public int height = 0;
         public String color = "0x00000000";
     }
+
+    public void setRowStyle(RowStyleConfig value) { this.row_style = value; }
+    public void setScrollbar(ScrollbarConfig value) { this.scrollbar = value; }
+    public void setDivider(DividerConfig value) { this.divider = value; }
+    public void setScrollSpeed(int value) { this.scroll_speed = value; }
+    public void setScrollbarMinHeight(int value) { this.scrollbar_min_height = value; }
+    public void setScrollbarPadding(int value) { this.scrollbar_padding = value; }
+    public void setSearchGap(int value) { this.search_gap = value; }
 }

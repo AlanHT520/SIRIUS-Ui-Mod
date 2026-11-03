@@ -1,7 +1,7 @@
 
 
 package net.alan.gui.render.screen;
-import com.google.gson.JsonElement;
+import net.alan.gui.ht.HtValue;
 import net.alan.gui.context.RenderContext;
 import net.alan.gui.context.WidgetDimensionRegistry;
 import net.alan.gui.data.screen.BackgroundLayer;
@@ -50,12 +50,11 @@ public class HtScreenRenderer {
         this.cardManager = new CardManager(minecraft, executor);
         executor.setCardManager(this.cardManager);
         List<Widget> widgets = new ArrayList<>();
-        List<JsonElement> elements = config.getElements();
+        List<HtValue> elements = config.getElements();
         if (elements != null) {
-            for (JsonElement elem : elements) {
+            for (HtValue elem : elements) {
                 if (elem.isJsonObject()) {
-                    Widget w = WidgetFactory.create(elem.getAsJsonObject(),
-                            minecraft.getResourceManager(), executor);
+                    Widget w = WidgetFactory.create(elem.getAsJsonObject(), executor);
                     if (w != null) widgets.add(w);
                 }
             }

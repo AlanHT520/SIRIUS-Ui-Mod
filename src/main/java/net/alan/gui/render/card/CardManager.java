@@ -54,9 +54,9 @@ public class CardManager {
         registeredCards.clear();
         LOGGER.debug("Cleared registered card definitions");
     }
-    public void showCardFromData(com.google.gson.JsonObject cardObj, String instanceId,
+    public void showCardFromData(net.alan.gui.ht.HtValue.Obj cardObj, String instanceId,
                                  Map<String, String> params) {
-        CardDefinition def = CardRegistry.createFromJson(cardObj);
+        CardDefinition def = CardRegistry.createFromData(cardObj);
         if (def == null) {
             LOGGER.error("Cannot show card: failed to parse inline definition");
             return;

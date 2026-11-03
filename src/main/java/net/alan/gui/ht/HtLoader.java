@@ -1,12 +1,7 @@
 
 
 package net.alan.gui.ht;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import net.alan.gui.context.ScreenVariableRegistry;
-import net.alan.gui.data.screen.BackgroundLayer;
-import net.alan.gui.data.screen.PanoramaConfig;
 import net.alan.gui.data.screen.ScreenConfig;
 import net.alan.gui.data.screen.ScreenLayout;
 import net.minecraft.resources.ResourceLocation;
@@ -18,12 +13,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 public final class HtLoader {
     private static final Logger LOGGER = LoggerFactory.getLogger("sirius_ui/ht");
-    private static final Gson GSON = new Gson();
     private HtLoader() {
     }
     public static HtProgram.SourceLoader sourceLoader(ResourceManager manager) {
@@ -68,11 +61,10 @@ public final class HtLoader {
             return null;
         }
     }
-    public static JsonObject loadCardObject(ResourceManager manager, ResourceLocation id) {
+    public static HtValue.Obj loadCardObject(ResourceManager manager, ResourceLocation id) {
         try {
             HtProgram program = HtProgram.load(id.toString(), sourceLoader(manager));
-            HtValue.Obj obj = HtInterpreter.runObject(program);
-            return HtJson.toJsonObject(obj);
+            return HtInterpreter.runObject(program);
         } catch (HtException e) {
             LOGGER.error("卡片定义编译失败：{}", e.getMessage());
             return null;
@@ -84,19 +76,12 @@ public final class HtLoader {
     private static ScreenConfig buildConfig(HtInterpreter.Result result) {
         ScreenConfig config = new ScreenConfig();
         if (result.panorama() != null) {
-            JsonObject panoramaJson = HtJson.toJsonObject(result.panorama());
-            config.setPanorama(GSON.fromJson(panoramaJson, PanoramaConfig.class));
+            config.setPanorama(HtData.panorama(result.panorama()));
         }
         if (!result.graphicsDraw().isEmpty()) {
-            JsonElement layersJson = HtJson.toJsonArray(result.graphicsDraw());
-            BackgroundLayer[] layers = GSON.fromJson(layersJson, BackgroundLayer[].class);
-            config.setBackgrounds(new ArrayList<>(Arrays.asList(layers)));
+            config.setBackgrounds(HtData.backgroundLayers(result.graphicsDraw()));
         }
-        List<JsonElement> elements = new ArrayList<>();
-        for (HtValue element : result.elements()) {
-            elements.add(HtJson.toJson(element));
-        }
-        config.setElements(elements);
+        config.setElements(new ArrayList<>(result.elements()));
         config.setVariables(new java.util.LinkedHashMap<>(result.variables()));
         config.setMember(new java.util.LinkedHashMap<>(result.member()));
         config.setSharedState(new java.util.LinkedHashMap<>(result.sharedState()));

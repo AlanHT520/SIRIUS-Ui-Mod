@@ -1,10 +1,9 @@
 
 
 package net.alan.gui.data;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.annotations.SerializedName;
+import net.alan.gui.ht.HtValue;
+
+
 import java.util.Map;
 public class Action {
     private String type;
@@ -16,8 +15,8 @@ public class Action {
     private String varValue;
     private String boxId;
     private String targetId;
-    private JsonElement card;
-    @SerializedName("confirm_with") private String confirmWith;
+    private HtValue card;
+    private String confirmWith;
     private Map<String, String> params;
     public Action() {}
     public String getType() { return type; }
@@ -38,20 +37,20 @@ public class Action {
     public void setBoxId(String boxId) { this.boxId = boxId; }
     public String getTargetId() { return targetId; }
     public void setTargetId(String targetId) { this.targetId = targetId; }
-    public JsonElement getCard() { return card; }
-    public void setCard(JsonElement card) { this.card = card; }
+    public HtValue getCard() { return card; }
+    public void setCard(HtValue card) { this.card = card; }
     public String getConfirmWith() { return confirmWith; }
     public void setConfirmWith(String confirmWith) { this.confirmWith = confirmWith; }
     public Map<String, String> getParams() { return params; }
     public void setParams(Map<String, String> params) { this.params = params; }
     public String getCardId() {
-        if (card instanceof JsonPrimitive prim && prim.isString()) {
+        if (card instanceof HtValue.Str prim) {
             return prim.getAsString();
         }
         return null;
     }
-    public JsonObject getCardObject() {
-        if (card instanceof JsonObject obj) {
+    public HtValue.Obj getCardData() {
+        if (card instanceof HtValue.Obj obj) {
             return obj;
         }
         return null;

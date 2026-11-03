@@ -1,8 +1,7 @@
 
 
 package net.alan.gui.render.card;
-import com.google.gson.JsonElement;
-import com.google.gson.annotations.SerializedName;
+import net.alan.gui.ht.HtValue;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -17,24 +16,24 @@ public class CardDefinition {
     private String type = "dialog";
     private boolean modal = true;
     private int width = 300;
-    @SerializedName("min_height") private int minHeight = 120;
-    @SerializedName("max_height") private int maxHeight = 0;
+    private int minHeight = 120;
+    private int maxHeight = 0;
     private int padding = 16;
     private String overlay = null;
     private BackgroundDef background = new BackgroundDef("0xF0282828");
     private String border = null;
-    @SerializedName("border_width") private int borderWidth = 1;
-    @SerializedName("title_bar") private TitleBarDef titleBar;
-    @SerializedName("duration_ms") private int durationMs;
-    @SerializedName("fade_ms") private int fadeMs = 500;
-    @SerializedName("pos_x") private int posX = -1;
-    @SerializedName("pos_y") private int posY = -1;
-    @SerializedName("shadow_offset") private int shadowOffset = 4;
-    @SerializedName("shadow_alpha") private int shadowAlpha = 0x50;
-    @SerializedName("z_index") private int zIndex = 400;
-    @SerializedName("data_source") private String dataSource;
+    private int borderWidth = 1;
+    private TitleBarDef titleBar;
+    private int durationMs;
+    private int fadeMs = 500;
+    private int posX = -1;
+    private int posY = -1;
+    private int shadowOffset = 4;
+    private int shadowAlpha = 0x50;
+    private int zIndex = 400;
+    private String dataSource;
     private Map<String, String> variables = new LinkedHashMap<>();
-    private List<JsonElement> elements = new ArrayList<>();
+    private List<HtValue> elements = new ArrayList<>();
     public CardDefinition() {}
     public CardType resolveType() {
         return switch (type) {
@@ -87,8 +86,8 @@ public class CardDefinition {
     public void setDataSource(String dataSource) { this.dataSource = dataSource; }
     public Map<String, String> getVariables() { return variables; }
     public void setVariables(Map<String, String> variables) { this.variables = variables; }
-    public List<JsonElement> getElements() { return elements; }
-    public void setElements(List<JsonElement> elements) { this.elements = elements; }
+    public List<HtValue> getElements() { return elements; }
+    public void setElements(List<HtValue> elements) { this.elements = elements; }
     public int parseColor(String hex) {
         if (hex == null) return 0xFFFFFFFF;
         hex = hex.replace("0x", "").replace("0X", "");

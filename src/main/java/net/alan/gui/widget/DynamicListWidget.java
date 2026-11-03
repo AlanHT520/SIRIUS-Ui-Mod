@@ -1,6 +1,7 @@
 package net.alan.gui.widget;
 
-import com.google.gson.JsonObject;
+import net.alan.gui.ht.HtData;
+import net.alan.gui.ht.HtValue;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.alan.gui.context.RenderContext;
 import net.alan.gui.context.WidgetDimensionRegistry;
@@ -30,12 +31,12 @@ public class DynamicListWidget extends BaseWidget {
     private final int gap;
     private final String backgroundColor;
     private final String backgroundTexture;
-    private final JsonObject rowTemplate;
+    private final HtValue.Obj rowTemplate;
     private final DynamicListStyleConfig styleConfig;
-    private final JsonObject editBtnTemplate;
-    private final JsonObject joinBtnTemplate;
-    private final JsonObject deleteBtnTemplate;
-    private final JsonObject recreateBtnTemplate;
+    private final HtValue.Obj editBtnTemplate;
+    private final HtValue.Obj joinBtnTemplate;
+    private final HtValue.Obj deleteBtnTemplate;
+    private final HtValue.Obj recreateBtnTemplate;
     private List<DynamicListData> rows;
     private double scrollAmount;
     private boolean scrolling;
@@ -58,9 +59,9 @@ public class DynamicListWidget extends BaseWidget {
                              Map<String, String> member, Supplier<List<DynamicListData>> dataSource,
                              ActionExecutor executor, int rowHeight, int gap,
                              String backgroundColor, String backgroundTexture,
-                             JsonObject rowTemplate, DynamicListStyleConfig styleConfig,
-                             JsonObject editBtnTemplate, JsonObject joinBtnTemplate,
-                             JsonObject deleteBtnTemplate, JsonObject recreateBtnTemplate) {
+                             HtValue.Obj rowTemplate, DynamicListStyleConfig styleConfig,
+                             HtValue.Obj editBtnTemplate, HtValue.Obj joinBtnTemplate,
+                             HtValue.Obj deleteBtnTemplate, HtValue.Obj recreateBtnTemplate) {
         super(id, layout, variables, member);
         this.dataSource = dataSource;
         this.executor = executor;
@@ -142,18 +143,17 @@ public class DynamicListWidget extends BaseWidget {
             }
         }
     }
-    private ButtonWidget createButtonForRow(JsonObject template, DynamicListData data, int rowIndex,
+    private ButtonWidget createButtonForRow(HtValue.Obj template, DynamicListData data, int rowIndex,
                                             String btnType) {
         try {
-            com.google.gson.Gson gson = new com.google.gson.Gson();
-            JsonObject btnJson = template.deepCopy();
+            HtValue.Obj btnJson = (HtValue.Obj) template.deepCopy();
             btnJson.addProperty("id", id + "_" + btnType + "_" + rowIndex);
             Action templateAction = template.has("action")
-                    ? gson.fromJson(template.get("action"), Action.class)
+                    ? HtData.action(template.get("action"))
                     : new Action();
             Action rowAction = buildAction(templateAction, data, btnType);
-            btnJson.add("action", gson.toJsonTree(rowAction).getAsJsonObject());
-            Widget widget = WidgetFactory.create(btnJson, null, executor);
+            btnJson.add("action", HtData.toValue(rowAction));
+            Widget widget = WidgetFactory.create(btnJson, executor);
             if (widget instanceof ButtonWidget btn) {
                 return btn;
             }
@@ -171,12 +171,12 @@ public class DynamicListWidget extends BaseWidget {
         registerTemplateDim("edit_button", editBtnTemplate, 16, 16);
         registerTemplateDim("recreate_button", recreateBtnTemplate, 16, 16);
     }
-    private void registerTemplateDim(String name, JsonObject template, int defaultW, int defaultH) {
+    private void registerTemplateDim(String name, HtValue.Obj template, int defaultW, int defaultH) {
         if (template == null) return;
         int w = defaultW;
         int h = defaultH;
         if (template.has("size") && template.get("size").isJsonObject()) {
-            JsonObject sizeObj = template.get("size").getAsJsonObject();
+            HtValue.Obj sizeObj = template.get("size").getAsJsonObject();
             if (sizeObj.has("width")) {
                 try { w = sizeObj.get("width").getAsInt(); } catch (Exception ignored) {}
             }
@@ -530,23 +530,23 @@ public class DynamicListWidget extends BaseWidget {
             searchBox.setFocused(false);
         }
     }
-    private static int getJsonInt(JsonObject parent, String key, String subKey, int defaultValue) {
+    private static int getJsonInt(HtValue.Obj parent, String key, String subKey, int defaultValue) {
         if (parent == null || !parent.has(key)) return defaultValue;
-        JsonObject obj = parent.getAsJsonObject(key);
+        HtValue.Obj obj = parent.getAsJsonObject(key);
         if (obj == null || !obj.has(subKey)) return defaultValue;
         return obj.get(subKey).getAsInt();
     }
-    private static String getJsonString(JsonObject parent, String key, String subKey,
+    private static String getJsonString(HtValue.Obj parent, String key, String subKey,
                                         String defaultValue) {
         if (parent == null || !parent.has(key)) return defaultValue;
-        JsonObject obj = parent.getAsJsonObject(key);
+        HtValue.Obj obj = parent.getAsJsonObject(key);
         if (obj == null || !obj.has(subKey)) return defaultValue;
         return obj.get(subKey).getAsString();
     }
-    private static boolean getJsonBool(JsonObject parent, String key, String subKey,
+    private static boolean getJsonBool(HtValue.Obj parent, String key, String subKey,
                                        boolean defaultValue) {
         if (parent == null || !parent.has(key)) return defaultValue;
-        JsonObject obj = parent.getAsJsonObject(key);
+        HtValue.Obj obj = parent.getAsJsonObject(key);
         if (obj == null || !obj.has(subKey)) return defaultValue;
         return obj.get(subKey).getAsBoolean();
     }

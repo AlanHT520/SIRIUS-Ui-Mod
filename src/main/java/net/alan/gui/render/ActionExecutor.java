@@ -49,8 +49,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.OptionalLong;
 import java.util.function.Function;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 public class ActionExecutor {
     private static final Logger LOGGER = LoggerFactory.getLogger(ActionExecutor.class);
     private final Minecraft minecraft;
@@ -130,7 +128,7 @@ public class ActionExecutor {
                 }
             }
             case "show_card" -> {
-                JsonElement cardEl = action.getCard();
+                net.alan.gui.ht.HtValue cardEl = action.getCard();
                 if (cardEl == null) {
                     LOGGER.warn("show_card action missing card");
                     return;
@@ -140,7 +138,7 @@ public class ActionExecutor {
                 String instanceId = "card_" + System.currentTimeMillis();
                 if (cardManager != null) {
                     String cardId = action.getCardId();
-                    JsonObject cardObj = action.getCardObject();
+                    net.alan.gui.ht.HtValue.Obj cardObj = action.getCardData();
                     if (cardId != null) {
                         cardManager.showCard(cardId, instanceId, params);
                     } else if (cardObj != null) {
